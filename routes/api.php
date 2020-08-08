@@ -19,5 +19,8 @@ Route::group(['prefix' => 'v1', 'namespace' => 'Api\v1'], function() {
 
 	Route::group(['middleware' => 'auth:api'], function() {
 		Route::get('user-authenticated', 'UserController@getUserLogin');
+
+		Route::post('user/teacher', 'UserController@storeTeacher');
+		Route::get('user/teacher', 'UserController@indexTeacher');
 	});
 });

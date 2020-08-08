@@ -52,4 +52,17 @@ class SendResponse
 	{
 		return response()->Json($data, 200);
 	}
+
+	/**
+	 * 500 Server error
+	 *
+	 * @return \Illuminate\Http\Response
+	 */
+	public static function serverError($message = '')
+	{
+		return response()->json([
+			'error' 	=> true,
+			'message' 	=> $message != '' ? $message : 'server error' 
+		], 500);
+	}
 }
