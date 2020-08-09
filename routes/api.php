@@ -25,5 +25,7 @@ Route::group(['prefix' => 'v1', 'namespace' => 'Api\v1'], function() {
 		Route::delete('user/{id}', 'UserController@destroy');
 		Route::post('user/photo', 'UserController@updatePhoto');
 		Route::resource('user', 'UserController');
+
+		Route::resource('lecture', 'LectureController');
 	});
 });

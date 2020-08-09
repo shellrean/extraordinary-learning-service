@@ -55,8 +55,8 @@ class UserController extends Controller
         $request->isactive = true;
         $request->details = [];
 
-        $create = $userRepository->createNew($request);
-        return SendResponse::acceptData($create);
+        $userRepository->createNew($request);
+        return SendResponse::acceptData($userRepository->getUser());
     }
 
     /**

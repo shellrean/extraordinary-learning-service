@@ -67,13 +67,16 @@ class UserRepository
 				'name'		=> $request->name,
 				'email'		=> $request->email,
 				'password'	=> bcrypt($request->password),
+				'role'		=> $request->role,
+				'isactive'	=> $request->isactive,
+				'details'	=> $request->details
 			];
 
 			$user = User::create($data);
 		} catch (\Exception $e) {
 			throw new \App\Exceptions\ModelException($e->getMessage());
 		}
-		return $user;
+		$this->setUser($user);
 	}
 
 	/**
@@ -99,14 +102,13 @@ class UserRepository
 	 * @since 1.0.0
 	 * @return void
 	 */
-	public function getDataUser(int $value, string $key = 'id'): void
+	public function getDataUser($value, string $key = 'id'): void
 	{
 		$user = User::where($key,$value)->first();
-		if($user) {
-			$this->user = User::where($key,$value)->first();
-			return;
+		if(!$user) {
+			throw new \App\Exceptions\UserNotFoundException();
 		}
-		throw new \App\Exceptions\UserNotFoundException();
+		$this->user = User::where($key,$value)->first();
 	}
 
 	/**
