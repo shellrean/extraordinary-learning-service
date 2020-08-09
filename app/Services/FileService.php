@@ -20,7 +20,7 @@ class FileService
 	{
 		try {
 			$file = $request->file($name);
-			$filename = date('Ymd').'-'.uniqid().'.'.$file->getClientOriginalExtention();
+			$filename = date('Ymd').'-'.uniqid().'.'.$file->getClientOriginalExtension();
 			$path = $file->storeAs('public/', $filename);
 
 			$this->fileDetail = collect([
