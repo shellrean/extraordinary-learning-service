@@ -18,14 +18,31 @@ Route::group(['prefix' => 'v1', 'namespace' => 'Api\v1'], function() {
 	Route::post('login', 'AuthController@login');
 
 	Route::group(['middleware' => 'auth:api'], function() {
+
+		/**
+		 |-----------------------------------------------------------------
+		 | User route section
+		 |-----------------------------------------------------------------
+		 */
 		Route::get('user-authenticated', 'UserController@getUserLogin');
+		Route::post('users/teacher', 'UserController@storeTeacher');
+		Route::get('users/teacher', 'UserController@indexTeacher');
+		Route::delete('users/{id}', 'UserController@destroy');
+		Route::post('users/photo', 'UserController@updatePhoto');
+		Route::apiResource('users', 'UserController');
 
-		Route::post('user/teacher', 'UserController@storeTeacher');
-		Route::get('user/teacher', 'UserController@indexTeacher');
-		Route::delete('user/{id}', 'UserController@destroy');
-		Route::post('user/photo', 'UserController@updatePhoto');
-		Route::resource('user', 'UserController');
+		/**
+		 |-----------------------------------------------------------------
+		 | Lecture route section
+		 |-----------------------------------------------------------------
+		 */
+		Route::apiResource('lectures', 'LectureController');
 
-		Route::resource('lecture', 'LectureController');
+		/**
+		 |-----------------------------------------------------------------
+		 | Subject route section
+		 |-----------------------------------------------------------------
+		 */
+		Route::apiResource('subjects', 'SubjectController');
 	});
 });

@@ -4,6 +4,7 @@ namespace App\Http\Controllers\Api\v1;
 
 use App\Http\Controllers\Controller;
 use App\Actions\SendResponse;
+use App\Http\Requests\LoginRequest;
 use Illuminate\Http\Request;
 use App\User;
 use Auth;
@@ -17,13 +18,8 @@ class AuthController extends Controller
      * @param \ILluminate\Http\Request $request
      * @return \App\Actions\SendResponse
      **/
-    public function login(Request $request)
+    public function login(LoginRequest $request)
     {
-        $request->validate([
-            'email' => 'required|email|exists:users,email',
-            'password' => 'required|string',
-        ]);
-
         $credentials = request(['email', 'password']);
         if (Auth::attempt($credentials)) {
             $user = Auth::user();
