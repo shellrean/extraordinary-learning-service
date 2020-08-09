@@ -13,13 +13,54 @@ class UserRepository
 	private $users = [];
 
 	/**
+	 * App\User
+	 */
+	private $user;
+
+	/**
+	 * Retreive users data 
+	 *
+	 * @author shellrean <wandinak17@gmail.com>
+	 * @since 1.0.0
+	 * @return \App\User
+	 */
+	public function getUsers()
+	{
+		return $this->users;
+	}
+
+	/**
+	 * Retreive user data
+	 *
+	 * @author shellrean <wandinak17@gmail.com>
+	 * @since 1.0.0
+	 * @return \App\User
+	 */
+	public function getUser()
+	{
+		return $this->user;
+	}
+
+	/**
+	 * Set user property
+	 *
+	 * @author shellrean <wandinak17@gmail.com>
+	 * @since 1.0.0
+	 * @return void
+	 */
+	public function setUser(User $user)
+	{
+		$this->user = $user;
+	}
+
+	/**
 	 * Create new user
 	 * 
 	 * @author shellrean <wandinak17@gmail.com>
 	 * @since 1.0.0
 	 * @return array
 	 */
-	public function createNew(UserRequest $request): array
+	public function createNew(UserRequest $request): User
 	{
 		try {
 			$data = [
@@ -30,17 +71,9 @@ class UserRepository
 
 			$user = User::create($data);
 		} catch (\Exception $e) {
-			return [
-				'error' 	=> true, 
-				'message' 	=> $e->getMessage(),
-				'data' 		=> []
-			];
+			throw new \App\Exceptions\ModelException($e->getMessage());
 		}
-		return [
-			'error' 	=> false, 
-			'message' 	=> 'user created', 
-			'data' 		=> $user
-		];
+		return $user;
 	}
 
 	/**
@@ -60,14 +93,87 @@ class UserRepository
 	}
 
 	/**
-	 * Retreive users data 
+	 * Get user data by id
 	 *
 	 * @author shellrean <wandinak17@gmail.com>
 	 * @since 1.0.0
 	 * @return void
 	 */
-	public function getUsers()
+	public function getDataUser(int $value, string $key = 'id'): void
 	{
-		return $this->users;
+		$user = User::where($key,$value)->first();
+		if($user) {
+			$this->user = User::where($key,$value)->first();
+			return;
+		}
+		throw new \App\Exceptions\UserNotFoundException();
+	}
+
+	/**
+	 * Remove data user
+	 *
+	 * @author shellrean <wandinak17@gmail.com>
+	 * @since 1.0.0
+	 * @return array
+	 */
+	public function deleteDataUser(): void
+	{
+		if($this->user instanceof User) {
+			try {
+				$this->user->delete();
+			} catch (\Exception $e) {
+				throw new \App\Exceptions\ModelException($e->getMessage());
+			}
+			return;
+		}
+	}
+
+	/**
+	 * Update photo profile
+	 *
+	 * @author shellrean <wandinak17@gmail.com>
+	 * @since 1.0.0
+	 * @return void
+	 */
+	public function updatePhoto($filename): void
+	{
+		$detail = $this->user->details;
+		if(is_array($detail)) {
+			if(isset($detail['avatar'])) {
+				unset($detail['avatar']);
+			}
+			$detail['avatar'] = $filename;
+		} else {
+			$detail = [
+				'avatar' => $filename
+			];
+		}
+
+		try {
+			$this->user->details = $detail;
+			$this->user->save();
+		} catch (\Exception $e) {
+			throw new \App\Exceptions\ModelException($e->getMessage());
+		}
+	}
+
+	/**
+	 * Update user data
+	 *
+	 * @author shellrean <wandinak17@gmail.com>
+	 * @since 1.0.0
+	 * @return void
+	 */
+	public function updateDataUser($request): void
+	{
+		$data = [
+			'name'			=> $request->name,
+			'email'			=> $request->email,
+			'details'		=> $request->details
+		];
+		if(isset($request->password) && $request->password != '') { 
+			$data['password'] = bcrypt($request->password);
+		}
+		$this->user->update($data);
 	}
 }

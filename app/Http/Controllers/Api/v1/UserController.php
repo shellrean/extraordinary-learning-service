@@ -2,10 +2,13 @@
 
 namespace App\Http\Controllers\Api\v1;
 
+use App\Http\Requests\UserUpdateRequest;
 use App\Repositories\UserRepository;
 use App\Http\Controllers\Controller;
+use App\Http\Requests\PhotoRequest;
 use App\Http\Requests\UserRequest;
 use App\Actions\SendResponse;
+use App\Services\FileService;
 use Illuminate\Http\Request;
 
 class UserController extends Controller
@@ -36,7 +39,6 @@ class UserController extends Controller
         $search = isset(request()->q) ? request()->q : '';
 
         $userRepository->getDataUsers($perPage, $search);
-
         return SendResponse::acceptData($userRepository->getUsers());
     }
 
@@ -50,10 +52,73 @@ class UserController extends Controller
     public function storeTeacher(UserRequest $request, UserRepository $userRepository)
     {
         $request->role = '1';
-        $created = $userRepository->createNew($request);
-        if($created['error']) {
-            return SendResponse::serverError($created['message']);
-        }
-        return SendResponse::acceptData($created['data']);
+        $request->isactive = true;
+        $request->details = [];
+
+        $create = $userRepository->createNew($request);
+        return SendResponse::acceptData($create);
+    }
+
+    /**
+     * Get user's detail by id
+     *
+     * @author shellrean <wandinak17@gmail.com>
+     * @param int $id
+     * @param \App\Repositories\UserRepository $userReqpository
+     * @return \App\Actions\SendResponse
+     */
+    public function show($id, UserRepository $userRepository)
+    {
+        $userRepository->getDataUser($id);
+        return SendResponse::acceptData($userRepository->getUser());
+    }
+
+    /**
+     * Update user
+     *
+     * @author shellrean <wandinak17@gmail.com>
+     * @param \App\Http\Requests\UserRequest $request
+     * @return \App\Actions\SendResponse
+     */
+    public function update($id, UserUpdateRequest $request, UserRepository $userRepository)
+    {
+        $userRepository->getDataUser($id);
+        $userRepository->updateDataUser($request);
+        return SendResponse::acceptData($userRepository->getUser());
+    }
+
+    /**
+     * Remove user from data
+     *
+     * @author shellrean <wandinak17@gmail.com>
+     * @param int $id
+     * @param \App\Respositories\UserRepository $userRepository
+     * @return \App\Actions\SendResponse
+     */
+    public function destroy($id, UserRepository $userRepository)
+    {
+        $userRepository->getDataUser($id);
+        $delete = $userRepository->deleteDataUser();
+
+        return SendResponse::accept('delete success');
+    }
+
+    /**
+     * Change user photo
+     * 
+     * @author shellrean  <wandinak17@gmail.com>
+     * @param \App\Http\Requests\PhotoRequest $request
+     * @param \App\Respositories\UserRepository $userRepository
+     * @return \App\Actions\SendResponse
+     */
+    public function updatePhoto(PhotoRequest $request, UserRepository $userRepository, FileService $fileService)
+    {
+        $user = request()->user('api');
+        $store = $fileService->store($request);
+
+        $userRepository->setUser($user);
+        $userRepository->updatePhoto($fileService->fileDetail['filename']);
+
+        return SendResponse::acceptData($fileService->fileDetail['filename']);
     }
 }

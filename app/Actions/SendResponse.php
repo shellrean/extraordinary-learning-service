@@ -6,7 +6,10 @@ class SendResponse
 {
 	/**
 	 * 400 Bad Request
+	 * User send request that can't be handle by server
 	 *
+	 * @author shellrean <wandinak17@gmail.com>
+	 * @since 1.0.0
 	 * @return \Iluminate\Http\Response
 	 */
 	public static function badRequest($message = '')
@@ -19,7 +22,10 @@ class SendResponse
 
 	/**
 	 * 200 Accept
+	 * Server send ok response with no data
 	 *
+	 * @author shellrean <wandinak17@gmail.com>
+	 * @since 1.0.0
 	 * @return \Illuminate\Http\Response
 	 */
 	public static function accept($message = '')
@@ -32,7 +38,10 @@ class SendResponse
 
 	/**
 	 * 200 Accept Data
+	 * Server send ok response with data
 	 *
+	 * @author shellrean <wandinak17@gmail.com>
+	 * @since 1.0.0
 	 * @return \Illuminate\Http\Response
 	 */
 	public static function acceptData($data) 
@@ -45,7 +54,10 @@ class SendResponse
 
 	/**
 	 * 200 Custom data
+	 * Server send ok response with custom data
 	 *
+	 * @author shellrean <wandinak17@gmail.com>
+	 * @since 1.0.0
 	 * @return \Illuminate\Http\Response
 	 */
 	public static function acceptCustom($data)
@@ -55,7 +67,10 @@ class SendResponse
 
 	/**
 	 * 500 Server error
+	 * Server error when try to process
 	 *
+	 * @author shellrean <wandinak17@gmail.com>
+	 * @since 1.0.0
 	 * @return \Illuminate\Http\Response
 	 */
 	public static function serverError($message = '')
@@ -64,5 +79,21 @@ class SendResponse
 			'error' 	=> true,
 			'message' 	=> $message != '' ? $message : 'server error' 
 		], 500);
+	}
+
+	/**
+	 * 404 Not found
+	 * Data not found in server
+	 *
+	 * @author shellrean <wandinak17@gmail.com>
+	 * @since 1.0.0
+	 * @return \Illuminate\Http\Response
+	 */
+	public static function notFound($message = '') 
+	{
+		return response()->json([
+			'error' 	=> true,
+			'message'	=> $message != '' ? $message : 'not found'
+		], 404);
 	}
 }
