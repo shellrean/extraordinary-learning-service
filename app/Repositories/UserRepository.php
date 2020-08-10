@@ -3,6 +3,7 @@
 namespace App\Repositories;
 
 use App\Http\Requests\UserRequest;
+use App\Services\FileService;
 use App\User;
 
 class UserRepository 
@@ -60,7 +61,7 @@ class UserRepository
 	 * @since 1.0.0
 	 * @return array
 	 */
-	public function createNew(UserRequest $request): User
+	public function createNew(UserRequest $request): void
 	{
 		try {
 			$data = [
@@ -86,7 +87,7 @@ class UserRepository
 	 * @since 1.0.0
 	 * @return void
 	 */
-	public function getDataUsers(int $perPage, string $search, string $role = '2'): void
+	public function getDataUsers(int $perPage, string $search, string $role = '1'): void
 	{
 		$users = User::where('role', $role);
 		if ($search != '') {
@@ -126,7 +127,6 @@ class UserRepository
 			} catch (\Exception $e) {
 				throw new \App\Exceptions\ModelException($e->getMessage());
 			}
-			return;
 		}
 	}
 
@@ -142,6 +142,7 @@ class UserRepository
 		$detail = $this->user->details;
 		if(is_array($detail)) {
 			if(isset($detail['avatar'])) {
+				FileService::remove('app/public/'.$detail['avatar']);
 				unset($detail['avatar']);
 			}
 			$detail['avatar'] = $filename;

@@ -31,4 +31,18 @@ class FileService
 			throw new \App\Exceptions\ModelException($e->getMessage());
 		}
 	}
+
+	/**
+	 * Remove file from storage
+	 *
+	 * @author shellrean <wandinak17@gmail.com>
+	 * @since 1.0.0
+	 * @param string $path
+	 */
+	public static function remove(string $path): void
+	{
+		if(file_exists(storage_path($path))) {
+			unlink(storage_path($path));
+		}
+	}
 }

@@ -43,7 +43,24 @@ class UserController extends Controller
     }
 
     /**
-     * Store new user
+     * Get user student
+     *
+     * @author shellrean <wandinak17@gmail.com>
+     * @return \App\Actions\SendResponse
+     */
+    public function indexStudent(UserRepository $userRepository)
+    {
+        $perPage = isset(request()->perPage) && request()->perPage != '' 
+                    ? request()->perPage 
+                    : 10;
+        $search = isset(request()->q) ? request()->q : '';
+
+        $userRepository->getDataUsers($perPage, $search, '2');
+        return SendResponse::acceptData($userRepository->getUsers());
+    }
+
+    /**
+     * Store new user teacher
      *
      * @author shellrean <wandinak17@gmail.com>
      * @param \App\Http\Requests\UserRequest $request
@@ -53,7 +70,22 @@ class UserController extends Controller
     {
         $request->role = '1';
         $request->isactive = true;
-        $request->details = [];
+
+        $userRepository->createNew($request);
+        return SendResponse::acceptData($userRepository->getUser());
+    }
+
+    /**
+     * Store new user student
+     *
+     * @author shellrean <wandinak17@gmail.com>
+     * @param \App\Http\Requests\UserRequest $request
+     * @return \App\Actions\SendResponse
+     */
+    public function storeStudent(UserRequest $request, UserRepository $userRepository)
+    {
+        $request->role = '2';
+        $request->isactive = true;
 
         $userRepository->createNew($request);
         return SendResponse::acceptData($userRepository->getUser());

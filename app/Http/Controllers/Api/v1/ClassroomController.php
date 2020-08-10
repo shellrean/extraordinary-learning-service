@@ -5,6 +5,7 @@ namespace App\Http\Controllers\Api\v1;
 use App\Repositories\ClassroomRepository;
 use App\Http\Requests\ClassroomRequest;
 use App\Http\Controllers\Controller;
+use App\Actions\SendResponse;
 use Illuminate\Http\Request;
 
 class ClassroomController extends Controller
@@ -21,9 +22,9 @@ class ClassroomController extends Controller
     	$perPage = isset(request()->perPage) && request()->perPage != ''
     				? request()->perPage
     				: 10;
-    	$search = isset(request()->q) ? request()->q : ''
+    	$search = isset(request()->q) ? request()->q : '';
     	$classroomRepository->getDataClassrooms($perPage, $search);
-    	return SendResponse::acceptData($classroomRepository->getClassroom());
+    	return SendResponse::acceptData($classroomRepository->getClassrooms());
     }
 
     /**
@@ -61,7 +62,7 @@ class ClassroomController extends Controller
      * @param \App\Repositories\ClassroomRepository $classroomRepository
      * @return \App\Actions\SendResponse
      */
-    public function update($classroom_id, ClassroomRepository $request, ClassroomRepository $classroomRepository)
+    public function update($classroom_id, ClassroomRequest $request, ClassroomRepository $classroomRepository)
     {
     	$classroomRepository->updateDataClassroom($request, $classroom_id);
     	return SendResponse::acceptData($classroomRepository->getClassroom());

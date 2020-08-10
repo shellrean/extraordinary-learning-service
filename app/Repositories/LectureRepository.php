@@ -125,9 +125,12 @@ class LectureRepository
 	 * @param \Illuminate\Http\Request
 	 * @return void
 	 */
-	public function updateDataLecture($request): void
+	public function updateDataLecture($request, $lecture_id = ''): void
 	{
 		try {
+			if($lecture_id != '') {
+				$this->getDataLecture($lecture_id);
+			}
 			$data = [
 				'title'		=> $request->title,
 				'body'		=> $request->body,
@@ -146,10 +149,13 @@ class LectureRepository
 	 * @since 1.0.0
 	 * @return void
 	 */
-	public function deleteDataLecture($request): void
+	public function deleteDataLecture($lecture_id = ''): void
 	{
 		try {
-			$this->user->delete();
+			if($lecture_id != '') {
+				$this->getDataLecture($lecture_id);
+			}
+			$this->lecture->delete();
 		} catch (\Exception $e) {
 			throw new \App\Exceptions\ModelException($e->getMessage());
 		}

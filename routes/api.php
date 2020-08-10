@@ -25,11 +25,22 @@ Route::group(['prefix' => 'v1', 'namespace' => 'Api\v1'], function() {
 		 |-----------------------------------------------------------------
 		 */
 		Route::get('user-authenticated', 'UserController@getUserLogin');
-		Route::post('users/teacher', 'UserController@storeTeacher');
-		Route::get('users/teacher', 'UserController@indexTeacher');
-		Route::delete('users/{id}', 'UserController@destroy');
 		Route::post('users/photo', 'UserController@updatePhoto');
-		Route::apiResource('users', 'UserController');
+		Route::group(['middleware' => 'auth.admin'], function() {
+			Route::post('users/teacher', 'UserController@storeTeacher');
+			Route::get('users/teacher', 'UserController@indexTeacher');
+			Route::post('users/student', 'UserController@storeStudent');
+			Route::get('users/student', 'UserController@indexStudent');
+			Route::delete('users/{id}', 'UserController@destroy');
+			Route::apiResource('users', 'UserController')->except('index');
+		});
+
+		/**
+		 |-----------------------------------------------------------------
+		 | Subject route section
+		 |-----------------------------------------------------------------
+		 */
+		Route::apiResource('subjects', 'SubjectController');
 
 		/**
 		 |-----------------------------------------------------------------
@@ -40,9 +51,11 @@ Route::group(['prefix' => 'v1', 'namespace' => 'Api\v1'], function() {
 
 		/**
 		 |-----------------------------------------------------------------
-		 | Subject route section
+		 | Classroom route section
 		 |-----------------------------------------------------------------
 		 */
-		Route::apiResource('subjects', 'SubjectController');
+		Route::apiResource('classrooms', 'ClassroomController');
+
+		
 	});
 });

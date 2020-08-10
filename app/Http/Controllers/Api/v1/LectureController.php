@@ -44,7 +44,7 @@ class LectureController extends Controller
     	$request->user_id = $user->id;
 
     	$lectureRepository->createNewLecture($request);
-    	return SendResponse::acceptData($lectureRepository->getUser());
+    	return SendResponse::acceptData($lectureRepository->getLecture());
     }
 
     /**
@@ -71,8 +71,7 @@ class LectureController extends Controller
      */
     public function update($id,  LectureUpdate $request, LectureRepository $lectureRepository)
     {
-    	$lectureRepository->getDataLecture($id);
-    	$lectureRepository->updateDataLecture($request);
+    	$lectureRepository->updateDataLecture($request, $id);
     	return SendResponse::acceptData($lectureRepository->getLecture());
     }
 
@@ -86,8 +85,7 @@ class LectureController extends Controller
      */
     public function destroy($id, LectureRepository $lectureRepository)
     {
-    	$lectureRepository->getDataLecutre($id);
-    	$lectureRepository->deleteDataLecture();
+    	$lectureRepository->deleteDataLecture($id);
     	return SendResponse::accept('lecture deleted');
     }
 }

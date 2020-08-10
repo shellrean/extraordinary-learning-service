@@ -63,7 +63,7 @@ class ClassroomRepository
 	 * @param string $search
 	 * @return void
 	 */
-	public function getDataClassroom(int $perPage, string $search = '')
+	public function getDataClassrooms(int $perPage, string $search = '')
 	{
 		try {
 			$classrooms = Classroom::orderBy('grade');
@@ -74,6 +74,23 @@ class ClassroomRepository
 		} catch (\Exception $e) {
 			throw new \App\Exceptions\ModelException($e->getMessage());
 		}
+	}
+
+	/**
+	 * Get data classroom
+	 *
+	 * @author shellrean <wandinak17@gmail.com>
+	 * @since 1.0.0
+	 * @param bool $exception
+	 * @return void
+	 */
+	public function getDataClassroom($classroom_id, string $key = 'id', bool $exception = true)
+	{
+		$classroom = Classroom::where($key, $classroom_id)->first();
+		if(!$classroom && $exception) {
+			throw new \App\Exceptions\ClassRoomNotFoundException();
+		}
+		$this->setClassroom($classroom);
 	}
 
 	/**

@@ -96,4 +96,20 @@ class SendResponse
 			'message'	=> $message != '' ? $message : 'not found'
 		], 404);
 	}
+
+	/**
+	  * 403 Forbidden
+	  * Not have access to the resource
+	  *
+	  * @author shellrean <wandinak17@gmail.com>
+	  * @since 1.0.0
+	  * @return \Illuminate\Http\Response
+	  */
+	public static function forbidden($message = '')
+	{
+		return response()->json([
+			'error'		=> true,
+			'message'	=> $message != '' ? $message : 'you do not have access to the resource'
+		], 403);
+	}
 }
