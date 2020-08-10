@@ -31,4 +31,18 @@ class AuthController extends Controller
         }
         return SendResponse::acceptData('invalid-credentials');
     }
+
+    /**
+     * Logout from Api and revoke token
+     *
+     * @author shellrean <wandinak17@gmail.com>
+     * @return \App\Actions\SendResponse
+     */
+    public function logout()
+    {
+        $user = Auth::user()->token();
+        $user->revoke();
+
+        return SendResponse::accept();
+    }
 }
