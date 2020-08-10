@@ -47,6 +47,8 @@ Route::group(['prefix' => 'v1', 'namespace' => 'Api\v1'], function() {
 		 | Lecture route section
 		 |-----------------------------------------------------------------
 		 */
+		Route::get('lectures/{lecture_id}/comment', 'CommentController@index');
+		Route::post('lectures/{lecture_id}/comment', 'CommentController@store');
 		Route::apiResource('lectures', 'LectureController');
 
 		/**
@@ -55,7 +57,5 @@ Route::group(['prefix' => 'v1', 'namespace' => 'Api\v1'], function() {
 		 |-----------------------------------------------------------------
 		 */
 		Route::apiResource('classrooms', 'ClassroomController');
-
-		
 	});
 });

@@ -3,6 +3,7 @@
 namespace App\Http\Controllers\Api\v1;
 
 use App\Repositories\CommentRepository;
+use App\Http\Requests\CommentRequest;
 use App\Http\Controllers\Controller;
 use App\Actions\SendResponse;
 use Illuminate\Http\Request;
@@ -21,8 +22,23 @@ class CommentController extends Controller
     	$perPage = isset(request()->perPage) && request()->perPage != '' 
     				? request()->perPage 
     				: 10;
-    	$commentRepository->getDataComments($lecture_id);
+    	$commentRepository->getDataComments($lecture_id, $perPage);
     	return SendResponse::acceptData($commentRepository->getComments());
+    }
+
+    /**
+     * Create new lecture comment
+     *
+     * @author shellrean <wandinak17@gmail.com>
+     * @param int $lecture_id
+     * @return \App\Actions\SendResponse
+     */
+    public function store($lecture_id, CommentRequest $request, CommentRepository $commentRepository)
+    {
+        $user = request()->user('api');
+        $request->user_id = $user->id;
+        $commentRepository->createNewComment($request);
+        return SendResponse::acceptData($commentRepository->getComment());
     }
 
     /**
