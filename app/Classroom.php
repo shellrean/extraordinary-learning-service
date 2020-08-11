@@ -20,5 +20,5 @@ class Classroom extends Model
      */
     protected $casts = [
     	'settings'		=> 'array'
-    ];    
+    ];  
 }
