@@ -43,7 +43,8 @@ Route::group(['prefix' => 'v1', 'namespace' => 'Api\v1'], function() {
 		 |-----------------------------------------------------------------
 		 */
 		Route::get('subjects/mine', 'SubjectController@mine')->middleware('auth.teacher');
-		Route::apiResource('subjects', 'SubjectController')->middleware('auth.admin');
+		Route::get('subjects', 'SubjectController@index');
+		Route::apiResource('subjects', 'SubjectController')->middleware('auth.admin')->except('index');
 
 		/**
 		 |-----------------------------------------------------------------

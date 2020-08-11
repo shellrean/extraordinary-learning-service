@@ -18,10 +18,16 @@ class ChannelController extends Controller
      * @param \App\Services\SocketService
      * @return \App\Actions\SendResponse
      */
-    public function changeToChannel($channel_id, SocketService $socketService)
+    public function changeToChannel($channel_id, Request $request, SocketService $socketService)
     {
-    	$user = request()->user('api');
-    	$socketService->setUserToChannel($user->id, $channel_id);
+        $user_id = $request->user_id;
+        if(!$request->user_id) {
+    	   $user_id = request()->user('api')->id;
+        }
+        if($channel_id == 0) {
+            $channel_id = '';
+        }
+    	$socketService->setUserToChannel($user_id, $channel_id);
     	return SendResponse::accept('channel changed');
     }
 
