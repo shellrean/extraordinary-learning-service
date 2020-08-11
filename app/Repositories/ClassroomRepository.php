@@ -3,6 +3,7 @@
 namespace App\Repositories;
 
 use App\Classroom;
+use App\ClassroomSubject;
 
 class ClassroomRepository
 {
@@ -91,6 +92,28 @@ class ClassroomRepository
 			throw new \App\Exceptions\ClassRoomNotFoundException();
 		}
 		$this->setClassroom($classroom);
+	}
+
+	/**
+	 * Get data subject classroom
+	 *
+	 * @author shellrean <wandinak17@gmail.com>
+	 * @since 1.0.0
+	 * @return void
+	 */
+	public function getDataClasssroomHasSubject($subject_ids) 
+	{
+		try {
+			$classrooms = ClassroomSubject::with(['classroom', 'subject']);
+			if(is_array($subject_ids)) {
+				$classrooms = $classrooms->whereIn('subject_id', $subject_ids);
+			} else {
+				$classrooms = $classrooms->where('subject_id', $subject_ids);
+			}
+			$this->classrooms = $classrooms->get();
+		} catch (\Exceptions $e) {
+			throw new \App\Exceptions\ModelException($e->getMessage());
+		}
 	}
 
 	/**

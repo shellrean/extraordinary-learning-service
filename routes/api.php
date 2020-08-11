@@ -25,6 +25,8 @@ Route::group(['prefix' => 'v1', 'namespace' => 'Api\v1'], function() {
 		 |-----------------------------------------------------------------
 		 */
 		Route::get('user-authenticated', 'UserController@getUserLogin');
+		Route::post('users/online', 'UserController@setOnlineUser');
+
 		Route::post('users/photo', 'UserController@updatePhoto');
 		Route::group(['middleware' => 'auth.admin'], function() {
 			Route::post('users/teacher', 'UserController@storeTeacher');
@@ -40,7 +42,8 @@ Route::group(['prefix' => 'v1', 'namespace' => 'Api\v1'], function() {
 		 | Subject route section
 		 |-----------------------------------------------------------------
 		 */
-		Route::apiResource('subjects', 'SubjectController');
+		Route::get('subjects/mine', 'SubjectController@mine')->middleware('auth.teacher');
+		Route::apiResource('subjects', 'SubjectController')->middleware('auth.admin');
 
 		/**
 		 |-----------------------------------------------------------------
@@ -56,6 +59,15 @@ Route::group(['prefix' => 'v1', 'namespace' => 'Api\v1'], function() {
 		 | Classroom route section
 		 |-----------------------------------------------------------------
 		 */
-		Route::apiResource('classrooms', 'ClassroomController');
+		Route::get('classrooms/mine', 'ClassroomController@mine')->middleware('auth.teacher');
+		Route::apiResource('classrooms', 'ClassroomController')->middleware('auth.admin');
+
+		/**
+		 |-----------------------------------------------------------------
+		 | Abcent route section
+		 |-----------------------------------------------------------------
+		 */
+		Route::get('abcents/subject/{subject_id}/classroom/{classroom_id}/today', 'AbcentController@subjectClassroomToday');
+		Route::post('abcents/subject/{subject_id}/classroom/{classroom_id}/today', 'AbcentController@store');
 	});
 });

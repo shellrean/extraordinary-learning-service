@@ -153,4 +153,21 @@ class UserController extends Controller
 
         return SendResponse::acceptData($fileService->fileDetail['filename']);
     }
+
+    /**
+     * Change user isonline status
+     *
+     * @author shellrean <wandinak17@gmail.com>
+     * @param \App\Http\Request $request
+     * @return \App\Actions\SendResponse
+     */
+    public function setOnlineUser(Request $request, UserRepository $userRepository) 
+    {
+        $user = request()->user('api');
+
+        $userRepository->setUser($user);
+        $userRepository->updateDataOnlineUser($request);
+
+        return SendResponse::accept();
+    }
 }

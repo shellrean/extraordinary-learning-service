@@ -83,4 +83,18 @@ class SubjectController extends Controller
     	$subjectRepository->deleteDataSubject($subject_id);
     	return SendResponse::accept('subject deleted');
     }
+
+    /**
+     * Get user's subject
+     *
+     * @author shellrean <wanddinak17@gmail.com>
+     * @param \App\Repositories\SubjectRepository $subjectRepository
+     * @return \App\Actions\SendResponse
+     */
+    public function mine(SubjectRepository $subjectRepository)
+    {
+        $user = request()->user('api');
+        $subjectRepository->getDataSubjectsTeacher($user->id);
+        return SendResponse::acceptData($subjectRepository->getSubjects());
+    }
 }

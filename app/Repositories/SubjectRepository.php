@@ -3,6 +3,7 @@
 namespace App\Repositories;
 
 use App\Subject;
+use App\TeacherSubject;
 
 class SubjectRepository
 {
@@ -72,6 +73,24 @@ class SubjectRepository
 			}
 			$this->subjects = $subjects->paginate($perPage);
 		} catch (\Exception $e) {
+			throw new \App\Exceptions\ModelException($e->getMessage());
+		}
+	}
+
+	/**
+	 * Get data subjects teacher
+	 *
+	 * @author shellrean <wandinak17@gmail.com>
+	 * @since 1.0.0
+	 * @param int $teacher_id
+	 * @return void
+	 */
+	public function getDataSubjectsTeacher(int $teacher_id): void
+	{
+		try {
+			$subjects = TeacherSubject::where('teacher_id', $teacher_id)->get();
+			$this->subjects = $subjects;
+		} catch (\Exceptions $e) {
 			throw new \App\Exceptions\ModelException($e->getMessage());
 		}
 	}

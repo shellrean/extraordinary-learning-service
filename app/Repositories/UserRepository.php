@@ -179,4 +179,25 @@ class UserRepository
 		}
 		$this->user->update($data);
 	}
+
+	/**
+	 * Set user online
+	 *
+	 * @author shellrean <wandinak17@gmail.com>
+	 * @since 1.0.0
+	 * @return void
+	 */
+	public function updateDataOnlineUser($request, $user_id = ''): void
+	{
+		try {
+			if($user_id != '') {
+				$this->getDataUser($user_id);
+			}
+			$this->user->update([
+				'isonline'	=> $request->isonline
+			]);
+		} catch (\Exception $e) {
+			throw new \App\Exceptions\ModelException($e->getMessage());
+		}
+	}
 }

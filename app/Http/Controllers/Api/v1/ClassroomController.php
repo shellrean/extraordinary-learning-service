@@ -3,6 +3,7 @@
 namespace App\Http\Controllers\Api\v1;
 
 use App\Repositories\ClassroomRepository;
+use App\Repositories\SubjectRepository;
 use App\Http\Requests\ClassroomRequest;
 use App\Http\Controllers\Controller;
 use App\Actions\SendResponse;
@@ -80,5 +81,23 @@ class ClassroomController extends Controller
     {
     	$classroomRepository->deleteDataClassroom($classroom_id);
     	return SendResponse::accept();
+    }
+
+    /**
+     * Get data user's classroom
+     *
+     * @author shellrean <wandinak17@gmail.com>
+     * @param \App\Repositories\ClassroomRepository
+     * @param \App\Repositories\SubjectRepository
+     * @return \App\Actions\SendResponse
+     */
+    public function mine(ClassroomRepository $classroomRepository, SubjectRepository $subjectRepository)
+    {
+        $user = request()->user('api');
+        $subjectRepository->getDataSubjectsTeacher($user->id);
+        $classroomRepository->getDataClasssroomHasSubject(
+            $subjectRepository->getSubjects()->pluck('subject_id')->toArray()
+        );
+        return SendResponse::acceptData($classroomRepository->getClassrooms());
     }
 }

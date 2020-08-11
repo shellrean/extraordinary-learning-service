@@ -18,7 +18,18 @@ class UserSeeder extends Seeder
         	'password'	=> bcrypt('criticalpassword'),
         	'role'		=> '0',
         	'isactive'  => true,
+            'isonline'  => true,
         	'details'	=> []
+        ]);
+
+        User::create([
+            'name'      => 'Sefna',
+            'email'     => 'sefna@shellrean.com',
+            'password'  => bcrypt('password'),
+            'role'      => '1',
+            'isactive'  => true,
+            'isonline'  => true,
+            'details'   => []
         ]);
     }
 }
