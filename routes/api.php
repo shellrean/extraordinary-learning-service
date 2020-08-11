@@ -69,5 +69,13 @@ Route::group(['prefix' => 'v1', 'namespace' => 'Api\v1'], function() {
 		 */
 		Route::get('abcents/subject/{subject_id}/classroom/{classroom_id}/today', 'AbcentController@subjectClassroomToday');
 		Route::post('abcents/subject/{subject_id}/classroom/{classroom_id}/today', 'AbcentController@store');
+
+		/**
+		 |-----------------------------------------------------------------
+		 | Channel route section
+		 |-----------------------------------------------------------------
+		 */
+		Route::get('channels/{channel_id}/user', 'ChannelController@getDataChannelUser');
+		Route::post('channels/{channel_id}/user', 'ChannelController@changeToChannel');
 	});
 });
