@@ -5,6 +5,7 @@ namespace App\Http\Controllers\Api\v1;
 use App\Repositories\ClassroomRepository;
 use App\Repositories\SubjectRepository;
 use App\Http\Requests\ClassroomRequest;
+use App\Http\Requests\ClassroomLive;
 use App\Http\Controllers\Controller;
 use App\Actions\SendResponse;
 use Illuminate\Http\Request;
@@ -99,5 +100,52 @@ class ClassroomController extends Controller
             $subjectRepository->getSubjects()->pluck('subject_id')->toArray()
         );
         return SendResponse::acceptData($classroomRepository->getClassrooms());
+    }
+
+    /**
+     * Get data classroom's live
+     *
+     * @author shellrean <wandinak17@gmail.com>
+     * @param \App\Repositories\ClassroomRepository
+     * @param $classroom_id
+     * @return \App\Actions\SendResponse
+     */
+    public function liveClassroom($classroom_id, ClassroomRepository $classroomRepository)
+    {
+        $user = request()->user('api');
+        $classroomRepository->getDataClassroomLive($classroom_id, $user->id);
+        return SendResponse::acceptData($classroomRepository->getClassrooms());
+    }
+
+    /**
+     * Create new classroom's live
+     *
+     * @author shellrean <wandinak17@gmail.com>
+     * @param \App\Repositories\ClassroomRepository
+     * @param $classroom_id
+     * @return \App\Actions\SendResponse
+     */
+    public function storeLiveClassroom($classroom_id, ClassroomLive $request, ClassroomRepository $classroomRepository)
+    {
+        $user = request()->user('api');
+        $request->teacher_id = $user->id;
+        $request->classroom_id = $classroom_id;
+
+        $classroomRepository->createNewClassroomLive($request);
+        return SendResponse::acceptData($classroomRepository->getClassroom());
+    }
+
+    /**
+     * Stop classroom live
+     *
+     * @author shellrean <wandinak17@gmail.com>
+     * @param \App\Repositories\ClassroomRepository
+     * @param $classlive_id
+     * @return \App\Actions\SendResponse
+     */
+    public function stopLiveClassroom($classlive_id, ClassroomRepository $classroomRepository)
+    {
+        $classroomRepository->setStatusClassroomLive($classlive_id, false);
+        return SendResponse::accept('live class stopped');
     }
 }

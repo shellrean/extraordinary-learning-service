@@ -3,6 +3,7 @@
 namespace App\Repositories;
 
 use App\Classroom;
+use App\ClassroomLive;
 use App\ClassroomSubject;
 
 class ClassroomRepository
@@ -178,6 +179,73 @@ class ClassroomRepository
 				$this->getDataClassroom($classroom_id);
 			}
 			$this->classroom->delete();
+		} catch (\Exception $e) {
+			throw new \App\Exceptions\ModelException($e->getMessage());
+		}
+	}
+
+	/**
+	 * Create new classroom live
+	 *
+	 * @author shellrean <wandinak17@gmail.com>
+	 * @since 1.0.0
+	 * @param \Illuminate\Http\Request
+	 * @return void
+	 */
+	public function createNewClassroomLive($request)
+	{
+		try {
+			$data = [
+				'teacher_id'	=> $request->teacher_id,
+				'classroom_id'	=> $request->classroom_id,
+				'subject_id'	=> $request->subject_id,
+				'body'			=> $request->body
+			];
+			$classroom = ClassroomLive::create($data);
+			$this->classroom = $classroom;
+		} catch (\Exception $e) {
+			throw new \App\Exceptions\ModelException($e->getMessage());
+		}
+	}
+
+	/**
+	 * Get data classroom live
+	 *
+	 * @author shellrean <wandinak17@gmail.com>
+	 * @since 1.0.0
+	 * @param $classroom_id
+	 * @param \Illuminate\Http\Request
+	 * @return void
+	 */
+	 public function getDataClassroomLive($classroom_id, $teacher_id = '', bool $status = true)
+	{
+	 	try {
+	 		$classrooms = ClassroomLive::where('classroom_id', $classroom_id)->where('isactive',$status);
+	 		if($teacher_id != '') {
+	 			$classrooms = $classrooms->where('teacher_id', $teacher_id);
+	 		}
+	 		$this->classrooms = $classrooms->orderBy('id','desc')->get();
+	 	} catch (\Exception $e) {
+	 		throw new \App\Exceptions\ModelException($e->getMessage());
+	 	}
+	}
+
+	/**
+	 * Set data classroom live status
+	 *
+	 * @author shellrean <wandinak17@gmail.com>
+	 * @since 1.0.0
+	 * @param $classlive_id
+	 * @param bool $status
+	 */
+	public function setStatusClassroomLive($classlive_id, bool $status)
+	{
+		try {
+			$liveClass = ClassroomLive::find($classlive_id);
+			if(!$liveClass) {
+				throw new \App\Exceptions\ClassRoomNotFoundException();
+			}
+			$liveClass->update(['isactive' => $status]);
 		} catch (\Exception $e) {
 			throw new \App\Exceptions\ModelException($e->getMessage());
 		}
