@@ -53,6 +53,8 @@ Route::group(['prefix' => 'v1', 'namespace' => 'Api\v1'], function() {
 		 */
 		Route::get('lectures/{lecture_id}/comment', 'CommentController@index');
 		Route::post('lectures/{lecture_id}/comment', 'CommentController@store');
+		Route::post('lectures/{lecture_id}/sharee', 'LectureController@sharee');
+		Route::get('lectures/classrooms/{classroom_id}', 'LectureController@classroomLectures');
 		Route::apiResource('lectures', 'LectureController');
 
 		/**

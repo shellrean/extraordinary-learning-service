@@ -61,10 +61,11 @@ class CommentRepository
 	 * @param int $perPage
 	 * @return void
 	 */	
-	public function getDataComments($id_lecture, int $perPage): void
+	public function getDataComments($id_lecture, int $perPage, string $type = 'lecture'): void
 	{
 		$comments = Comment::with('user')
 					->where('lecture_id', $id_lecture)
+					->where('type', $type)
 					->paginate($perPage);
 		$this->comments = $comments;
 	}

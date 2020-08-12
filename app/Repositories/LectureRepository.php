@@ -3,6 +3,7 @@
 namespace App\Repositories;
 
 use App\Lecture;
+use App\ClassroomLecture;
 
 class LectureRepository
 {
@@ -123,6 +124,7 @@ class LectureRepository
 	 * @author shellrean <wandinak17@gmail.com>
 	 * @since 1.0.0
 	 * @param \Illuminate\Http\Request
+	 * @param $lecture_id <optional>
 	 * @return void
 	 */
 	public function updateDataLecture($request, $lecture_id = ''): void
@@ -147,6 +149,7 @@ class LectureRepository
 	 *
 	 * @author shellrean <wandinak17@gmaill.com>
 	 * @since 1.0.0
+	 * @param $lecture_id <optional>
 	 * @return void
 	 */
 	public function deleteDataLecture($lecture_id = ''): void
@@ -156,6 +159,51 @@ class LectureRepository
 				$this->getDataLecture($lecture_id);
 			}
 			$this->lecture->delete();
+		} catch (\Exception $e) {
+			throw new \App\Exceptions\ModelException($e->getMessage());
+		}
+	}
+
+	/**
+	 * Create new classroom lecture
+	 *
+	 * @author shellrean <wandinak17@gmail.com>
+	 * @since 1.0.0
+	 * @param $request
+	 * @return void
+	 */
+	public function createNewLectureClassroom($request)
+	{
+		try {
+			$data = [
+				'teacher_id' => $request->teacher_id,
+				'lecture_id' => $request->lecture_id,
+				'classroom_id' => $request->classroom_id,
+				'body' => $request->body
+			];
+			ClassroomLecture::create($data);
+		} catch (\Exception $e) {
+			throw new \App\Exceptions\ModelException($e->getMessage());
+		}
+	}
+
+
+	/**
+	 * Get data lecture classroom
+	 *
+	 * @author shellrean <wandinak17@gmail.com>
+	 * @since 1.0.0
+	 * @param $classroom_id
+	 * @return void
+	 */
+	public function getDataLecturesClassroom($classroom_id, $teacher_id = '')
+	{
+		try {
+			$lectures = ClassroomLecture::with(['lecture'])->where('classroom_id', $classroom_id);
+			if($teacher_id != '') {
+				$lectures = $lectures->where('teacher_id', $teacher_id);
+			}
+			$this->lectures = $lectures->orderBy('id','desc')->get();
 		} catch (\Exception $e) {
 			throw new \App\Exceptions\ModelException($e->getMessage());
 		}

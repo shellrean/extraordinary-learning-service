@@ -5,6 +5,7 @@ namespace App\Http\Controllers\Api\v1;
 use App\Repositories\LectureRepository;
 use App\Http\Requests\LectureCreate;
 use App\Http\Requests\LectureUpdate;
+use App\Http\Requests\LectureSharee;
 use App\Http\Controllers\Controller;
 use App\Actions\SendResponse;
 use Illuminate\Http\Request;
@@ -87,5 +88,38 @@ class LectureController extends Controller
     {
     	$lectureRepository->deleteDataLecture($id);
     	return SendResponse::accept('lecture deleted');
+    }
+
+    /**
+     * Sharee lecture data to classroom
+     *
+     * @author shellrean <wandinak17@gmail.com>
+     * @param int $lecture_id
+     * @param \App\Repositories\LectureRepository
+     * @return \App\Actions\SendResponse
+     */
+    public function sharee($lecture_id, LectureSharee $request, LectureRepository $lectureRepository) 
+    {
+        $user = request()->user('api');
+        $request->teacher_id = $user->id;
+        $request->lecture_id = $lecture_id;
+
+        $lectureRepository->createNewLectureClassroom($request);
+        return SendResponse::accept('lecture shared');
+    }
+
+    /**
+     * Get data classroom's lectures
+     *
+     * @author shellrean <wandinak17@gmail.com>
+     * @param int $classroom_id
+     * @param \App\Reqpositories\LectureRepository
+     * @return \App\Actions\SendResponse
+     */
+    public function classroomLectures($classroom_id, LectureRepository $lectureRepository)
+    {
+        $user = request()->user('api');
+        $lectureRepository->getDataLecturesClassroom($classroom_id, $user->id);
+        return SendResponse::acceptData($lectureRepository->getLectures());
     }
 }
