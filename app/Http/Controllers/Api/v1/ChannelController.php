@@ -24,7 +24,7 @@ class ChannelController extends Controller
         if(!$request->user_id) {
     	   $user_id = request()->user('api')->id;
         }
-        if($channel_id == 0) {
+        if($channel_id == '0') {
             $channel_id = '';
         }
     	$socketService->setUserToChannel($user_id, $channel_id);
