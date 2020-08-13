@@ -22,7 +22,10 @@ class CommentController extends Controller
     	$perPage = isset(request()->perPage) && request()->perPage != '' 
     				? request()->perPage 
     				: 10;
-    	$commentRepository->getDataComments($lecture_id, $perPage);
+        $type = isset(request()->type) && request()->type != '' 
+                ? request()->type
+                : 'lecture';
+    	$commentRepository->getDataComments($lecture_id, $perPage, $type);
     	return SendResponse::acceptData($commentRepository->getComments());
     }
 
