@@ -102,7 +102,7 @@ class AbcentRepository
 	 * @since 1.0.0
 	 * @return void
 	 */
-	public function createNewAbcent($request)
+	public function createNewAbcent($request):void
 	{
 		try {
 			$data = [
@@ -113,6 +113,15 @@ class AbcentRepository
 				'desc'			=> $request->desc,
 				'details'		=> $request->details
 			];
+			$user = Abcent::where(function($query) use ($request){
+				$query->where('subject_id', $request->subject_id)
+				->where('classroom_id', $request->classroom_id)
+				->whereDate('created_at', \Carbon\Carbon::today())
+				->where('user_id', $request->user_id);
+			})->first();
+			if($user) {
+				return;
+			}
 			$this->setAbcent(Abcent::create($data));
 		} catch (\Exception $e) {
 			throw new \App\Exceptions\ModelException($e->getMessage());
