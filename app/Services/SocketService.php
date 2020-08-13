@@ -22,7 +22,8 @@ class SocketService
 				return [
 					'id' => $item->id,
 					'name' => $item->name,
-					'email' => $item->email
+					'email' => $item->email,
+					'role' => $item->role
 				];
 			});
 			if(!$users) {
