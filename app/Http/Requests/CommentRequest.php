@@ -25,7 +25,8 @@ class CommentRequest extends FormRequest
     {
         return [
             'lecture_id'        => 'required|exists:lectures,id',
-            'content'   => 'required'
+            'content'   => 'required',
+            'type'      => 'required'
         ];
     }
 }

@@ -101,7 +101,8 @@ class CommentRepository
 			$data = [
 				'lecture_id'		=> $request->lecture_id,
 				'user_id'			=> $request->user_id,
-				'content'			=> $request->content
+				'content'			=> $request->content,
+				'type'				=> $request->type
 			];
 			$comment = Comment::create($data);
 		} catch (\Exception $e) {
