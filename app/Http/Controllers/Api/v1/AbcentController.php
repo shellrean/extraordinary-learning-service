@@ -28,11 +28,9 @@ class AbcentController extends Controller
      * Create new abcent for today 
      *
      * @author shellrean <wandinak17@gmail.com>
-     * @param int $subject_id
-     * @param int $classroom_id
      * @return \App\Actions\SendResponse
      */
-    public function store($subject_id, $classroom_id, AbcentRequest $request, AbcentRepository $abcentRepository)
+    public function store(AbcentRequest $request, AbcentRepository $abcentRepository)
     {
         if(!$request->user_id) {
             $user = request()->user('api');

@@ -76,8 +76,8 @@ Route::group(['prefix' => 'v1', 'namespace' => 'Api\v1'], function() {
 		 | Abcent route section
 		 |-----------------------------------------------------------------
 		 */
+		Route::post('abcents', 'AbcentController@store');
 		Route::get('abcents/subject/{subject_id}/classroom/{classroom_id}/today', 'AbcentController@subjectClassroomToday');
-		Route::post('abcents/subject/{subject_id}/classroom/{classroom_id}/today', 'AbcentController@store');
 
 		/**
 		 |-----------------------------------------------------------------
