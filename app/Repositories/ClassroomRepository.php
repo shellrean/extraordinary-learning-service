@@ -4,6 +4,7 @@ namespace App\Repositories;
 
 use App\Classroom;
 use App\ClassroomLive;
+use App\ClassroomStudent;
 use App\ClassroomSubject;
 
 class ClassroomRepository
@@ -21,6 +22,12 @@ class ClassroomRepository
 	private $classroom;
 
 	/**
+	 * Data classroom's student
+	 * App\ClassroomStudent
+	 */
+	private $classroom_students;
+
+	/**
 	 * Retreive data classrooms
 	 *
 	 * @author shellrean <wandinak17@gmail.com>
@@ -30,6 +37,18 @@ class ClassroomRepository
 	public function getClassrooms()
 	{
 		return $this->classrooms;
+	}
+
+	/**
+	 * Retreive data classroom students
+	 *
+	 * @author shellrean <wandinak17@gmail.com>
+	 * @since 1.0.0
+	 * @return \App\ClassroomStudent
+	 */
+	public function getClassroomStudents()
+	{
+		return $this->classroom_students;
 	}
 
 	/**
@@ -266,6 +285,44 @@ class ClassroomRepository
 				throw new \App\Exceptions\ClassRoomNotFoundException();
 			}
 			$this->classroom = $liveClass;
+		} catch (\Exception $e) {
+			throw new \App\Exceptions\ModelException($e->getMessage());
+		}
+	}
+
+	/**
+	 * Get data classroom's student
+	 *
+	 * @author shellrean <wandinak17@gmail.com>
+	 * @since 1.0.0
+	 * @param $classroom_id
+	 */
+	public function getDataClassroomStudent($classroom_id)
+	{
+		try {
+			$students = ClassroomStudent::with('student')->where('classroom_id', $classroom_id)->get();
+			$this->classroom_students = $students;
+		} catch (\Exception $e) {
+			throw new \App\Exceptions\ModelException($e->getMessage());
+		}
+	}
+
+	/**
+	 * Store data classroom's student
+	 *
+	 * @author shellrean <wandinak17@gmail.com>
+	 * @since 1.0.0
+	 * @param $request
+	 */
+	public function createNewClassroomStudent($request)
+	{
+		try {
+			$data = [
+				'student_id'	=> $request->student_id,
+				'classroom_id'	=> $request->classroom_id,
+				'invitation_code' => $request->invitation_code
+			];
+			ClassroomStudent::create($data);
 		} catch (\Exception $e) {
 			throw new \App\Exceptions\ModelException($e->getMessage());
 		}

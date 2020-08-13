@@ -21,4 +21,8 @@ class Classroom extends Model
     protected $casts = [
     	'settings'		=> 'array'
     ];  
+
+    protected $hidden = [
+        'invitation_code'
+    ];
 }

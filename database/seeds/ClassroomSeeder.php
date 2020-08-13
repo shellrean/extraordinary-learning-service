@@ -17,7 +17,8 @@ class ClassroomSeeder extends Seeder
         	'name'				=> 'XII IPA',
         	'grade'				=> 12,
         	'group'				=> 'IPA',
-        	'settings'			=> []
+        	'settings'			=> [],
+            'invitation_code'   => 'XJJIFEJRE'
         ]);
     }
 }

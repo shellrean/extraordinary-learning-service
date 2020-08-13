@@ -15,6 +15,7 @@ class CreateClassroomsTable extends Migration
     {
         Schema::create('classrooms', function (Blueprint $table) {
             $table->id();
+            $table->string('invitation_code');
             $table->unsignedBigInteger('teacher_id');
             $table->string('name');
             $table->string('grade');
