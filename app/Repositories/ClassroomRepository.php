@@ -220,7 +220,7 @@ class ClassroomRepository
 	 public function getDataClassroomLives($classroom_id, $teacher_id = '', bool $status = true)
 	{
 	 	try {
-	 		$classrooms = ClassroomLive::where('classroom_id', $classroom_id)->where('isactive',$status);
+	 		$classrooms = ClassroomLive::with(['teacher','subject'])->where('classroom_id', $classroom_id)->where('isactive',$status);
 	 		if($teacher_id != '') {
 	 			$classrooms = $classrooms->where('teacher_id', $teacher_id);
 	 		}
