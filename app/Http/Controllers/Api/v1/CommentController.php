@@ -25,7 +25,7 @@ class CommentController extends Controller
         $type = isset(request()->type) && request()->type != '' 
                 ? request()->type
                 : 'lecture';
-    	$commentRepository->getDataComments($lecture_id, $perPage, $type);
+    	$commentRepository->getDataComments($id, $perPage, $type);
     	return SendResponse::acceptData($commentRepository->getComments());
     }
 
