@@ -2,54 +2,107 @@
 
 namespace App\Repositories;
 
-use App\Comment;
+use App\LectureComment;
+use App\ClassroomLiveComment;
 
 class CommentRepository 
 {
 	/**
-	 * Comments data
-	 * App\Comment
+	 * Lecture comments data
+	 * App\LectureComment
 	 */
-	private $comments;
+	private $lecture_comments;
 
 	/**
-	 * Comment data
-	 * App\Commment
+	 * Classlive comments data
+	 * App\ClassroomLiveComment
 	 */
-	private $comment;
+	private $classroom_live_comments;
+
+	/**
+	 * lecture comment data
+	 * App\LectureComment
+	 */
+	private $lecture_comment;
+
+	/**
+	 * Classlive comment data
+	 * App\ClassroomLiveComment
+	 */
+	private $classroom_live_comment;
 
 	/**
 	 * Retreive lecture's comments
 	 *
 	 * @author shelleran <wandinak17@gmail.com>
-	 * @return \App\Comment
+	 * @since 1.0.0
+	 * @return \App\LectureComment
 	 */
-	public function getComments()
+	public function getLectureComments()
 	{
-		return $this->comments;
+		return $this->lecture_comments;
+	}
+
+	/**
+	 * Retreive classlive's comments
+	 *
+	 * @author shellrean <wandinak17@gmail.com>
+	 * @since 1.0.0
+	 * @return \App\ClassroomLiveComment
+	 */
+	public function getClassroomLiveComments()
+	{
+		return $this->classroom_live_comments;
 	}
 
 	/**
 	 * Retreive lecture's comment
 	 * 
 	 * @author shellrean <wandinak17@gmail.com>
-	 * @return \App\Comment
+	 * @since 1.0.0
+	 * @return \App\LectureComment
 	 */
-	public function getComment()
+	public function getLectureComment()
 	{
-		return $this->comment;
+		return $this->lecture_comment;
 	}
 
 	/**
-	 * Set comment property
+	 * Retreive classlive's comment
 	 *
 	 * @author shellrean <wandinak17@gmail.com>
-	 * @param \App\Comment
+	 * @since 1.0.0
+	 * @return \App\ClassroomLiveComment
+	 */
+	public function getClassroomLiveComment()
+	{
+		return $this->classroom_live_comment;
+	}
+
+	/**
+	 * Set lecture_comment property
+	 *
+	 * @author shellrean <wandinak17@gmail.com>
+	 * @since 1.0.0
+	 * @param \App\LectureComment
 	 * @return void
 	 */
-	public function setComment($comment)
+	public function setLectureComment($comment)
 	{
-		$this->comment = $comment;
+		$this->lecture_comment = $comment;
+	}
+
+	/**
+	 * Set classroom_live_comment property
+	 *
+	 * @author shellrean <wandinak17@gmail.com>
+	 * @since 1.0.0
+	 * @param \App\ClassroomLiveComment
+	 * @return void
+	 */
+	public function setClassroomLiveComment($comment)
+	{
+		$this->classroom_live_comment = $comment;
 	}
 
 	/**
@@ -61,13 +114,12 @@ class CommentRepository
 	 * @param int $perPage
 	 * @return void
 	 */	
-	public function getDataComments($id_lecture, int $perPage, string $type = 'lecture'): void
+	public function getDataLectureComments($id_lecture, int $perPage): void
 	{
-		$comments = Comment::with('user')
+		$comments = LectureComment::with('user')
 					->where('lecture_id', $id_lecture)
-					->where('type', $type)
 					->paginate($perPage);
-		$this->comments = $comments;
+		$this->lecture_comments = $comments;
 	}
 
 	/**
@@ -78,63 +130,65 @@ class CommentRepository
 	 * @param int $id_comment
 	 * @return void
 	 */
-	public function getDataComment($id_comment, $key = 'id'): void
+	public function getDataLectureComment($id_comment, $key = 'id'): void
 	{
-		$comment = Comment::where($key, $id_comment)->first();
+		$comment = LectureComment::where($key, $id_comment)->first();
 		if(!$comment) {
 			throw new \App\Exceptiosn\CommentNotFoundException();
 		}
-		$this->setComment($comment);
+		$this->setLectureComment($comment);
 	}
 
 	/**
-	 * Create new comment data
+	 * Create new lecture comment data
 	 *
 	 * @author shellrean <wandinak17@gmail.com>
 	 * @since 1.0.0
 	 * @param \Illuminate\Http\Request
 	 * @return void
 	 */
-	public function createNewComment($request): void
+	public function createNewLectureComment($request): void
 	{
 		try {
 			$data = [
 				'lecture_id'		=> $request->lecture_id,
 				'user_id'			=> $request->user_id,
-				'content'			=> $request->content,
-				'type'				=> $request->type
+				'content'			=> $request->content
 			];
-			$comment = Comment::create($data);
+			$comment = LectureComment::create($data);
 		} catch (\Exception $e) {
 			throw new \App\Exceptions\ModelException($e->getMessage());
 		}
-		$this->setComment($comment);
+		$this->setLectureComment($comment);
 	}
 
 	/**
-	 * Delete comment data
+	 * Delete lecture comment data
 	 *
 	 * @author shellrean <wandinak17@gmail.com>
 	 * @since 1.0.0
 	 * @return void
 	 */
-	public function deleteDataComment(): void
+	public function deleteDataLectureComment($lecture_comment_id = ''): void
 	{
 		try {
-			$this->comment->delete();
+			if($lecture_comment_id != '') {
+				$this->getDataLectureComment($lecture_comment_id);
+			}
+			$this->lecture_comment->delete();
 		} catch (\Exception $e) {
 			throw new \App\Exceptions\ModelException($e->getMessage());
 		}
 	}
 
 	/**
-	 * Update comment data
+	 * Update lecture comment data
 	 *
 	 * @author shellrean <wandinak17@gmail.com>
 	 * @since 1.0.0
 	 * @return void
 	 */
-	public function updateDataComment($request): void
+	public function updateDataLectureComment($request): void
 	{
 		try {
 			$data = [
@@ -144,5 +198,43 @@ class CommentRepository
 		} catch (\Exception $e) {
 			throw new \App\Exceptions\ModelException($e->getMessage());
 		}
+	}
+
+	/**
+	 * Get data classroom live comments
+	 *
+	 * @author shellrean <wandinak17@gmail.com>
+	 * @since 1.0.0
+	 * @return void
+	 */
+	public function getDataClassroomLiveComments($class_live, int $perPage): void
+	{
+		$comments = ClassroomLiveComment::with('user')
+					->where('classroom_live_id', $class_live)
+					->paginate($perPage);
+		$this->classroom_live_comments = $comments;
+	}
+
+	/**
+	 * Create new classroom live comment data
+	 *
+	 * @author shellrean <wandinak17@gmail.com>
+	 * @since 1.0.0
+	 * @param \Illuminate\Http\Request
+	 * @return void
+	 */
+	public function createNewClassroomLiveComment($request): void
+	{
+		try {
+			$data = [
+				'classroom_live_id'	=> $request->classroom_live_id,
+				'user_id'			=> $request->user_id,
+				'content'			=> $request->content
+			];
+			$comment = ClassroomLiveComment::create($data);
+		} catch (\Exception $e) {
+			throw new \App\Exceptions\ModelException($e->getMessage());
+		}
+		$this->setClassroomLiveComment($comment);
 	}
 }

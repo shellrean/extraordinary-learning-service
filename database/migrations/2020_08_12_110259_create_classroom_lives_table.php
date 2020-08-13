@@ -19,6 +19,7 @@ class CreateClassroomLivesTable extends Migration
             $table->unsignedBigInteger('classroom_id');
             $table->unsignedBigInteger('subject_id');
             $table->longText('body')->nullable();
+            $table->longText('settings')->nullable();
             $table->boolean('isactive')->default(true);
             $table->timestamps();
 

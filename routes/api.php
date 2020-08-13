@@ -51,8 +51,8 @@ Route::group(['prefix' => 'v1', 'namespace' => 'Api\v1'], function() {
 		 | Lecture route section
 		 |-----------------------------------------------------------------
 		 */
-		Route::get('lectures/{lecture_id}/comment', 'CommentController@index');
-		Route::post('lectures/{lecture_id}/comment', 'CommentController@store');
+		Route::get('lectures/{lecture_id}/comment', 'CommentController@indexLecture');
+		Route::post('lectures/{lecture_id}/comment', 'CommentController@storeLecture');
 		Route::post('lectures/{lecture_id}/sharee', 'LectureController@sharee');
 		Route::get('lectures/classrooms/{classroom_id}', 'LectureController@classroomLectures');
 		Route::apiResource('lectures', 'LectureController');
@@ -67,8 +67,8 @@ Route::group(['prefix' => 'v1', 'namespace' => 'Api\v1'], function() {
 		Route::post('classrooms/{classroom_id}/live', 'ClassroomController@storeLiveClassroom')->middleware('auth.teacher');
 		Route::post('classrooms/live/{classroom_live_id}/stop', 'ClassroomController@stopLiveClassroom')->middleware('auth.teacher');
 		Route::get('classrooms/live/{classroom_live_id}', 'ClassroomController@getDataLiveClassroom');
-		Route::get('classrooms/live/{classroom_live_id}/comment', 'CommentController@index');
-		Route::post('classrooms/live/{classroom_live_id}/comment', 'CommentController@store');
+		Route::get('classrooms/live/{classroom_live_id}/comment', 'CommentController@indexClassroomLive');
+		Route::post('classrooms/live/{classroom_live_id}/comment', 'CommentController@storeClassroomLive');
 		Route::apiResource('classrooms', 'ClassroomController')->middleware('auth.admin');
 
 		/**

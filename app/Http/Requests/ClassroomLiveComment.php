@@ -24,7 +24,7 @@ class ClassroomLiveComment extends FormRequest
     public function rules()
     {
         return [
-            'classlive_id'        => 'required|exists:classroom_live_comments,id',
+            'classroom_live_id'        => 'required|exists:classroom_live_comments,id',
             'content'   => 'required'
         ];
     }
