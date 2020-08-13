@@ -31,5 +31,15 @@ class UserSeeder extends Seeder
             'isonline'  => true,
             'details'   => []
         ]);
+
+        User::create([
+            'name'      => 'Brian',
+            'email'     => 'brian@shellrean.com',
+            'password'  => bcrypt('password'),
+            'role'      => '2',
+            'isactive'  => true,
+            'isonline'  => true,
+            'details'   => []
+        ]);
     }
 }
