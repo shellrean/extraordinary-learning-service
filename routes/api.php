@@ -67,6 +67,7 @@ Route::group(['prefix' => 'v1', 'namespace' => 'Api\v1'], function() {
 		Route::post('classrooms/{classroom_id}/live', 'ClassroomController@storeLiveClassroom')->middleware('auth.teacher');
 		Route::post('classrooms/live/{classroom_live_id}/stop', 'ClassroomController@stopLiveClassroom')->middleware('auth.teacher');
 		Route::get('classrooms/live/{classroom_live_id}', 'ClassroomController@getDataLiveClassroom');
+		Route::get('classrooms/live/{classroom_live_id}/comment', 'CommentController@index');
 		Route::apiResource('classrooms', 'ClassroomController')->middleware('auth.admin');
 
 		/**

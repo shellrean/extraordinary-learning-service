@@ -14,10 +14,10 @@ class CommentController extends Controller
      * Get lecture comments
      *
      * @author shellrean <wandinak17@gmail.com>
-     * @param int $lecture_id
+     * @param int $id
      * @return \App\Actions\SendResponse
      */
-    public function index($lecture_id, CommentRepository $commentRepository)
+    public function index($id, CommentRepository $commentRepository)
     {
     	$perPage = isset(request()->perPage) && request()->perPage != '' 
     				? request()->perPage 
