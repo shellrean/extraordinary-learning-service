@@ -199,7 +199,7 @@ class LectureRepository
 	public function getDataLecturesClassroom($classroom_id, $teacher_id = '')
 	{
 		try {
-			$lectures = ClassroomLecture::with(['lecture'])->where('classroom_id', $classroom_id);
+			$lectures = ClassroomLecture::with(['lecture','lecture.subject'])->where('classroom_id', $classroom_id);
 			if($teacher_id != '') {
 				$lectures = $lectures->where('teacher_id', $teacher_id);
 			}

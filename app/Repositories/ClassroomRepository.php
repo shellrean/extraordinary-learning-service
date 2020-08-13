@@ -217,7 +217,7 @@ class ClassroomRepository
 	 * @param \Illuminate\Http\Request
 	 * @return void
 	 */
-	 public function getDataClassroomLive($classroom_id, $teacher_id = '', bool $status = true)
+	 public function getDataClassroomLives($classroom_id, $teacher_id = '', bool $status = true)
 	{
 	 	try {
 	 		$classrooms = ClassroomLive::where('classroom_id', $classroom_id)->where('isactive',$status);
@@ -246,6 +246,26 @@ class ClassroomRepository
 				throw new \App\Exceptions\ClassRoomNotFoundException();
 			}
 			$liveClass->update(['isactive' => $status]);
+		} catch (\Exception $e) {
+			throw new \App\Exceptions\ModelException($e->getMessage());
+		}
+	}
+
+	/**
+	 * Get data classroom live
+	 *
+	 * @author shellrean <wandinak17@gmail.com>
+	 * @since 1.0.0
+	 * @param $classlive_id
+	 */
+	public function getDataClassroomLive($classlive_id)
+	{
+		try {
+			$liveClass = ClassroomLive::find($classlive_id);
+			if(!$liveClass) {
+				throw new \App\Exceptions\ClassRoomNotFoundException();
+			}
+			$this->classroom = $liveClass;
 		} catch (\Exception $e) {
 			throw new \App\Exceptions\ModelException($e->getMessage());
 		}

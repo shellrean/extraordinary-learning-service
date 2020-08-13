@@ -11,4 +11,9 @@ class Lecture extends Model
     protected $casts = [
     	'settings'	=> 'casts'
     ];
+
+    public function subject()
+    {
+    	return $this->belongsTo(Subject::class);
+    }
 }

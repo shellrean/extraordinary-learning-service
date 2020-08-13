@@ -113,7 +113,7 @@ class ClassroomController extends Controller
     public function liveClassroom($classroom_id, ClassroomRepository $classroomRepository)
     {
         $user = request()->user('api');
-        $classroomRepository->getDataClassroomLive($classroom_id, $user->id);
+        $classroomRepository->getDataClassroomLives($classroom_id, $user->id);
         return SendResponse::acceptData($classroomRepository->getClassrooms());
     }
 
@@ -147,5 +147,19 @@ class ClassroomController extends Controller
     {
         $classroomRepository->setStatusClassroomLive($classlive_id, false);
         return SendResponse::accept('live class stopped');
+    }
+
+    /**
+     * Get data classroom live
+     *
+     * @author shellrean <wandinak17@gmail.com>
+     * @param \App\Repositories\ClassroomRepository
+     * @param $classlive_id
+     * @return \App\Actions\SendResponse
+     */
+    public function getDataLiveClassroom($classlive_id, ClassroomRepository $classroomRepository)
+    {
+        $classroomRepository->getDataClassroomLive($classlive_id);
+        return SendResponse::acceptData($classroomRepository->getClassroom());
     }
 }
