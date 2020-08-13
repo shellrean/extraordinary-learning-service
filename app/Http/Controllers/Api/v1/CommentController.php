@@ -2,6 +2,7 @@
 
 namespace App\Http\Controllers\Api\v1;
 
+use App\Http\Requests\ClassroomLiveComment;
 use App\Repositories\CommentRepository;
 use App\Http\Requests\LectureComment;
 use App\Http\Controllers\Controller;
