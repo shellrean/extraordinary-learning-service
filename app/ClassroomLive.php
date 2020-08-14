@@ -8,6 +8,10 @@ class ClassroomLive extends Model
 {
     protected $guarded = [];
 
+    protected $casts = [
+    	'settings'	=> 'array'
+    ];
+    
     public function teacher()
     {
     	return $this->belongsTo(User::class,'teacher_id');
@@ -17,4 +21,5 @@ class ClassroomLive extends Model
     {
     	return $this->belongsTo(Subject::class);
     }
+
 }
