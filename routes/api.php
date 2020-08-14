@@ -67,10 +67,15 @@ Route::group(['prefix' => 'v1', 'namespace' => 'Api\v1'], function() {
 		Route::post('classrooms/{classroom_id}/live', 'ClassroomController@storeLiveClassroom')->middleware('auth.teacher');
 		Route::post('classrooms/live/{classroom_live_id}/stop', 'ClassroomController@stopLiveClassroom')->middleware('auth.teacher');
 		Route::get('classrooms/live/{classroom_live_id}', 'ClassroomController@getDataLiveClassroom');
+
 		Route::get('classrooms/live/{classroom_live_id}/comment', 'CommentController@indexClassroomLive');
 		Route::post('classrooms/live/{classroom_live_id}/comment', 'CommentController@storeClassroomLive');
+
 		Route::get('classrooms/{classroom_id}/student', 'StudentController@index');
 		Route::post('classrooms/{classroom_id}/student', 'StudentController@store');
+
+		Route::get('classrooms/{classroom_id}/task', 'TaskController@classroomTasks');
+
 		Route::apiResource('classrooms', 'ClassroomController')->middleware('auth.admin');
 
 		/**
@@ -80,6 +85,14 @@ Route::group(['prefix' => 'v1', 'namespace' => 'Api\v1'], function() {
 		 */
 		Route::post('abcents', 'AbcentController@store');
 		Route::get('abcents/subject/{subject_id}/classroom/{classroom_id}/today', 'AbcentController@subjectClassroomToday');
+
+		/**
+		 |-----------------------------------------------------------------
+		 | Task route section
+		 |-----------------------------------------------------------------
+		 */
+		Route::post('tasks/{task_id}/sharee', 'TaskController@sharee');
+		Route::apiResource('tasks', 'TaskController');
 
 		/**
 		 |-----------------------------------------------------------------
