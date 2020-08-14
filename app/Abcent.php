@@ -8,7 +8,7 @@ class Abcent extends Model
 {
     protected $guarded = [];
 
-    protected $guarded = [
+    protected $casts = [
     	'details' => 'array'
     ];
 }
