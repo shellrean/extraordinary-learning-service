@@ -84,7 +84,7 @@ class AbcentRepository
 	public function getDataAbcentSubjectClassroomToday($subject_id, $classroom_id)
 	{
 		try {
-			$abcents = Abcent::where(function($query) use ($subject_id, $classroom_id) {
+			$abcents = Abcent::with('user')->where(function($query) use ($subject_id, $classroom_id) {
 				$query->where('subject_id', $subject_id)
 				->where('classroom_id', $classroom_id)
 				->whereDate('created_at', \Carbon\Carbon::today());
