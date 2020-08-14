@@ -4,6 +4,7 @@ namespace App\Http\Controllers\Api\v1;
 
 use App\Http\Controllers\Controller;
 use App\Repositories\TaskRepository;
+use App\Http\Requests\TaskCollect;
 use App\Http\Requests\TaskSharee;
 use App\Http\Requests\TaskCreate;
 use App\Actions\SendResponse;
@@ -87,4 +88,21 @@ class TaskController extends Controller
   		$taskRepository->getDataTaskClassroom($classroom_id);
   		return SendResponse::acceptData($taskRepository->getTasks());
   	}
+
+    /**
+     * Store collect data task
+     *
+     * @author shellrean <wandinak17@gmail.com>
+     * @param \App\Repositories\TaskRepository
+     * @return \App\Actions\SendResponse
+     */
+    public function collect($task_id, TaskCollect $request, TaskRepository $taskRepository)
+    {
+        $user = request()->user('api');
+        $request->student_id = $user->id;
+        $request->task_id = $task_id;
+
+        $taskRepository->createNewStudentTask($request);
+        return SendResponse::accept('assign collected');
+    }
 }

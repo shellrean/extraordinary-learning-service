@@ -92,6 +92,7 @@ Route::group(['prefix' => 'v1', 'namespace' => 'Api\v1'], function() {
 		 |-----------------------------------------------------------------
 		 */
 		Route::post('tasks/{task_id}/sharee', 'TaskController@sharee');
+		Route::post('tasks/{task_id}/collect', 'TaskController@collect');
 		Route::apiResource('tasks', 'TaskController');
 
 		/**

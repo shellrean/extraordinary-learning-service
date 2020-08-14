@@ -3,6 +3,7 @@
 namespace App\Repositories;
 
 use App\Task;
+use App\StudentTask;
 use App\ClassroomTask;
 
 class TaskRepository
@@ -156,6 +157,28 @@ class TaskRepository
 				'body'			=> $request->body
 			];
 			$task = ClassroomTask::create($data);
+		} catch (\Exception $e) {
+			throw new \App\Exceptions\ModelException($e->getMessage());
+		}
+	}
+
+	/**
+	 * Collect student's task
+	 *
+	 * @author shellran <wandinak17@gmail.com>
+	 * @since 1.0.0
+	 * @param $request
+	 * @return void
+	 */
+	public function createNewStudentTask($request)
+	{
+		try {
+			$data = [
+				'student_id'	=> $request->student_id,
+				'task_id'		=> $request->task_id,
+				'content'		=> $request->content
+			];
+			$task = StudentTask::create($data);
 		} catch (\Exception $e) {
 			throw new \App\Exceptions\ModelException($e->getMessage());
 		}
