@@ -4,6 +4,7 @@ namespace App\Http\Controllers\Api\v1;
 
 use App\Repositories\SubjectRepository;
 use App\Http\Requests\SubjectRequest;
+use App\Http\Requests\SubjectTeacher;
 use App\Http\Requests\SubjectImport;
 use App\Http\Controllers\Controller;
 use App\Actions\SendResponse;
@@ -97,6 +98,35 @@ class SubjectController extends Controller
         $user = request()->user('api');
         $subjectRepository->getDataSubjectsTeacher($user->id);
         return SendResponse::acceptData($subjectRepository->getSubjects());
+    }
+
+    /**
+     * create data teacher's subject
+     *
+     * @author shellrean <wandinak17@gmail.com>
+     * @param \App\Repositories\SubjectRepository
+     * @return \App\Actions\SendResponse
+     */
+    public function createNewMine(SubjectTeacher $request, SubjectRepository $subjectRepository)
+    {
+        $user = request()->user('api');
+        $request->teacher_id = $user->id;
+
+        $subjectRepository->createDataSubjectTeacher($request);
+        return SendResponse::accept('teacher subject created');
+    }
+
+    /**
+     * delete data teacher's subject
+     *
+     * @author shellrean <wandinak17@gmail.com>
+     * @param \App\Repositories\SubjectRepository
+     * @return \App\Actions\SendResponse
+     */
+    public function deleteMine($teacher_subject_id, SubjectRepository $subjectRepository)
+    {
+        $subjectRepository->deleteDataSubjectTeacher($teacher_subject_id);
+        return SendResponse::accept('teacher subject deleted');
     }
 
     /**

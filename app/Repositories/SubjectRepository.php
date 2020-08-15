@@ -91,7 +91,7 @@ class SubjectRepository
 	public function getDataSubjectsTeacher(int $teacher_id): void
 	{
 		try {
-			$subjects = TeacherSubject::where('teacher_id', $teacher_id)->get();
+			$subjects = TeacherSubject::with('subject')->where('teacher_id', $teacher_id)->get();
 			$this->subjects = $subjects;
 		} catch (\Exceptions $e) {
 			throw new \App\Exceptions\ModelException($e->getMessage());
@@ -203,6 +203,44 @@ class SubjectRepository
 		} catch (\Exception $e) {
 			DB::rollback();
 			throw new \App\Exceptions\ModelException($e->getMessage());
+		}
+	}
+
+	/** 
+	 * Create new teacher's subject
+	 *
+	 * @author shellrean <wandinak17@gmail.com>
+	 * @since 1.0.0
+	 * @param \Illuminate\Http\Request
+	 * @return void
+	 */
+	public function createDataSubjectTeacher($request)
+	{
+		try {
+			$data = [
+				'teacher_id'	=> $request->teacher_id,
+				'subject_id'	=> $request->subject_id
+			];
+			TeacherSubject::create($data);
+		} catch (\Exception $e) {
+			throw new \App\Exceptions\ModelException($e->getMessage());
+		}
+	}
+
+	/**
+	 * Delete teacher's subject
+	 *
+	 * @author shellrean <wandinak17@gmail.com>
+	 * @since 1.0.0
+	 * @param teacher_subject_id
+	 * @return void
+	 */
+	public function deleteDataSubjectTeacher($teacher_subject_id)
+	{
+		try {
+			TeacherSubject::where('id', $teacher_subject_id)->delete();
+		} catch (\Exception $e) {
+			throw new \App\Exceptions\ModelException($e->getMessage());	
 		}
 	}
 }

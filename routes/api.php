@@ -44,10 +44,16 @@ Route::group(['prefix' => 'v1', 'namespace' => 'Api\v1'], function() {
 		 | Subject route section
 		 |-----------------------------------------------------------------
 		 */
-		Route::get('subjects/mine', 'SubjectController@mine')->middleware('auth.teacher');
+		Route::group(['middleware' => 'auth.teacher'], function() {
+			Route::get('subjects/mine', 'SubjectController@mine');
+			Route::post('subjects/mine', 'SubjectController@createNewMine');
+			Route::delete('subjects/mine/{teacher_subject_id}', 'SubjectController@deleteMine');
+		});
 		Route::get('subjects', 'SubjectController@index');
-		Route::post('subjects/import', 'SubjectController@import')->middleware('auth.admin');
-		Route::apiResource('subjects', 'SubjectController')->middleware('auth.admin')->except('index');
+		Route::group(['middleware' => 'auth.admin'], function() {
+			Route::post('subjects/import', 'SubjectController@import');
+			Route::apiResource('subjects', 'SubjectController')->except('index');
+		});
 
 		/**
 		 |-----------------------------------------------------------------
