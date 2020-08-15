@@ -80,7 +80,8 @@ Route::group(['prefix' => 'v1', 'namespace' => 'Api\v1'], function() {
 		Route::get('classrooms/{classroom_id}/task', 'TaskController@classroomTasks');
 
 		Route::post('classrooms/import', 'ClassroomController@import');
-		Route::apiResource('classrooms', 'ClassroomController')->middleware('auth.admin');
+		Route::get('classrooms', 'ClassroomController@index');
+		Route::apiResource('classrooms', 'ClassroomController')->except('index')->middleware('auth.admin');
 
 		/**
 		 |-----------------------------------------------------------------
