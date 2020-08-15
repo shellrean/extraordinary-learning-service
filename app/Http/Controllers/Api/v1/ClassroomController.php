@@ -5,6 +5,7 @@ namespace App\Http\Controllers\Api\v1;
 use App\Repositories\ClassroomRepository;
 use App\Repositories\SubjectRepository;
 use App\Http\Requests\ClassroomRequest;
+use App\Http\Requests\ClassroomImport;
 use App\Http\Requests\ClassroomLive;
 use App\Http\Controllers\Controller;
 use App\Actions\SendResponse;
@@ -100,6 +101,19 @@ class ClassroomController extends Controller
             $subjectRepository->getSubjects()->pluck('subject_id')->toArray()
         );
         return SendResponse::acceptData($classroomRepository->getClassrooms());
+    }
+
+    /**
+     * Import data classroom
+     *
+     * @author shellrean <wandinak17@gmail.com>
+     * @param \App\Repositories\ClassroomRepository
+     * @param \App\Actions\SendResponse
+     */
+    public function import(ClassroomImport $request, ClassroomRepository $classroomRepository)
+    {
+        $classroomRepository->importDataClassroom($request);
+        return SendResponse::accept('class imported');
     }
 
     /**

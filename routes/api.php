@@ -29,9 +29,11 @@ Route::group(['prefix' => 'v1', 'namespace' => 'Api\v1'], function() {
 
 		Route::post('users/photo', 'UserController@updatePhoto');
 		Route::group(['middleware' => 'auth.admin'], function() {
+			Route::post('users/teacher/import', 'UserController@importTeacher');
 			Route::post('users/teacher', 'UserController@storeTeacher');
 			Route::get('users/teacher', 'UserController@indexTeacher');
 			Route::post('users/student', 'UserController@storeStudent');
+			Route::post('users/student/import', 'UserController@importStudent');
 			Route::get('users/student', 'UserController@indexStudent');
 			Route::delete('users/{id}', 'UserController@destroy');
 			Route::apiResource('users', 'UserController')->except('index');
@@ -44,6 +46,7 @@ Route::group(['prefix' => 'v1', 'namespace' => 'Api\v1'], function() {
 		 */
 		Route::get('subjects/mine', 'SubjectController@mine')->middleware('auth.teacher');
 		Route::get('subjects', 'SubjectController@index');
+		Route::post('subjects/import', 'SubjectController@import')->middleware('auth.admin');
 		Route::apiResource('subjects', 'SubjectController')->middleware('auth.admin')->except('index');
 
 		/**
@@ -76,6 +79,7 @@ Route::group(['prefix' => 'v1', 'namespace' => 'Api\v1'], function() {
 
 		Route::get('classrooms/{classroom_id}/task', 'TaskController@classroomTasks');
 
+		Route::post('classrooms/import', 'ClassroomController@import');
 		Route::apiResource('classrooms', 'ClassroomController')->middleware('auth.admin');
 
 		/**
@@ -85,6 +89,7 @@ Route::group(['prefix' => 'v1', 'namespace' => 'Api\v1'], function() {
 		 */
 		Route::post('abcents', 'AbcentController@store');
 		Route::get('abcents/subject/{subject_id}/classroom/{classroom_id}/today', 'AbcentController@subjectClassroomToday');
+		Route::get('abcents/subject/{subject_id}/classroom/{classroom_id}/export', 'AbcentController@subjectClassroomTodayExport');
 
 		/**
 		 |-----------------------------------------------------------------

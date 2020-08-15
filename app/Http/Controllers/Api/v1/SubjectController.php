@@ -4,6 +4,7 @@ namespace App\Http\Controllers\Api\v1;
 
 use App\Repositories\SubjectRepository;
 use App\Http\Requests\SubjectRequest;
+use App\Http\Requests\SubjectImport;
 use App\Http\Controllers\Controller;
 use App\Actions\SendResponse;
 use Illuminate\Http\Request;
@@ -96,5 +97,18 @@ class SubjectController extends Controller
         $user = request()->user('api');
         $subjectRepository->getDataSubjectsTeacher($user->id);
         return SendResponse::acceptData($subjectRepository->getSubjects());
+    }
+
+    /**
+     * Import Subject 
+     *
+     * @author shellrean <wandinak17@gmail.com>
+     * @param \App\Repositories\SubjectRepository $subjectRepository
+     * @return \App\Actions\SendResponse
+     */
+    public function import(SubjectImport $request, SubjectRepository $subjectRepository)
+    {
+        $subjectRepository->importDataSubject($request);
+        return SendResponse::accept('subject imported');
     }
 }

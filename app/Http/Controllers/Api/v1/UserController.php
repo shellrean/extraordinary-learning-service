@@ -7,6 +7,7 @@ use App\Repositories\UserRepository;
 use App\Http\Controllers\Controller;
 use App\Http\Requests\PhotoRequest;
 use App\Http\Requests\UserRequest;
+use App\Http\Requests\UserImport;
 use App\Actions\SendResponse;
 use App\Services\FileService;
 use Illuminate\Http\Request;
@@ -169,5 +170,31 @@ class UserController extends Controller
         $userRepository->updateDataOnlineUser($request);
 
         return SendResponse::accept();
+    }
+
+    /**
+     * Import teacher from excel file
+     *
+     * @author shellrean <wandinak17@gmail.com>
+     * @param \App\Http\Request\UserImport
+     * @return \App\Actions\SendResponse
+     */
+    public function importTeacher(UserImport $request, UserRepository $userRepository)
+    {
+        $userRepository->importTeacher($request);
+        return SendResponse::accept('teacher imported');
+    }
+
+    /**
+     * Import student from excel file
+     *
+     * @author shellrean <wandinak17@gmail.com>
+     * @param \App\Http\Request\UserImport
+     * @return \App\Actions\SendResponse
+     */
+    public function importStudent(UserImport $request, UserRepository $userRepository)
+    {
+        $userRepository->importStudent($request);
+        return SendResponse::accept('student imported');
     }
 }

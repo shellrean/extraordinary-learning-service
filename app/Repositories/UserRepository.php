@@ -2,7 +2,11 @@
 
 namespace App\Repositories;
 
+use Maatwebsite\Excel\Facades\Excel;
+use Illuminate\Support\Facades\DB;
 use App\Http\Requests\UserRequest;
+use App\Imports\TeacherImport;
+use App\Imports\StudentImport;
 use App\Services\FileService;
 use App\User;
 
@@ -172,6 +176,7 @@ class UserRepository
 		$data = [
 			'name'			=> $request->name,
 			'email'			=> $request->email,
+			'isactive'		=> $request->isactive,
 			'details'		=> $request->details
 		];
 		if(isset($request->password) && $request->password != '') { 
@@ -197,6 +202,48 @@ class UserRepository
 				'isonline'	=> $request->isonline
 			]);
 		} catch (\Exception $e) {
+			throw new \App\Exceptions\ModelException($e->getMessage());
+		}
+	}
+
+	/**
+	 * Import teacher form excel file
+	 *
+	 * @author shellrean <wandinak17@gmail.com>
+	 * @since 1.0.0
+	 * @return void
+	 */
+	public function importTeacher($request)
+	{
+		DB::beginTransaction();
+
+		try {
+			Excel::import(new TeacherImport, $request->file('file'));
+
+			DB::commit();
+		} catch (\Exception $e) {
+			DB::rollback();
+			throw new \App\Exceptions\ModelException($e->getMessage());
+		}
+	}
+
+	/**
+	 * Import student form excel file
+	 *
+	 * @author shellrean <wandinak17@gmail.com>
+	 * @since 1.0.0
+	 * @return void
+	 */
+	public function importStudent($request)
+	{
+		DB::beginTransaction();
+
+		try {
+			Excel::import(new StudentImport, $request->file('file'));
+
+			DB::commit();
+		} catch (\Exception $e) {
+			DB::rollback();
 			throw new \App\Exceptions\ModelException($e->getMessage());
 		}
 	}

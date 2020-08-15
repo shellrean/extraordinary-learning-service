@@ -102,6 +102,25 @@ class TaskController extends Controller
         $request->student_id = $user->id;
         $request->task_id = $task_id;
 
+        if(isset($request->file)) {
+            $attach = [];
+            $files = $request->file('file');
+
+            if($request->hasFile('file'))
+            {
+                foreach ($files as $file) {
+                    $filename = date('Ymd').'-'.$file->getClientOriginalName();
+                    array_push($attach, $filename);
+                    $file->storeAs('attachment/', $filename );
+                }
+                
+                $content = [
+                    'file'     => $attach
+                ];
+                $request->merge([ 'content' => $content ]);
+            }
+        }
+
         $taskRepository->createNewStudentTask($request);
         return SendResponse::accept('assign collected');
     }

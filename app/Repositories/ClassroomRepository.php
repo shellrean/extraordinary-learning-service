@@ -6,6 +6,9 @@ use App\Classroom;
 use App\ClassroomLive;
 use App\ClassroomStudent;
 use App\ClassroomSubject;
+use App\Imports\ClassroomImport;
+use Maatwebsite\Excel\Facades\Excel;
+use Illuminate\Support\Facades\DB;
 
 class ClassroomRepository
 {
@@ -150,7 +153,9 @@ class ClassroomRepository
 				'teacher_id' => $request->teacher_id,
 				'name' => $request->name,
 				'grade'	=> $request->grade,
-				'settings' => $request->settings 
+				'group'	=> $request->group,
+				'settings' => $request->settings,
+				'invitation_code' => strtoupper(date('d').uniqid())
 			];
 			$classroom = Classroom::create($data);
 		} catch (\Exception $e) {
@@ -218,7 +223,8 @@ class ClassroomRepository
 				'teacher_id'	=> $request->teacher_id,
 				'classroom_id'	=> $request->classroom_id,
 				'subject_id'	=> $request->subject_id,
-				'body'			=> $request->body
+				'body'			=> $request->body,
+				'settings'		=> $request->settings
 			];
 			$classroom = ClassroomLive::create($data);
 			$this->classroom = $classroom;
@@ -325,6 +331,26 @@ class ClassroomRepository
 			ClassroomStudent::create($data);
 		} catch (\Exception $e) {
 			throw new \App\Exceptions\ModelException($e->getMessage());
+		}
+	}
+
+	/** 
+	 * Import classroom
+	 *
+	 * @author shellrean <wandinak17@gmail.com>
+	 * @since 1.0.0
+	 * @param $request
+	 */
+	public function importDataClassroom($request)
+	{
+		DB::beginTransaction();
+
+		try {
+			Excel::import(new ClassroomImport, $request->file('file'));
+			DB::commit();
+		} catch (\Exception $e) {
+			DB::rollback();
+			throw new \App\Exceptions\ModelException($e->getMessage());	
 		}
 	}
 }

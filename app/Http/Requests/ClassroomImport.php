@@ -4,7 +4,7 @@ namespace App\Http\Requests;
 
 use Illuminate\Foundation\Http\FormRequest;
 
-class TaskCollect extends FormRequest
+class ClassroomImport extends FormRequest
 {
     /**
      * Determine if the user is authorized to make this request.
@@ -24,7 +24,7 @@ class TaskCollect extends FormRequest
     public function rules()
     {
         return [
-            'content'   => 'array'
+            'file'  => 'required|mimes:xlsx,xls'
         ];
     }
 }

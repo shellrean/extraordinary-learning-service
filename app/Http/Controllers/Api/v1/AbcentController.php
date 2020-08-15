@@ -2,9 +2,11 @@
 
 namespace App\Http\Controllers\Api\v1;
 
+use App\Exports\AbcentSubjectClassroomExport;
 use App\Repositories\AbcentRepository;
 use App\Http\Requests\AbcentRequest;
 use App\Http\Controllers\Controller;
+use Maatwebsite\Excel\Facades\Excel;
 use App\Actions\SendResponse;
 use Illuminate\Http\Request;
 
@@ -38,5 +40,19 @@ class AbcentController extends Controller
         }
         $abcentRepository->createNewAbcent($request);
         return SendResponse::accept('abcent saved');
+    }
+
+    /**
+     * Export data subject's classroom today
+     *
+     * @author shellrean <wandinak17@gmail.com>
+     * @param int $subject_id
+     * @param int $classroom_id
+     * @return \App\Actions\SendResponse
+     */
+    public function subjectClassroomTodayExport($subject_id, $classroom_id, AbcentRepository $abcentRepository) 
+    {
+        $abcentRepository->getDataAbcentSubjectClassroomToday($subject_id, $classroom_id);
+        return Excel::download(new AbcentSubjectClassroomExport($abcentRepository->getAbcents()), 'abcent_subject_classroom.xlsx');
     }
 }
