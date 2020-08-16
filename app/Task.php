@@ -18,6 +18,6 @@ class Task extends Model
 
     public function getLastsubmitAttribute()
     {
-    	return $this->lastsubmit;
+    	return $this->deadline;
     }
 }
