@@ -15,6 +15,7 @@ class ClassroomSubjectSeeder extends Seeder
         ClassroomSubject::create([
         	'classroom_id'		=> 1,
         	'subject_id'		=> 1,
+            'teacher_id'        => 1
         ]);
     }
 }

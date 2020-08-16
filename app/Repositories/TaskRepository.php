@@ -66,10 +66,10 @@ class TaskRepository
 	 * @param $perPage
 	 * @return void
 	 */
-	public function getDataTasks($user_id, int $perPage)
+	public function getDataTasks($user_id, int $perPage, $search = '')
 	{
 		try {
-			$tasks = Task::where('user_id',$user_id)->paginate($perPage);
+			$tasks = Task::where('user_id',$user_id)->where('title','LIKE','%'.$search.'%')->paginate($perPage);
 			$this->tasks = $tasks;
 		} catch (\Exception $e) {
 			throw new \App\Exceptions\ModelException($e->getMessage());
@@ -112,11 +112,53 @@ class TaskRepository
 				'title'			=> $request->title,
 				'body'			=> $request->body,
 				'type'			=> $request->type,
+				'deadline'		=> $request->deadline,
 				'isactive'		=> $request->isactive,
 				'settings'		=> $request->settings
 			];
 			$task = Task::create($data);
 			$this->setTask($task);
+		} catch (\Exception $e) {
+			throw new \App\Exceptions\ModelException($e->getMessage());
+		}
+	}
+
+	/**
+	 * Update data task
+	 *
+	 * @author shellrean <wandinak17@gmail.com>
+	 * @since 1.0.0
+	 * @param \Illuminate\Http\Request
+	 * @return void
+	 */
+	public function updateDataTask($task_id, $request)
+	{
+		try {
+			$this->getDataTask($task_id);
+			$data = [
+				'title'		=> $request->title,
+				'body'		=> $request->body,
+				'type'		=> $request->type,
+				'deadline'		=> $request->deadline,
+			];
+			$this->task->update($data);
+		} catch (\Exception $e) {
+			throw new \App\Exceptions\ModelException($e->getMessage());
+		}
+	}
+
+	/**
+	 * Delete data task
+	 *
+	 * @author shellrean <wandinak17@gmail.com>
+	 * @since 1.0.0
+	 * @param $task_id
+	 * @return void
+	 */
+	public function deleteDataTask($task_id)
+	{
+		try {
+			Task::where('id', $task_id)->delete();
 		} catch (\Exception $e) {
 			throw new \App\Exceptions\ModelException($e->getMessage());
 		}

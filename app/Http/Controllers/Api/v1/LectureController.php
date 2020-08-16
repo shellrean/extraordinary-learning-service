@@ -27,7 +27,9 @@ class LectureController extends Controller
     	$search = isset(request()->q) ? request()->q : '';
     	$status = isset(request()->status) ? request()->status : '';
 
-    	$lectureRepository->getDataLectures($perPage, $search, $status);
+        $user = request()->user('api');
+
+    	$lectureRepository->getDataLectures($user->id, $perPage, $search, $status);
     	return SendResponse::acceptData($lectureRepository->getLectures());
     }
 

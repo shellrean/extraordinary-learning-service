@@ -65,9 +65,9 @@ class LectureRepository
 	 * @param string status
 	 * @return void
 	 */
-	public function getDataLectures(int $perPage, string $search, $isactive = ''): void
+	public function getDataLectures($user_id, int $perPage, string $search, $isactive = ''): void
 	{
-		$lectures = Lecture::orderBy('id','desc');
+		$lectures = Lecture::with('subject')->orderBy('id','desc')->where('user_id', $user_id);
 		if ($search != '') {
 			$lectures = $lectures->where('title', 'LIKE','%'.$search.'%');
 		}

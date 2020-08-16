@@ -140,6 +140,25 @@ class ClassroomRepository
 	}
 
 	/**
+	 * Get data teacher's classroom
+	 *
+	 * @author shellrean <wandinak17@gmail.com>
+	 * @since 1.0.0
+	 * @return void
+	 */
+	public function getDataClassroomTeacher($teacher_id)
+	{
+		try {
+			$classrooms = ClassroomSubject::with(['classroom','subject'])
+						->where('teacher_id', $teacher_id)
+						->get();
+			$this->classrooms = $classrooms;
+		} catch (\Exception $e) {
+			throw new \App\Exceptions\ModelException($e->getMessage());
+		}
+	}
+
+	/**
 	 * Create new classroom
 	 *
 	 * @author shellrean <wandinak17@gmail.com>
@@ -329,6 +348,45 @@ class ClassroomRepository
 				'invitation_code' => $request->invitation_code
 			];
 			ClassroomStudent::create($data);
+		} catch (\Exception $e) {
+			throw new \App\Exceptions\ModelException($e->getMessage());
+		}
+	}
+
+	/**
+	 * Create new user's classroom
+	 *
+	 * @author shellrean <wandinak17@gmail.com>
+	 * @since 1.0.0
+	 * @param \Illuminate\Http\Request
+	 * @return void
+	 */
+	public function createNewClassroomTeacher($request)
+	{
+		try {
+			$data = [
+				'teacher_id'	=> $request->teacher_id,
+				'classroom_id'	=> $request->classroom_id,
+				'subject_id'	=> $request->subject_id
+			];
+			ClassroomSubject::create($data);
+		} catch (\Exception $e) {
+			throw new \App\Exceptions\ModelException($e->getMessage());
+		}
+	}
+
+	/**
+	 * Delete user's classroom
+	 *
+	 * @author shellrean <wandinak17@gmail.com>
+	 * @since 1.0.0
+	 * @param \Illuminate\Http\Request
+	 * @return void
+	 */
+	public function deleteDataClassroomTeacher($classroom_subject_id)
+	{
+		try {
+			ClassroomSubject::where('id', $classroom_subject_id)->delete();
 		} catch (\Exception $e) {
 			throw new \App\Exceptions\ModelException($e->getMessage());
 		}

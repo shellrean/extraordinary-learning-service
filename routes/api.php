@@ -71,7 +71,11 @@ Route::group(['prefix' => 'v1', 'namespace' => 'Api\v1'], function() {
 		 | Classroom route section
 		 |-----------------------------------------------------------------
 		 */
-		Route::get('classrooms/mine', 'ClassroomController@mine')->middleware('auth.teacher');
+		Route::group(['middleware' => 'auth.teacher'], function() {
+			Route::get('classrooms/mine', 'ClassroomController@mine');
+			Route::post('classrooms/mine', 'ClassroomController@createNewmine');
+			Route::delete('classrooms/mine/{classroom_subject_id}', 'ClassroomController@deleteMine');
+		});
 		Route::get('classrooms/{classroom_id}/live', 'ClassroomController@liveClassroom');
 		Route::post('classrooms/{classroom_id}/live', 'ClassroomController@storeLiveClassroom')->middleware('auth.teacher');
 		Route::post('classrooms/live/{classroom_live_id}/stop', 'ClassroomController@stopLiveClassroom')->middleware('auth.teacher');
@@ -87,7 +91,8 @@ Route::group(['prefix' => 'v1', 'namespace' => 'Api\v1'], function() {
 
 		Route::post('classrooms/import', 'ClassroomController@import');
 		Route::get('classrooms', 'ClassroomController@index');
-		Route::apiResource('classrooms', 'ClassroomController')->except('index')->middleware('auth.admin');
+		Route::get('classrooms/{classroom_id}', 'ClassroomController@show');
+		Route::apiResource('classrooms', 'ClassroomController')->except('index','show')->middleware('auth.admin');
 
 		/**
 		 |-----------------------------------------------------------------

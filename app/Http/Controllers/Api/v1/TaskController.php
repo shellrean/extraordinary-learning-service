@@ -5,6 +5,7 @@ namespace App\Http\Controllers\Api\v1;
 use App\Http\Controllers\Controller;
 use App\Repositories\TaskRepository;
 use App\Http\Requests\TaskCollect;
+use App\Http\Requests\TaskUpdate;
 use App\Http\Requests\TaskSharee;
 use App\Http\Requests\TaskCreate;
 use App\Actions\SendResponse;
@@ -24,8 +25,9 @@ class TaskController extends Controller
     	$perPage = isset(request()->perPage) && request()->perPage != ''
     				? request()->perPage
     				: 10;
+        $search = isset(request()->q) ? request()->q : '';
     	$user = request()->user('api');
-    	$taskRepository->getDataTasks($user->id, $perPage);
+    	$taskRepository->getDataTasks($user->id, $perPage, $search);
     	return SendResponse::acceptData($taskRepository->getTasks());
     }
 
@@ -58,6 +60,34 @@ class TaskController extends Controller
 
     	$taskRepository->createNewTask($request);
     	return SendResponse::acceptData($taskRepository->getTask());
+    }
+
+    /**
+     * Update data task
+     *
+     * @author shellrean <wandinak17@gmail.com>
+     * @param \App\Repositories\TaskRepository
+     * @param \App\Http\Repositores\TaskUpdate
+     * @return \App\Actions\SendResponse
+     */
+    public function update($task_id, TaskUpdate $request, TaskRepository $taskRepository)
+    {
+        $taskRepository->updateDataTask($task_id, $request);
+        return SendResponse::accept('task updated');
+    }
+
+    /**
+     * Delete data task
+     *
+     * @author shellrean <wandinak17@gmail.com>
+     * @param \App\Repositories\TaskRepository
+     * @param \App\Http\Request
+     * @return \App\Actions\SendResponse
+     */
+    public function destroy($task_id, TaskRepository $taskRepository)
+    {
+        $taskRepository->deleteDataTask($task_id);
+        return SendResponse::accept('task deleted');
     }
 
     /**

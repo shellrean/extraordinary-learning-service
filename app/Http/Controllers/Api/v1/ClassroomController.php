@@ -4,6 +4,7 @@ namespace App\Http\Controllers\Api\v1;
 
 use App\Repositories\ClassroomRepository;
 use App\Repositories\SubjectRepository;
+use App\Http\Requests\ClassroomTeacher;
 use App\Http\Requests\ClassroomRequest;
 use App\Http\Requests\ClassroomImport;
 use App\Http\Requests\ClassroomLive;
@@ -96,11 +97,36 @@ class ClassroomController extends Controller
     public function mine(ClassroomRepository $classroomRepository, SubjectRepository $subjectRepository)
     {
         $user = request()->user('api');
-        $subjectRepository->getDataSubjectsTeacher($user->id);
-        $classroomRepository->getDataClasssroomHasSubject(
-            $subjectRepository->getSubjects()->pluck('subject_id')->toArray()
-        );
+        $classroomRepository->getDataClassroomTeacher($user->id);
         return SendResponse::acceptData($classroomRepository->getClassrooms());
+    }
+
+    /**
+     * Create data user's classroom
+     *
+     * @author shellrean <wandinak17@gmail.com>
+     * @param \App\Repositories\ClassroomRepository
+     * @param \App\Actions\SendResponse
+     */
+    public function createNewMine(ClassroomTeacher $request, ClassroomRepository $classroomRepository)
+    {
+        $user = request()->user('api');
+        $request->teacher_id = $user->id;
+        $classroomRepository->createNewClassroomTeacher($request);
+        return SendResponse::accept("teacher's data created");
+    }
+
+    /**
+     * Delete data user's classroom
+     *
+     * @author shellrean <wandinak17@gmail.com>
+     * @param \App\Repositories\ClassroomRepository
+     * @param \App\Actions\SendResponse
+     */
+    public function deleteMine($classroom_subject_id, ClassroomRepository $classroomRepository)
+    {
+        $classroomRepository->deleteDataClassroomTeacher($classroom_subject_id);
+        return SendResponse::accept("teacher's data deleted");
     }
 
     /**
