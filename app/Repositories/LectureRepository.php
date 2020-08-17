@@ -203,7 +203,7 @@ class LectureRepository
 			if($teacher_id != '') {
 				$lectures = $lectures->where('teacher_id', $teacher_id);
 			}
-			$this->lectures = $lectures->orderBy('id','desc')->get();
+			$this->lectures = $lectures->orderBy('id','desc')->paginate(10);
 		} catch (\Exception $e) {
 			throw new \App\Exceptions\ModelException($e->getMessage());
 		}

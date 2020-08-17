@@ -4,6 +4,7 @@ namespace App\Repositories;
 
 use App\Subject;
 use App\TeacherSubject;
+use App\ClassroomSubject;
 use App\Imports\SubjectImport;
 use Maatwebsite\Excel\Facades\Excel;
 use Illuminate\Support\Facades\DB;
@@ -239,6 +240,28 @@ class SubjectRepository
 	{
 		try {
 			TeacherSubject::where('id', $teacher_subject_id)->delete();
+		} catch (\Exception $e) {
+			throw new \App\Exceptions\ModelException($e->getMessage());	
+		}
+	}
+
+	/**
+	 * Get data classroom's subject
+	 *
+	 * @author shellrean <wandinak17@gmail.com>
+	 * @since 1.0.0
+	 * @param $classroom_id
+	 * @return void
+	 */
+	public function getDataClassroomSubject($classroom_id, $teacher_id = '')
+	{
+		try {
+			$subjects = ClassroomSubject::with('subject')
+						->where('classroom_id', $classroom_id);
+			if($teacher_id != '') {
+				$subjects = $subjects->where('teacher_id', $teacher_id);
+			}
+			$this->subjects = $subjects->get();
 		} catch (\Exception $e) {
 			throw new \App\Exceptions\ModelException($e->getMessage());	
 		}

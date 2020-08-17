@@ -121,7 +121,15 @@ class LectureController extends Controller
     public function classroomLectures($classroom_id, LectureRepository $lectureRepository)
     {
         $user = request()->user('api');
-        $lectureRepository->getDataLecturesClassroom($classroom_id, $user->id);
+        switch ($user->role) {
+            case '1':
+                $lectureRepository->getDataLecturesClassroom($classroom_id, $user->id);
+                break;
+            
+            default:
+                $lectureRepository->getDataLecturesClassroom($classroom_id);
+                break;
+        }
         return SendResponse::acceptData($lectureRepository->getLectures());
     }
 }

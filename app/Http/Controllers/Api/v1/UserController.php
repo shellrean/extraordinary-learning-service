@@ -22,8 +22,12 @@ class UserController extends Controller
      */
     public function getUserLogin()
     {
-    	$user = request()->user('api');
-    	return SendResponse::acceptData($user);
+    	$auth = request()->user('api');
+        $user = \App\ClassroomStudent::with('classroom')->where('student_id', $auth->id)->first();
+        if($user) {
+            $auth->classroom = $user->classroom;
+        }
+    	return SendResponse::acceptData($auth);
     }
 
     /**

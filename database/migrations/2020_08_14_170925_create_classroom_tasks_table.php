@@ -17,11 +17,13 @@ class CreateClassroomTasksTable extends Migration
             $table->id();
             $table->unsignedBigInteger('classroom_id');
             $table->unsignedBigInteger('task_id');
+            $table->unsignedBigInteger('teacher_id');
             $table->longText('body');
             $table->timestamps();
 
             $table->foreign('classroom_id')->references('id')->on('classrooms')->onDelete('cascade');
             $table->foreign('task_id')->references('id')->on('tasks')->onDelete('cascade');
+            $table->foreign('teacher_id')->references('id')->on('users')->onDelete('cascade');
         });
     }
 

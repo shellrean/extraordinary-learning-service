@@ -141,4 +141,27 @@ class SubjectController extends Controller
         $subjectRepository->importDataSubject($request);
         return SendResponse::accept('subject imported');
     }
+
+    /**
+     * Get data teacher's classroom subject
+     *
+     * @author shellrean <wandinak17@gmail.com>
+     * @param $classroom_id
+     * @param \App\Repositories\SubjectRepository
+     * @return \App\Actions\SendResponse
+     */
+    public function getTeacherClassroomSubject($classroom_id, SubjectRepository $subjectRepository)
+    {
+        $user = request()->user('api');
+        switch ($user->role) {
+            case '1':
+                $subjectRepository->getDataClassroomSubject($classroom_id, $user->id);
+                break;
+            
+            default:
+                $subjectRepository->getDataClassroomSubject($classroom_id);
+                break;
+        }
+        return SendResponse::acceptData($subjectRepository->getSubjects());
+    }
 }

@@ -10,14 +10,13 @@ class Task extends Model
 
     protected $casts = [
     	'settings'		=> 'array',
-    	'created_at' =>  'datetime:d F Y G : i',
-    	'lastsubmit'	=> 'datetime:d F Y G : i'
+    	'created_at' =>  'datetime:d F Y h : i A'
     ];
 
     public $appends = ['lastsubmit'];
 
     public function getLastsubmitAttribute()
     {
-    	return $this->deadline;
+    	return $this->deadline->format('d F Y h : i A');
     }
 }

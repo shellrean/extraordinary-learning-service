@@ -172,10 +172,16 @@ class TaskRepository
 	 * @param $classroom_id
 	 * @return void
 	 */
-	public function getDataTaskClassroom($classroom_id)
+	public function getDataTaskClassroom($classroom_id, $teacher_id = '')
 	{
 		try {
-			$tasks = ClassroomTask::with('task')->where('classroom_id', $classroom_id)->orderBy('id','desc')->get();
+			$tasks = ClassroomTask::with('task')
+					->where('classroom_id', $classroom_id)
+					->orderBy('id','desc');
+			if($teacher_id != '') {
+				$tasks = $tasks->where('teacher_id', $teacher_id);
+			}
+			$tasks = $tasks->paginate(10);
 			$this->tasks = $tasks;
 		} catch (\Exception $e) {
 			throw new \App\Exceptions\ModelException($e->getMessage());
@@ -196,6 +202,7 @@ class TaskRepository
 			$data = [
 				'classroom_id'	=> $request->classroom_id,
 				'task_id'		=> $request->task_id,
+				'teacher_id'	=> $request->teacher_id,
 				'body'			=> $request->body
 			];
 			$task = ClassroomTask::create($data);

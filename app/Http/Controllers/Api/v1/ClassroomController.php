@@ -153,7 +153,15 @@ class ClassroomController extends Controller
     public function liveClassroom($classroom_id, ClassroomRepository $classroomRepository)
     {
         $user = request()->user('api');
-        $classroomRepository->getDataClassroomLives($classroom_id, $user->id);
+        switch ($user->role) {
+            case '1':
+                $classroomRepository->getDataClassroomLives($classroom_id, $user->id);
+                break;
+            
+            default:
+                $classroomRepository->getDataClassroomLives($classroom_id);
+                break;
+        }
         return SendResponse::acceptData($classroomRepository->getClassrooms());
     }
 

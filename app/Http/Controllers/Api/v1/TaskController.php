@@ -100,7 +100,9 @@ class TaskController extends Controller
      */
     public function sharee($task_id, TaskSharee $request, TaskRepository $taskRepository)
     {
+        $user = request()->user('api');
     	$request->task_id = $task_id;
+        $request->teacher_id = $user->id;
 
     	$taskRepository->createNewTaskClassroom($request);
     	return SendResponse::accept('task sharared');
@@ -115,7 +117,16 @@ class TaskController extends Controller
   	 */
   	public function classroomTasks($classroom_id, TaskRepository $taskRepository)
   	{
-  		$taskRepository->getDataTaskClassroom($classroom_id);
+        $user = request()->user('api');
+        switch ($user->role) {
+            case '1':
+                $taskRepository->getDataTaskClassroom($classroom_id, $user->id);
+                break;
+            
+            default:
+                $taskRepository->getDataTaskClassroom($classroom_id);
+                break;
+        }
   		return SendResponse::acceptData($taskRepository->getTasks());
   	}
 

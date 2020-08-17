@@ -62,9 +62,11 @@ Route::group(['prefix' => 'v1', 'namespace' => 'Api\v1'], function() {
 		 */
 		Route::get('lectures/{lecture_id}/comment', 'CommentController@indexLecture');
 		Route::post('lectures/{lecture_id}/comment', 'CommentController@storeLecture');
-		Route::post('lectures/{lecture_id}/sharee', 'LectureController@sharee');
-		Route::get('lectures/classrooms/{classroom_id}', 'LectureController@classroomLectures');
-		Route::apiResource('lectures', 'LectureController');
+		Route::get('lectures/{lecture_id}', 'LectureController@show');
+		Route::group(['middleware' => 'auth.teacher'], function() {
+			Route::post('lectures/{lecture_id}/sharee', 'LectureController@sharee');
+			Route::apiResource('lectures', 'LectureController')->except('show');
+		});
 
 		/**
 		 |-----------------------------------------------------------------
@@ -75,24 +77,31 @@ Route::group(['prefix' => 'v1', 'namespace' => 'Api\v1'], function() {
 			Route::get('classrooms/mine', 'ClassroomController@mine');
 			Route::post('classrooms/mine', 'ClassroomController@createNewmine');
 			Route::delete('classrooms/mine/{classroom_subject_id}', 'ClassroomController@deleteMine');
+			Route::post('classrooms/{classroom_id}/live', 'ClassroomController@storeLiveClassroom');
+			Route::post('classrooms/live/{classroom_live_id}/stop', 'ClassroomController@stopLiveClassroom');
+			
+			Route::get('classrooms/{classroom_id}/student', 'StudentController@index');
+			Route::post('classrooms/{classroom_id}/student', 'StudentController@store');
+
 		});
+		Route::get('classrooms/{classroom_id}/subject', 'SubjectController@getTeacherClassroomSubject');
+		
 		Route::get('classrooms/{classroom_id}/live', 'ClassroomController@liveClassroom');
-		Route::post('classrooms/{classroom_id}/live', 'ClassroomController@storeLiveClassroom')->middleware('auth.teacher');
-		Route::post('classrooms/live/{classroom_live_id}/stop', 'ClassroomController@stopLiveClassroom')->middleware('auth.teacher');
 		Route::get('classrooms/live/{classroom_live_id}', 'ClassroomController@getDataLiveClassroom');
 
 		Route::get('classrooms/live/{classroom_live_id}/comment', 'CommentController@indexClassroomLive');
 		Route::post('classrooms/live/{classroom_live_id}/comment', 'CommentController@storeClassroomLive');
 
-		Route::get('classrooms/{classroom_id}/student', 'StudentController@index');
-		Route::post('classrooms/{classroom_id}/student', 'StudentController@store');
-
 		Route::get('classrooms/{classroom_id}/task', 'TaskController@classroomTasks');
+		
+		Route::get('classrooms/{classroom_id}/lecture', 'LectureController@classroomLectures');
 
-		Route::post('classrooms/import', 'ClassroomController@import');
 		Route::get('classrooms', 'ClassroomController@index');
 		Route::get('classrooms/{classroom_id}', 'ClassroomController@show');
-		Route::apiResource('classrooms', 'ClassroomController')->except('index','show')->middleware('auth.admin');
+		Route::group(['middleware' => 'auth.admin'], function() {
+			Route::post('classrooms/import', 'ClassroomController@import');
+			Route::apiResource('classrooms', 'ClassroomController')->except('index','show');
+		});
 
 		/**
 		 |-----------------------------------------------------------------
@@ -108,9 +117,12 @@ Route::group(['prefix' => 'v1', 'namespace' => 'Api\v1'], function() {
 		 | Task route section
 		 |-----------------------------------------------------------------
 		 */
-		Route::post('tasks/{task_id}/sharee', 'TaskController@sharee');
 		Route::post('tasks/{task_id}/collect', 'TaskController@collect');
-		Route::apiResource('tasks', 'TaskController');
+		Route::get('tasks/{task_id}', 'TaskController@show');
+		Route::group(['middleware' => 'auth.teacher'], function() {
+			Route::post('tasks/{task_id}/sharee', 'TaskController@sharee');
+			Route::apiResource('tasks', 'TaskController')->except('show');
+		});
 
 		/**
 		 |-----------------------------------------------------------------
