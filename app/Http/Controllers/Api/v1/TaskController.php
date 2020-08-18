@@ -191,6 +191,33 @@ class TaskController extends Controller
     }
 
     /**
+     * Get data task result 
+     *
+     * @author shellrean <wandinak17@gmail.com>
+     * @return \App\Repositories\TaskRepository
+     * @return \App\Actions\SendResponse
+     */
+    public function taskResult($task_id, TaskRepository $taskRepository)
+    {
+        $classroom_id = isset(request()->c) ? request()->c : '';
+        $taskRepository->getDataTaskResults($task_id, $classroom_id);
+        $data = $taskRepository->getTasks()->map(function($item) {
+            return [
+                'id'        => $item->id,
+                'result'    => [
+                    'id'    => $item->result->id,
+                    'point' => $item->result->point
+                ],
+                'student'   => [
+                    'id'    => $item->student->id,
+                    'name'  => $item->student->name
+                ]
+            ];
+        });
+        return SendResponse::acceptData($data);
+    }
+
+    /**
      * Store result student's task submit
      *
      * @author shellrean <wandinak17@gmail.com>

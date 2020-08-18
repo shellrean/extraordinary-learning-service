@@ -122,6 +122,7 @@ Route::group(['prefix' => 'v1', 'namespace' => 'Api\v1'], function() {
 		Route::group(['middleware' => 'auth.teacher'], function() {
 			Route::post('tasks/{task_id}/sharee', 'TaskController@sharee');
 			Route::get('tasks/{task_id}/check', 'TaskController@studentTask');
+			Route::get('tasks/{task_id}/result', 'TaskController@taskResult');
 			Route::post('tasks/result', 'TaskController@storeTaskResult');
 			Route::delete('tasks/student/{task_student_id}', 'TaskController@destroyStudentTask');
 			Route::apiResource('tasks', 'TaskController')->except('show');
@@ -134,5 +135,16 @@ Route::group(['prefix' => 'v1', 'namespace' => 'Api\v1'], function() {
 		 */
 		Route::get('channels/{channel_id}/user', 'ChannelController@getDataChannelUser');
 		Route::post('channels/{channel_id}/user', 'ChannelController@changeToChannel');
+
+		/**
+		 |-----------------------------------------------------------------
+		 | Setting route section
+		 |-----------------------------------------------------------------
+		 */
+		Route::get('settings/{name}', 'SettingController@show');
+		Route::group(['middleware' => 'auth.admin'], function() {
+			Route::post('settings', 'SettingController@store');
+			Route::post('settings/logo', 'SettingController@storeImage');
+		});
 	});
 });

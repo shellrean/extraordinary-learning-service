@@ -310,10 +310,35 @@ class TaskRepository
 	public function getDataTaskResult($student_task_id)
 	{
 		try {
-			$task = ResultTask::where('student_task_id', $student_task_id)->get();
+			$task = ResultTask::where('student_task_id', $student_task_id)->first();
 			$this->setTask($task);
 		} catch (\Exception $e) {
 			throw new \App\Exceptions\ModelException($e->getMessage());
+		}
+	}
+
+	/**
+	 * Get data task results
+	 *
+	 * @author shellrean <wandinak17@gmail.com>
+	 * @since 1.0.0
+	 * @param \Illuminate\Http\Request
+	 * @return void
+	 */
+	public function getDataTaskResults($task_id, $classroom_id)
+	{
+		try {
+			$tasks = StudentTask::with(['student','result'])
+					->whereHas('result')
+					->where('task_id', $task_id);
+			if($classroom_id != '') {
+				$tasks = $tasks->whereHas('classroom', function($query) use($classroom_id) {
+					$query->where('classroom_id', $classroom_id);
+				});
+			}
+			$this->tasks = $tasks->get();
+		} catch (\Exception $e) {
+			throw new \App\Exceptions\ModelException($e->getmessage());
 		}
 	}
 }
