@@ -140,6 +140,15 @@ class TaskController extends Controller
     public function collect($task_id, TaskCollect $request, TaskRepository $taskRepository)
     {
         $user = request()->user('api');
+        $taskRepository->getDataTask($task_id);
+        $task = $taskRepository->getTask();
+        if($task->status) {
+            return SendResponse::badRequest('You have submit your task'); 
+        }
+        if($task->deadline > \Carbon\Carbon::now()) {
+            return SendResponse::badRequest('Time to submit task has over');
+        }
+
         $request->student_id = $user->id;
         $request->task_id = $task_id;
 
