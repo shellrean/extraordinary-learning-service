@@ -2,6 +2,7 @@
 
 namespace App\Http\Controllers\Api\v1;
 
+use App\Http\Requests\ResultTaskStore;
 use App\Http\Controllers\Controller;
 use App\Repositories\TaskRepository;
 use App\Http\Requests\TaskCollect;
@@ -143,9 +144,9 @@ class TaskController extends Controller
         $taskRepository->getDataTask($task_id);
         $task = $taskRepository->getTask();
         if($task->status) {
-            return SendResponse::badRequest('You have submit your task'); 
+            return SendResponse::badRequest('You have submited this task'); 
         }
-        if($task->deadline > \Carbon\Carbon::now()) {
+        if($task->deadline < \Carbon\Carbon::now()) {
             return SendResponse::badRequest('Time to submit task has over');
         }
 
@@ -161,7 +162,7 @@ class TaskController extends Controller
                 foreach ($files as $file) {
                     $filename = date('Ymd').'-'.$file->getClientOriginalName();
                     array_push($attach, $filename);
-                    $file->storeAs('attachment/', $filename );
+                    $file->storeAs('public/attachment/', $filename );
                 }
                 
                 $content = [
@@ -173,5 +174,49 @@ class TaskController extends Controller
 
         $taskRepository->createNewStudentTask($request);
         return SendResponse::accept('assign collected');
+    }
+
+    /** 
+     * Get data student's task submit
+     *
+     * @author shellrean <wandinak17@gmail.com>
+     * @param \App\Repositores\TaskRepository
+     * @return \App\Actions\SendResponse
+     */
+    public function studentTask($task_id, TaskRepository $taskRepository)
+    {
+        $classroom_id = isset(request()->c) ? request()->c : '';
+        $taskRepository->getDataUncheckedTask($task_id, $classroom_id);
+        return SendResponse::acceptData($taskRepository->getTasks());
+    }
+
+    /**
+     * Store result student's task submit
+     *
+     * @author shellrean <wandinak17@gmail.com>
+     * @param \App\Repositories\TaskRepository
+     * @return \App\Actions\SendResponse
+     */
+    public function storeTaskResult(ResultTaskStore $request, TaskRepository $taskRepository)
+    {
+        $taskRepository->getDataTaskResult($request->student_task_id);
+        if($taskRepository->getTask()) {
+            return SendResponse::badRequest('result has submited before');
+        }
+        $taskRepository->createNewTaskResult($request);
+        return SendResponse::accept('result stored');
+    }
+
+    /**
+     * Delete data studen's task submit
+     *
+     * @author shellrean <wandinak17@gmail.com>
+     * @param \App\Repositories\TaskRepository
+     * @return \App\Actions\SendResponse
+     */
+    public function destroyStudentTask($student_task_id, TaskRepository $taskRepository)
+    {
+        $taskRepository->deleteDataStudentTask($student_task_id);
+        return SendResponse::accept('Student task submit deleted');
     }
 }

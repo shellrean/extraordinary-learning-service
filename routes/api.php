@@ -121,6 +121,9 @@ Route::group(['prefix' => 'v1', 'namespace' => 'Api\v1'], function() {
 		Route::get('tasks/{task_id}', 'TaskController@show');
 		Route::group(['middleware' => 'auth.teacher'], function() {
 			Route::post('tasks/{task_id}/sharee', 'TaskController@sharee');
+			Route::get('tasks/{task_id}/check', 'TaskController@studentTask');
+			Route::post('tasks/result', 'TaskController@storeTaskResult');
+			Route::delete('tasks/student/{task_student_id}', 'TaskController@destroyStudentTask');
 			Route::apiResource('tasks', 'TaskController')->except('show');
 		});
 

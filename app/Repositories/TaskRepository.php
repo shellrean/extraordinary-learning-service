@@ -3,8 +3,10 @@
 namespace App\Repositories;
 
 use App\Task;
+use App\ResultTask;
 use App\StudentTask;
 use App\ClassroomTask;
+use Illuminate\Support\Facades\DB;
 
 class TaskRepository
 {
@@ -228,6 +230,88 @@ class TaskRepository
 				'content'		=> $request->content
 			];
 			$task = StudentTask::create($data);
+		} catch (\Exception $e) {
+			throw new \App\Exceptions\ModelException($e->getMessage());
+		}
+	}
+
+	/**
+	 * Get data students task
+	 *
+	 * @author shellrean <wandinak17@gmail.com>
+	 * @since 1.0.0
+	 * @param $task_id
+	 * @param $classroom_id
+	 * @return void
+	 */
+	public function getDataUncheckedTask($task_id, $classroom_id = '')
+	{
+		try {
+			$tasks = StudentTask::with('student')
+					->doesntHave('result')
+					->where('task_id', $task_id);
+			if($classroom_id != '') {
+				$tasks = $tasks->whereHas('classroom', function($query) use($classroom_id) {
+					$query->where('classroom_id', $classroom_id);
+				});
+			}
+			$this->tasks = $tasks->get();
+		} catch (\Exception $e) {
+			throw new \App\Exceptions\ModelException($e->getMessage());
+		}
+	}
+
+	/**
+	 * Delete data students task
+	 *
+	 * @author shellrean <wandinak17@gmail.com>
+	 * @since 1.0.0
+	 * @param $student_task_id
+	 * @return void
+	 */
+	public function deleteDataStudentTask($student_task_id)
+	{
+		try {
+			StudentTask::where('id', $student_task_id)->delete();
+		} catch (\Exception $e) {
+			throw new \App\Exceptions\ModelException($e->getMessage());
+		}
+	}
+
+	/**
+	 * Create new data result task
+	 * 
+	 * @author shellrean <wandinak17@gmail.com>
+	 * @since 1.0.0
+	 * @param \Illuminate\Http\Request
+	 * @return void
+	 */
+	public function createNewTaskResult($request)
+	{
+		try {
+			$data = [
+				'student_task_id'	=> $request->student_task_id,
+				'point'				=> $request->point
+			];
+			ResultTask::create($data);
+		} catch (\Exception $e) {
+			throw new \App\Exceptions\ModelException($e->getMessage());
+		}
+	}
+
+	/**
+	 * Get data result task
+	 *
+	 * @author shellrean <wandinak17@gmail.com>
+	 * @since 1.0.0
+	 * @param \Illuminate\Http\Request
+	 * @return void
+	 */
+	public function getDataTaskResult($student_task_id)
+	{
+		try {
+			$task = ResultTask::where('student_task_id', $student_task_id)->get();
+			$this->setTask($task);
 		} catch (\Exception $e) {
 			throw new \App\Exceptions\ModelException($e->getMessage());
 		}

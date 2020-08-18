@@ -25,9 +25,9 @@ class Task extends Model
         $user = request()->user('api');
         if($user->role == '2') {
             $task = StudentTask::where([
-                'student_id'    => request()->user('api')->id,
+                'student_id'    => $user->id,
                 'task_id'       => $this->id
-            ])->first();
+            ])->count();
             if($task) {
                 return true;
             }

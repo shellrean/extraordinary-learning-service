@@ -17,7 +17,7 @@ class SendResponse
 		return response()->json([
 			'error' 	=> true,
 			'message' 	=> $message != '' ? $message : 'bad request'
-		]);
+		],400);
 	}
 
 	/**
