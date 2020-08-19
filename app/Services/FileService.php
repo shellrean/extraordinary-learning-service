@@ -21,7 +21,7 @@ class FileService
 		try {
 			$file = $request->file($name);
 			$filename = date('Ymd').'-'.uniqid().'.'.$file->getClientOriginalExtension();
-			$path = $file->storeAs('public/', $filename);
+			$path = $file->storeAs('public', $filename);
 
 			$this->fileDetail = collect([
 				'filename'		=> $filename,

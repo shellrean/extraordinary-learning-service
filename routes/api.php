@@ -155,7 +155,20 @@ Route::group(['prefix' => 'v1', 'namespace' => 'Api\v1'], function() {
 		 |-----------------------------------------------------------------
 		 */
 		Route::group(['middleware' => 'auth.teacher'], function() {
+			Route::get('question_banks/{question_bank_id}/question', 'QuestionController@indexQuestion');
+			Route::post('question_banks/{question_bank_id}/import', 'QuestionController@import');
+			Route::post('question_banks/question', 'QuestionController@storeQuestion');
+			Route::get('question_banks/question/{question_id}', 'QuestionController@showQuestion');
+			Route::put('question_banks/question/{question_id}', 'QuestionController@updateQuestion');
+			Route::delete('question_banks/question/{question_id}', 'QuestionController@destroyQuestion');
 			Route::apiResource('question_banks', 'QuestionController');
 		});
+
+		/**
+		 |-----------------------------------------------------------------
+		 | Fileupload bank route section
+		 |-----------------------------------------------------------------
+		 */
+		Route::post('files', 'FileUploadController@store');
 	});
 });

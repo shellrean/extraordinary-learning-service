@@ -14,7 +14,7 @@ class AddFinishedToOutput
      */
     public function handle(CommandFinished $event): void
     {
-        $message = 'Thanks for using Dian Elearning version 1.0.0 Community Version';
+        $message = 'Thanks for using Dian Elearning version 1.0.0 Education';
         $event->output->writeln('');
         $event->output->writeln($message);
     }
