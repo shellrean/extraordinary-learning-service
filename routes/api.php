@@ -166,6 +166,15 @@ Route::group(['prefix' => 'v1', 'namespace' => 'Api\v1'], function() {
 
 		/**
 		 |-----------------------------------------------------------------
+		 | Schedule exam bank route section
+		 |-----------------------------------------------------------------
+		 */
+		Route::group(['middleware' => 'auth.teacher'], function() {
+			Route::apiResource('exam_schedules', 'ExamScheduleController');
+		});
+
+		/**
+		 |-----------------------------------------------------------------
 		 | Fileupload bank route section
 		 |-----------------------------------------------------------------
 		 */

@@ -16,13 +16,17 @@ class CreateExamSchedulesTable extends Migration
         Schema::create('exam_schedules', function (Blueprint $table) {
             $table->id();
             $table->unsignedBigInteger('question_bank_id');
+            $table->unsignedBigInteger('teacher_id');
             $table->string('name', 50);
             $table->date('date');
             $table->time('start_time');
             $table->integer('duration');
             $table->enum('isactive', [0,1])->default('0');
-            $table->string('setting');
+            $table->string('setting')->nullable();
             $table->timestamps();
+
+            $table->foreign('question_bank_id')->references('id')->on('question_banks')->onDelete('cascade');
+            $table->foreign('teacher_id')->references('id')->on('users')->onDelete('cascade');
         });
     }
 

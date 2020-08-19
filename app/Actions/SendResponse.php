@@ -62,7 +62,7 @@ class SendResponse
 	 */
 	public static function acceptCustom($data)
 	{
-		return response()->Json($data, 200);
+		return response()->json($data, 200);
 	}
 
 	/**
