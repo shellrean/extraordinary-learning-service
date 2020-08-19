@@ -25,6 +25,12 @@ class ClassroomRepository
 	private $classroom;
 
 	/**
+	 * Data subjects
+	 * App\ClassroomSubject
+	 */
+	private $subjects;
+
+	/**
 	 * Data classroom's student
 	 * App\ClassroomStudent
 	 */
@@ -40,6 +46,18 @@ class ClassroomRepository
 	public function getClassrooms()
 	{
 		return $this->classrooms;
+	}
+
+	/**
+	 * Retreive data subjects
+	 *
+	 * @author shellrean <wandinak17@gmail.com>
+	 * @since 1.0.0
+	 * @return App\ClassroomStudent
+	 */
+	public function getSubjects()
+	{
+		return $this->subjects;
 	}
 
 	/**
@@ -409,6 +427,53 @@ class ClassroomRepository
 		} catch (\Exception $e) {
 			DB::rollback();
 			throw new \App\Exceptions\ModelException($e->getMessage());	
+		}
+	}
+
+	/**
+	 * Join classroom
+	 *
+	 * @author shellrean <wandinak17@gmail.com>
+	 * @since 1.0.0
+	 * @param $request
+	 * @return void
+	 */
+	public function joinClassroomStudent($request)
+	{
+		try {
+			$classroom = Classroom::where('invitation_code', $request->invitation_code)->first();
+			$data = [
+				'student_id'	=> $request->student_id,
+				'classroom_id' => $classroom->id,
+				'invitation_code' => $request->invitation_code
+			];
+			ClassroomStudent::create($data);
+		} catch (\Exception $e) {	
+			throw new \App\Exceptions\ModelException($e->getMessage());
+		}
+	}
+
+	/**
+	 * Get teacher's subject
+	 *
+	 * @author shellrean <wandinak17@gmail.com>
+	 * @since 1.0.0
+	 * @param $teacher_id
+	 * @return void
+	 */
+	public function getDataTeacherSubject($teacher_id, $classroom_id = '')
+	{
+		try {
+			$subjects = ClassroomSubject::with(['subject' => function($query) {
+				$query->select('id','name');
+			}])
+			->where('teacher_id', $teacher_id);
+			if($classroom_id != '') {
+				$subjects = $subjects->where('classroom_id', $classroom_id);
+			}
+			$this->subjects = $subjects->get();
+		} catch (\Exception $e) {
+			throw new \App\Exceptions\ModelException($e->getMessage());
 		}
 	}
 }

@@ -9,6 +9,7 @@ use App\Http\Requests\ClassroomRequest;
 use App\Http\Requests\ClassroomImport;
 use App\Http\Requests\ClassroomLive;
 use App\Http\Controllers\Controller;
+use App\Http\Requests\ClassroomJoin;
 use App\Actions\SendResponse;
 use Illuminate\Http\Request;
 
@@ -209,5 +210,41 @@ class ClassroomController extends Controller
     {
         $classroomRepository->getDataClassroomLive($classlive_id);
         return SendResponse::acceptData($classroomRepository->getClassroom());
+    }
+
+    /**
+     * Join classroom
+     *
+     * @author shellrean <wandinak17@gmila.com>
+     * @param \App\Repositories\ClassroomRepository
+     * @param \App\Http\Requests\ClassroomJoin
+     * @return \App\Actions\SendResponse
+     */
+    public function join(ClassroomJoin $request, ClassroomRepository $classroomRepository)
+    {
+        $user = request()->user('api');
+        if($user->role != '2') {
+            return SendResponse::forbidden();
+        }
+        $request->student_id = $user->id;
+        $classroomRepository->joinClassroomStudent($request);
+        return SendResponse::accept('join success');
+    }
+
+    /**
+     * Get teacher teacher
+     *
+     * @author shellrean <wandinak17@gmail.com>
+     * @param \App\Repositories\ClassroomRepository
+     * @return \App\Actions\SendResponse
+     */
+    public function getTeacherSubject(ClassroomRepository $classroomRepository)
+    {
+        $user = request()->user('api');
+        $classroomRepository->getDataTeacherSubject($user->id);
+        $data = $classroomRepository->getSubjects()->map(function($item) {
+            return $item->subject;
+        })->unique('id');
+        return SendResponse::acceptData($data);
     }
 }

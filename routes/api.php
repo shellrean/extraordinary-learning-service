@@ -16,6 +16,7 @@ use Illuminate\Support\Facades\Route;
 
 Route::group(['prefix' => 'v1', 'namespace' => 'Api\v1'], function() {
 	Route::post('login', 'AuthController@login');
+	Route::get('settings/{name}', 'SettingController@show');
 
 	Route::group(['middleware' => 'auth:api'], function() {
 		Route::get('logout', 'AuthController@logout');
@@ -74,6 +75,7 @@ Route::group(['prefix' => 'v1', 'namespace' => 'Api\v1'], function() {
 		 |-----------------------------------------------------------------
 		 */
 		Route::group(['middleware' => 'auth.teacher'], function() {
+			Route::get('classrooms/subject/mine', 'ClassroomController@getTeacherSubject');
 			Route::get('classrooms/mine', 'ClassroomController@mine');
 			Route::post('classrooms/mine', 'ClassroomController@createNewmine');
 			Route::delete('classrooms/mine/{classroom_subject_id}', 'ClassroomController@deleteMine');
@@ -96,6 +98,7 @@ Route::group(['prefix' => 'v1', 'namespace' => 'Api\v1'], function() {
 		
 		Route::get('classrooms/{classroom_id}/lecture', 'LectureController@classroomLectures');
 
+		Route::post('classrooms/join', 'ClassroomController@join');
 		Route::get('classrooms', 'ClassroomController@index');
 		Route::get('classrooms/{classroom_id}', 'ClassroomController@show');
 		Route::group(['middleware' => 'auth.admin'], function() {
@@ -141,10 +144,18 @@ Route::group(['prefix' => 'v1', 'namespace' => 'Api\v1'], function() {
 		 | Setting route section
 		 |-----------------------------------------------------------------
 		 */
-		Route::get('settings/{name}', 'SettingController@show');
 		Route::group(['middleware' => 'auth.admin'], function() {
 			Route::post('settings', 'SettingController@store');
 			Route::post('settings/logo', 'SettingController@storeImage');
+		});
+
+		/**
+		 |-----------------------------------------------------------------
+		 | Question bank route section
+		 |-----------------------------------------------------------------
+		 */
+		Route::group(['middleware' => 'auth.teacher'], function() {
+			Route::apiResource('question_banks', 'QuestionController');
 		});
 	});
 });
