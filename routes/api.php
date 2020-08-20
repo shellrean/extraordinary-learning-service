@@ -170,6 +170,7 @@ Route::group(['prefix' => 'v1', 'namespace' => 'Api\v1'], function() {
 		 |-----------------------------------------------------------------
 		 */
 		Route::group(['middleware' => 'auth.teacher'], function() {
+			Route::post('exam_schedules/{exam_schedule_id}/status', 'ExamScheduleController@setStatus');
 			Route::apiResource('exam_schedules', 'ExamScheduleController');
 		});
 
@@ -179,5 +180,18 @@ Route::group(['prefix' => 'v1', 'namespace' => 'Api\v1'], function() {
 		 |-----------------------------------------------------------------
 		 */
 		Route::post('files', 'FileUploadController@store');
+	});
+});
+
+Route::group(['prefix' => 'v2', 'namespace' => 'Api\v2'], function() {
+	Route::group(['middleware' => 'auth:api'], function() {
+		Route::get('exam_schedules', 'ExamScheduleController@index');
+		Route::get('exam_schedules/uncomplete', 'ExamController@uncomplete');
+		Route::get('exam_schedules/active', 'ExamController@active');
+		Route::post('exam_schedules/exam', 'ExamController@store');
+		Route::get('exam', 'ExamController@indexAnswer');
+		Route::post('exam', 'ExamController@storeAnswer');
+		Route::post('exam/doubt', 'ExamController@doubtAnswer');
+		Route::get('exam/finish', 'ExamController@finishExam');
 	});
 });

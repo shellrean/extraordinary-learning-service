@@ -212,6 +212,33 @@ class QuestionRepository
 	}
 
 	/**
+	 * Get data question type
+	 *
+	 * @author shellrean <wandinak17@gamil.com>
+	 * @since 1.0.0
+	 * @param $question_bank_id,
+	 * @param $type
+	 * @return $void
+	 */
+	public function getDataQuestionsByType($question_bank_id, $type, $max, $random)
+	{
+		try {
+			$questions = DB::table('questions')->where([
+				'question_bank_id'	=> $question_bank_id,
+				'type'	=> $type
+			]);
+			if($random == "1") {
+				$questions = $questions->inRandomOrder();
+			}
+			$questions = $questions->take($max)->get();
+
+			$this->questions = $questions;
+		} catch (\Exception $e) {
+			throw new \App\Exceptions\ModelException($e->getMessage());
+		}
+	}
+
+	/**
 	 * Create data question
 	 *
 	 * @author shellrean <wandinak17@gmail.com>

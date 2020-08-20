@@ -30,7 +30,7 @@ class ExamScheduleController extends Controller
     /**
      * Store exam schedule
      *
-     * @author shellran <wandinak17@gamil.com>
+     * @author shellrean <wandinak17@gamil.com>
      * @param \App\Repositories\ExamScheduleRepository
      * @return \App\Actions\SendResponse
      */
@@ -43,5 +43,59 @@ class ExamScheduleController extends Controller
     }
 
     /**
-     * Get data exam sh
+     * Get data exam schedule
+     *
+     * @author shellrean <wandinak17@gmail.com>
+     * @param \App\Repositories\ExamSheduleRepository
+     * @param $exam_schedule_id
+     * @return \App\Actions\SendResponse
+     */
+    public function show($exam_schedule_id, ExamScheduleRepository $examScheduleRepository)
+    {
+    	$examScheduleRepository->getDataExamSchedule($exam_schedule_id);
+    	return SendResponse::acceptData($examScheduleRepository->getExamSchedule());
+    }
+
+    /**
+     * Update data exam schedule
+     *
+     * @author shellrean <wandinak17@gmail.com>
+     * @param \App\Repositories\ExamScheduleRepository
+     * @param $exam_schedule_id
+     * @param \App\Http\Requests\ExamScheduleStore
+     * @return \App\Actions\SendResponse
+     */
+    public function update($exam_schedule_id, ExamScheduleStore $request, ExamScheduleRepository $examScheduleRepository)
+    {
+    	$examScheduleRepository->updateDataExamSchedule($exam_schedule_id, $request);
+    	return SendResponse::acceptData($examScheduleRepository->getExamSchedule());
+    }
+
+    /**
+     * Delete data exam schedule
+     *
+     * @author shellrean <wandinak17@gmail.com>
+     * @param \App\Repositories\ExamScheduleRepository
+     * @param $exam_schedule_id
+     * @return \App\Actions\SendResponse
+     */
+    public function destroy($exam_schedule_id, ExamScheduleRepository $examScheduleRepository)
+    {
+    	$examScheduleRepository->deleteDataExamSchedule($exam_schedule_id);
+    	return SendResponse::accept('exam schedule deleted');
+    }
+
+    /**
+     * Set status exam schedule
+     *
+     * @author shellrean <wandinak17@gamil.com>
+     * @param \App\Repositories\ExamScheduleRepository
+     * @param $exam_schedule_id
+     * @return \App\Actions\SendResponse
+     */
+    public function setStatus($exam_schedule_id, Request $request, ExamScheduleRepository $examScheduleRepository)
+    {
+    	$examScheduleRepository->updateStatusExamSchedule($exam_schedule_id, $request);
+    	return SendResponse::accept('status changed');
+    }
 }

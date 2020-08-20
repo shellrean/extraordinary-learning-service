@@ -17,6 +17,7 @@ class CreateExamSchedulesTable extends Migration
             $table->id();
             $table->unsignedBigInteger('question_bank_id');
             $table->unsignedBigInteger('teacher_id');
+            $table->text('classrooms');
             $table->string('name', 50);
             $table->date('date');
             $table->time('start_time');

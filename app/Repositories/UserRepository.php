@@ -8,6 +8,7 @@ use App\Http\Requests\UserRequest;
 use App\Imports\TeacherImport;
 use App\Imports\StudentImport;
 use App\Services\FileService;
+use App\ClassroomStudent;
 use App\User;
 
 class UserRepository 
@@ -244,6 +245,25 @@ class UserRepository
 			DB::commit();
 		} catch (\Exception $e) {
 			DB::rollback();
+			throw new \App\Exceptions\ModelException($e->getMessage());
+		}
+	}
+
+	/**
+	 * Get user classroom
+	 *
+	 * @author shellrean <wandinak17@gmail.com>
+	 * @since 1.0.0
+	 * @return void
+	 */
+	public function getStudentClassroom($student_id, bool $exception = false)
+	{
+		try {
+			$classroom = ClassroomStudent::with('classroom')
+					->where('student_id', $student_id)
+					->first();
+			return $classroom;
+		} catch (\Exception $e) {
 			throw new \App\Exceptions\ModelException($e->getMessage());
 		}
 	}
