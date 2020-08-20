@@ -179,7 +179,7 @@ Route::group(['prefix' => 'v1', 'namespace' => 'Api\v1'], function() {
 		 | Fileupload bank route section
 		 |-----------------------------------------------------------------
 		 */
-		Route::post('files', 'FileUploadController@store');
+		Route::post('file', 'FileUploadController@store');
 	});
 });
 

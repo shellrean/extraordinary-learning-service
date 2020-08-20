@@ -16,7 +16,7 @@ class CreateQuestionOptionsTable extends Migration
         Schema::create('question_options', function (Blueprint $table) {
             $table->id();
             $table->unsignedBigInteger('question_id');
-            $table->longText('body');
+            $table->longText('body')->nullable();
             $table->boolean('correct');
             $table->timestamps();
 
