@@ -22,7 +22,7 @@ class CreateExamSchedulesTable extends Migration
             $table->date('date');
             $table->time('start_time');
             $table->integer('duration');
-            $table->enum('isactive', [0,1])->default('0');
+            $table->boolean('isactive')->default(false);
             $table->string('setting')->nullable();
             $table->timestamps();
 

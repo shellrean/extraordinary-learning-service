@@ -75,7 +75,7 @@ class ExamScheduleRepository
 		try {
 			$schedules = ExamSchedule::with(['question_bank' => function($query) {
 				$query->select('id','code');
-			}]);
+			}])->orderBy('id','desc');
 			if($teacher_id != '') {
 				$schedules = $schedules->where('teacher_id', $teacher_id);
 			}
