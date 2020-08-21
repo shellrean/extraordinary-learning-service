@@ -28,7 +28,7 @@ class ExamScheduleController extends Controller
     	$schedules = $examScheduleRepository->getExamSchedules();
 
     	$use = $schedules->reject(function($value) use ($classroom, $has_complete) {
-    		return !in_array($classroom->classroom_id, array_column($value->classrooms,'id')) 
+    		return !in_array($classroom->classroom_id, $value->classrooms) 
     			|| in_array($value->id, $has_complete->toArray());
     	});
 

@@ -9,6 +9,7 @@ use App\Http\Requests\ExamStudentStore;
 use App\Http\Controllers\Controller;
 use App\Actions\SendResponse;
 use Illuminate\Http\Request;
+use Carbon\Carbon;
 
 class ExamController extends Controller
 {
@@ -120,9 +121,10 @@ class ExamController extends Controller
     		return SendResponse::badRequest(" We can't found your schedule");
     	}
 
-    	$student_answers = $examStudentRepository->getDataStudentAnswers($schedule->id, $student->id, $schedule->setting['random_option']);
-
-    	if($student_answers->count() < 1) {
+    	$examStudentRepository->getDataStudentAnswers($schedule->id, $student->id, $schedule->setting['random_option']);
+        $student_answers = $examStudentRepository->getStudentAnswers();
+    	
+        if($student_answers->count() < 1) {
     		$questionRepository->getDataQuestionBank($schedule->question_bank_id);
     		$bank = $questionRepository->getQuestionBank();
     		$max_mc = $bank->mc_count;
@@ -160,14 +162,12 @@ class ExamController extends Controller
     			];
     		});
 
-    		$answers = [
-    			$question_mc->values()->toArray(),
-    			$question_esay->values()->toArray()
-    		];
+            $answers = array_merge($question_mc->values()->toArray(), $question_esay->values()->toArray());
 
     		$examStudentRepository->createDataStudentAnswers($answers);
 
-    		$student_answers = $examStudentRepository->getDataStudentAnswers($schedule->id, $student->id, $schedule->setting['random_option']);
+    		$examStudentRepository->getDataStudentAnswers($schedule->id, $student->id, $schedule->setting['random_option']);
+            $student_answers = $examStudentRepository->getStudentAnswers();
 
     		return SendResponse::acceptCustom([
     			'data' => $student_answers,

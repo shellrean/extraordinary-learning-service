@@ -5,6 +5,7 @@ namespace App\Repositories;
 use App\StudentAnswer;
 use App\QuestionBank;
 use App\ExamSchedule;
+use App\StudentExam;
 use App\ExamResult;
 use Illuminate\Support\Facades\DB;
 
@@ -115,20 +116,20 @@ class ExamStudentRepository
 				$student_answer->esay = $request->esay;
 				$student_answer->save();
 
-				$this->student_answer = $student_answer->except(['doubt', 'created_at', 'updated_at']);
+				$this->student_answer = $student_answer->only(['esay','answer']);
 				return;
 			}
 
 			$ca = DB::table('question_options')->where('id', $request->answer)->first();
 			if(!$ca) {
-				$this->student_answer = $student_answer->except(['doubt', 'created_at', 'updated_at']);
+				$this->student_answer = $student_answer->only(['esay','answer']);
 				return;
 			}
 			$student_answer->answer = $request->answer;
 	        $student_answer->iscorrect = $ca->correct;
 	        $student_answer->save();
 
-	        $this->student_answer = $student_answer->except(['doubt', 'created_at', 'updated_at']);
+	        $this->student_answer = $student_answer->only(['esay','answer']);
 		} catch (\Exception $e) {
 			throw new \App\Exceptions\ModelException($e->getMessage());
 		}
@@ -147,14 +148,36 @@ class ExamStudentRepository
 			$student_answer = StudentAnswer::find($request->answer_id);
 			
 			if(!isset($request->doubt)) {
-	            $this->student_answer = $student_answer->except(['doubt', 'created_at', 'updated_at']);
+	            $this->student_answer = $student_answer->only(['doubt']);
 	            return;
 	        }
 
 	        $student_answer->doubt = $request->doubt;
 	        $student_answer->save();
 
-	        $this->student_answer = $student_answer->except(['doubt', 'created_at', 'updated_at']);
+	        $this->student_answer = $student_answer->only(['doubt']);
+		} catch (\Exception $e) {
+			throw new \App\Exceptions\ModelException($e->getMessage());
+		}
+	}
+
+	/**
+	 * Update student exam ststus
+	 *
+	 * @author shellrean <wandinak17@gmail.com>
+	 * @param $student_id
+	 * @param schedule_id
+	 */
+	public function stopStudentExam($student_id, $schedule_id)
+	{
+		try {
+			$exam = StudentExam::where([
+				'student_id'	=> $student_id,
+				'exam_schedule_id' => $schedule_id
+			])->first();
+
+			$exam->status = 1;
+			$exam->save();
 		} catch (\Exception $e) {
 			throw new \App\Exceptions\ModelException($e->getMessage());
 		}
@@ -170,6 +193,7 @@ class ExamStudentRepository
 	 */
 	public function finishingExamStudent($schedule_id, $student_id)
 	{
+		DB::beginTransaction();
 		try {
 			$schedule = ExamSchedule::find($schedule_id);
 			if(!$schedule) {
@@ -219,7 +243,7 @@ class ExamStudentRepository
                 'exam_schedule_id'     => $schedule_id, 
                 'student_id'    => $student_id,
             ])
-            ->whereHas('soal', function($query) {
+            ->whereHas('question', function($query) {
                 $query->where('type','1');
             })
             ->count();
@@ -233,7 +257,11 @@ class ExamStudentRepository
             	'null' 				=> $null,
             	'result' 			=> $mc_result
             ]);
+
+            $this->stopStudentExam($student_id, $schedule_id);
+            DB::commit();
 		} catch (\Exception $e) {
+			DB::rollback();
 			throw new \App\Exceptions\ModelException($e->getMessage());
 		}
 	}
