@@ -170,7 +170,7 @@ class ExamController extends Controller
     		$student_answers = $examStudentRepository->getDataStudentAnswers($schedule->id, $student->id, $schedule->setting['random_option']);
 
     		return SendResponse::acceptCustom([
-    			'data' => $student_answers
+    			'data' => $student_answers,
     			'detail' => $exam
     		]);
     	}
@@ -190,7 +190,7 @@ class ExamController extends Controller
         }
 
         return SendResponse::acceptCustom([
-    		'data' => $student_answers
+    		'data' => $student_answers,
     		'detail' => $exam
     	]);
     }

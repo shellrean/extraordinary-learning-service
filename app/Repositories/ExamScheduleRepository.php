@@ -209,7 +209,7 @@ class ExamScheduleRepository
 	public function getDataExamScheduleActive($teacher_id = '')
 	{
 		try {
-			$schedules = ExamSchedule::where('isactive', '1');
+			$schedules = ExamSchedule::where('isactive', 1);
 			if($teacher_id != '') {
 				$schedules = $schedules->where('teacher_id', $teacher_id);
 			}
@@ -252,8 +252,8 @@ class ExamScheduleRepository
 	public function uncompleteExamScheduleStudent($student_id)
 	{
 		try {
-			$schedules = $this->getDataExamScheduleActive();
-			$schedule_ids = $schedules->pluck('id')->toArray();
+			$this->getDataExamScheduleActive();
+			$schedule_ids = $this->schedules->pluck('id')->toArray();
 
 			$schedule = StudentExam::where(function($query) use ($student_id, $schedule_ids) {
 				$query->where('student_id', $student_id)
@@ -279,8 +279,8 @@ class ExamScheduleRepository
 	{
 		try {
 			if($schedule_ids == '') {
-				$schedules = $this->getDataExamScheduleActive();
-				$schedule_ids = $schedules->pluck('id')->toArray();
+				$this->getDataExamScheduleActive();
+				$schedule_ids = $this->schedules->pluck('id')->toArray();
 			}
 
 			$schedule = StudentExam::where(function($query) use ($student_id, $schedule_ids) {
