@@ -189,6 +189,7 @@ Route::group(['prefix' => 'v2', 'namespace' => 'Api\v2'], function() {
 		Route::get('exam_schedules/uncomplete', 'ExamController@uncomplete');
 		Route::get('exam_schedules/active', 'ExamController@active');
 		Route::post('exam_schedules/exam', 'ExamController@store');
+		Route::post('exam_schedules/start', 'ExamController@start');
 		Route::get('exam', 'ExamController@indexAnswer');
 		Route::post('exam', 'ExamController@storeAnswer');
 		Route::post('exam/doubt', 'ExamController@doubtAnswer');
