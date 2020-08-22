@@ -87,6 +87,9 @@ class AbcentRepository
 			$abcents = Abcent::with('user')->where(function($query) use ($subject_id, $classroom_id) {
 				$query->where('subject_id', $subject_id)
 				->where('classroom_id', $classroom_id)
+				->whereHas('user', function($query) {
+					$query->where('role','2');
+				})
 				->whereDate('created_at', \Carbon\Carbon::today());
 			})->get();
 			$this->abcents = $abcents;
