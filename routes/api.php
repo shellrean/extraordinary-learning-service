@@ -197,8 +197,9 @@ Route::group(['prefix' => 'v1', 'namespace' => 'Api\v1'], function() {
 		 |-----------------------------------------------------------------
 		 */
 		Route::get('events/public', 'EventController@public_event');
+		Route::get('events/{event_id}', 'EventController@show');
 		Route::group(['middleware' => 'auth.admin'], function() {
-			Route::apiResource('events', 'EventController');
+			Route::apiResource('events', 'EventController')->except('show');
 		});
 	});
 });

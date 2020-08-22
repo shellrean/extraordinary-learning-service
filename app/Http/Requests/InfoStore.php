@@ -25,8 +25,7 @@ class InfoStore extends FormRequest
     {
         return [
             'title'     => 'required',
-            'body'      => 'required',
-            'settings'  => 'array'
+            'body'      => 'required'
         ];
     }
 }

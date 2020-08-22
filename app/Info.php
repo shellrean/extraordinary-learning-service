@@ -9,6 +9,7 @@ class Info extends Model
     protected $guarded = [];
 
     protected $casts = [
-    	'settings'
+    	'settings' => 'array',
+    	'created_at' =>  'datetime:d F Y h : i A'
     ];
 }

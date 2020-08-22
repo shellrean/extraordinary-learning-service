@@ -28,8 +28,7 @@ class EventStore extends FormRequest
             'title' => 'required',
             'body'  => 'required',
             'date'  => 'required',
-            'time'  => 'required',
-            'settings' => 'array'
+            'time'  => 'required'
         ];
     }
 }
