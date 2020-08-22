@@ -180,6 +180,26 @@ Route::group(['prefix' => 'v1', 'namespace' => 'Api\v1'], function() {
 		 |-----------------------------------------------------------------
 		 */
 		Route::post('file', 'FileUploadController@store');
+
+		/**
+		 |-----------------------------------------------------------------
+		 | Information bank route section
+		 |-----------------------------------------------------------------
+		 */
+		Route::get('infos/public', 'InfoController@public_info');
+		Route::group(['middleware' => 'auth.admin'], function() {
+			Route::apiResource('infos', 'InfoController');
+		});
+
+		/**
+		 |-----------------------------------------------------------------
+		 | Event bank route section
+		 |-----------------------------------------------------------------
+		 */
+		Route::get('events/public', 'EventController@public_event');
+		Route::group(['middleware' => 'auth.admin'], function() {
+			Route::apiResource('events', 'EventController');
+		});
 	});
 });
 

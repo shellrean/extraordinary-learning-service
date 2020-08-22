@@ -18,7 +18,7 @@ class CreateInfosTable extends Migration
             $table->unsignedBigInteger('user_id');
             $table->string('title');
             $table->longText('body');
-            $table->enum('status',[0,1])->default(0);
+            $table->boolean('status')->default(0);
             $table->text('settings')->nullable();
             $table->timestamps();
             $table->foreign('user_id')->references('id')->on('users')->onDelete('cascade');
