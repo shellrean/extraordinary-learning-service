@@ -92,6 +92,20 @@ class TaskController extends Controller
     }
 
     /**
+     * Delete data task sharee 
+     *
+     * @author shellrean <wandinak17@gmail.com>
+     * @param \App\Repositories\TaskRepository
+     * @param $task_sharee_id
+     * @return \App\Actions\SendResponse
+     */
+    public function deleteSharee($task_sharee_id, TaskRepository $taskRepository)
+    {
+        $taskRepository->deleteShareeTask($task_sharee_id);
+        return SendResponse::accept('task share deleted');
+    }
+
+    /**
      * Share task to classroom
      *
      * @author shellrean <wandinak17@gmail.com>

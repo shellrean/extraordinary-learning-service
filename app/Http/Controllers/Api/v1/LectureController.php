@@ -111,6 +111,20 @@ class LectureController extends Controller
     }
 
     /**
+     * Delete lecture sharee
+     *
+     * @author shellrean <wandinak17@gmail.com>
+     * @param int $lecture_id
+     * @param \App\Repositories\LectureRepository
+     * @return \App\Actions\SendResponse
+     */
+    public function deleteSharee($lecture_sharee_id, LectureRepository $lectureRepository)
+    {
+        $lectureRepository->deleteDataLectureSharee($lecture_sharee_id);
+        return SendResponse::accept('Lecture share deleted');
+    }
+
+    /**
      * Get data classroom's lectures
      *
      * @author shellrean <wandinak17@gmail.com>

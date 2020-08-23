@@ -66,6 +66,7 @@ Route::group(['prefix' => 'v1', 'namespace' => 'Api\v1'], function() {
 		Route::get('lectures/{lecture_id}', 'LectureController@show');
 		Route::group(['middleware' => 'auth.teacher'], function() {
 			Route::post('lectures/{lecture_id}/sharee', 'LectureController@sharee');
+			Route::delete('lectures/sharee/{lecture_share_id}', 'LectureController@deleteSharee');
 			Route::apiResource('lectures', 'LectureController')->except('show');
 		});
 
@@ -123,6 +124,7 @@ Route::group(['prefix' => 'v1', 'namespace' => 'Api\v1'], function() {
 		Route::post('tasks/{task_id}/collect', 'TaskController@collect');
 		Route::get('tasks/{task_id}', 'TaskController@show');
 		Route::group(['middleware' => 'auth.teacher'], function() {
+			Route::delete('tasks/sharee/{share_task_id}', 'TaskController@deleteSharee');
 			Route::post('tasks/{task_id}/sharee', 'TaskController@sharee');
 			Route::get('tasks/{task_id}/check', 'TaskController@studentTask');
 			Route::get('tasks/{task_id}/result', 'TaskController@taskResult');

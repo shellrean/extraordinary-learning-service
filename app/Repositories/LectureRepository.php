@@ -208,4 +208,21 @@ class LectureRepository
 			throw new \App\Exceptions\ModelException($e->getMessage());
 		}
 	}
+
+	/**
+	 * Delete data lecture sharee 
+	 *
+	 * @author shellrean <wandinak17@gmail.com>
+	 * @since 1.0.0
+	 * @param $sharee_lecture_id
+	 * @return void
+	 */
+	public function deleteDataLectureSharee($sharee_lecture_id)
+	{
+		try {
+			ClassroomLecture::where('id', $sharee_lecture_id)->delete();
+		} catch (\Exceptions $e) {
+			throw new \App\Exceptions\ModelException($e->getMessage());
+		}
+	}
 }

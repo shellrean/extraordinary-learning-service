@@ -341,4 +341,21 @@ class TaskRepository
 			throw new \App\Exceptions\ModelException($e->getmessage());
 		}
 	}
+
+	/**
+	 * Delete dat atask sharee
+	 *
+	 * @author shellrean <wandinak17@gmail.com>
+	 * @since 1.0.0
+	 * @param $sharee_task_id
+	 * @return void
+	 */
+	public function deleteShareeTask($sharee_task_id)
+	{
+		try {
+			ClassroomTask::where('id', $sharee_task_id)->delete();
+		} catch (\Exception $e) {
+			throw new \App\Exceptions\ModelException($e->getmessage());
+		}
+	}
 }
