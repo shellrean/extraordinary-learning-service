@@ -4,6 +4,7 @@ namespace App\Repositories;
 
 use App\Lecture;
 use App\ClassroomLecture;
+use Illuminate\Support\Facades\DB;
 
 class LectureRepository
 {
@@ -175,13 +176,28 @@ class LectureRepository
 	public function createNewLectureClassroom($request)
 	{
 		try {
-			$data = [
-				'teacher_id' => $request->teacher_id,
-				'lecture_id' => $request->lecture_id,
-				'classroom_id' => $request->classroom_id,
-				'body' => $request->body
-			];
-			ClassroomLecture::create($data);
+			$data  = [];
+			if(is_array($request->classroom_id)) {
+				foreach ($request->classroom_id as $key => $value) {
+					array_push($data, [
+						'teacher_id' => $request->teacher_id,
+						'lecture_id' => $request->lecture_id,
+						'classroom_id' => $value,
+						'body' => $request->body,
+						'created_at' => now(),
+						'updated_at' => now()
+					]);
+				}
+				DB::table('classroom_lectures')->insert($data);
+			} else {
+				$data = [
+					'teacher_id' => $request->teacher_id,
+					'lecture_id' => $request->lecture_id,
+					'classroom_id' => $request->classroom_id,
+					'body' => $request->body
+				];
+				ClassroomLecture::create($data);
+			}
 		} catch (\Exception $e) {
 			throw new \App\Exceptions\ModelException($e->getMessage());
 		}

@@ -24,7 +24,7 @@ class TaskSharee extends FormRequest
     public function rules()
     {
         return [
-            'classroom_id'      => 'required|exists:classrooms,id'
+            'classroom_id'      => 'required'
         ];
     }
 }

@@ -201,13 +201,31 @@ class TaskRepository
 	public function createNewTaskClassroom($request)
 	{
 		try {
-			$data = [
-				'classroom_id'	=> $request->classroom_id,
-				'task_id'		=> $request->task_id,
-				'teacher_id'	=> $request->teacher_id,
-				'body'			=> $request->body
-			];
-			$task = ClassroomTask::create($data);
+			$data = [];
+			if(is_array($request->classroom_id)) {
+				foreach ($request->classroom_id as $key => $value) {
+					$new_data = [
+						'classroom_id'	=> $value,
+						'task_id'		=> $request->task_id,
+						'teacher_id'	=> $request->teacher_id,
+						'body'			=> $request->body,
+						'created_at'	=> now(),
+						'updated_at'	=> now()
+					];
+					array_push($data, $new_data);
+				}
+			} else {
+				$new_data = [
+					'classroom_id'	=> $request->classroom_id,
+					'task_id'		=> $request->task_id,
+					'teacher_id'	=> $request->teacher_id,
+					'body'			=> $request->body,
+					'created_at'	=> now(),
+					'updated_at'	=> now()
+				];
+				array_push($data, $new_data);
+			}
+			DB::table('classroom_tasks')->insert($data);
 		} catch (\Exception $e) {
 			throw new \App\Exceptions\ModelException($e->getMessage());
 		}

@@ -27,6 +27,9 @@ class UserController extends Controller
         if($user) {
             $auth->classroom = $user->classroom;
         }
+        if($auth->role == '1') {
+            $auth->classroom->makeVisible('invitation_code');
+        }
     	return SendResponse::acceptData($auth);
     }
 

@@ -26,7 +26,7 @@ class User extends Authenticatable
      * @var array
      */
     protected $hidden = [
-        'password', 'remember_token',
+        'password', 'remember_token', 'created_at', 'updated_at', 'isonline'
     ];
 
     /**
@@ -38,4 +38,9 @@ class User extends Authenticatable
         'email_verified_at' => 'datetime',
         'details'           => 'array'
     ];
+
+    public function classroom()
+    {
+        return $this->hasOne(Classroom::class, 'teacher_id');
+    }
 }
