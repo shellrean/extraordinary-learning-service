@@ -17,6 +17,7 @@ use Illuminate\Support\Facades\Route;
 Route::group(['prefix' => 'v1', 'namespace' => 'Api\v1'], function() {
 	Route::post('login', 'AuthController@login');
 	Route::get('settings/{name}', 'SettingController@show');
+	Route::post('users/offline', 'UserController@userOffline')->middleware('auth.res');
 
 	Route::group(['middleware' => 'auth:api'], function() {
 		Route::get('logout', 'AuthController@logout');

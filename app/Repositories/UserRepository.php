@@ -267,4 +267,25 @@ class UserRepository
 			throw new \App\Exceptions\ModelException($e->getMessage());
 		}
 	}
+
+	/**
+	 * get data not in list
+	 *
+	 * @author shellrean <wandinak17@gmail.com>
+	 * @since 1.0.0
+	 * @return void
+	 */
+	public function getUserNotInData($request)
+	{
+		try {
+			if(is_array($request->ids)){
+				$users = User::whereNotIn('id', $request->ids)->get();
+			} else {
+				$users = User::orderBy('role')->get();
+			}
+			$this->users = $users;
+		} catch (\Exception $e) {
+			throw new \App\Exceptions\ModelException($e->getMessage());
+		}
+	}
 }

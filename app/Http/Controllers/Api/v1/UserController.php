@@ -204,4 +204,17 @@ class UserController extends Controller
         $userRepository->importStudent($request);
         return SendResponse::accept('student imported');
     }
+
+    /**
+     * Get user offline
+     *
+     * @author shellrean <wandinak17@gmail.com>
+     * @param \Illuminate\Http\Request
+     * @return \App\Actions\SendResponse
+     */
+    public function userOffline(Request $request, UserRepository $userRepository) 
+    {
+        $userRepository->getUserNotInData($request);
+        return SendResponse::acceptData($userRepository->getUsers());
+    }
 }
