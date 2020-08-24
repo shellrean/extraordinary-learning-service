@@ -55,4 +55,17 @@ class AbcentController extends Controller
         $abcentRepository->getDataAbcentSubjectClassroomToday($subject_id, $classroom_id);
         return Excel::download(new AbcentSubjectClassroomExport($abcentRepository->getAbcents()), 'abcent_subject_classroom.xlsx');
     }
+
+    /**
+     * Get data areport abcent today
+     *
+     * @author shellrean <wandinak17@gmail.com>
+     * @param \App\Reposiories\AbcentReposiory
+     * @return \App\Actions\SendResponse
+     */
+    public function reportToday(AbcentRepository $abcentRepository)
+    {
+        $abcentRepository->getProblemToday();
+        return SendResponse::acceptData($abcentRepository->getReports());
+    }
 }

@@ -18,6 +18,12 @@ class AbcentRepository
 	 */
 	private $abcent;
 
+	/**
+	 * Data reports
+	 * @var Collection
+	 */
+	private $reports;
+
 	/** 
 	 * Retreive data abcents
 	 *
@@ -40,6 +46,18 @@ class AbcentRepository
 	public function getAbcent()
 	{
 		return $this->abcent;
+	}
+
+	/**
+	 * Retreive data reports
+	 *
+	 * @author shellrean <wandinak17@gmail.com>
+	 * @since 1.0.0
+	 * @return Collection
+	 */
+	public function getReports()
+	{
+		return $this->reports;
 	}
 
 	/**
@@ -126,6 +144,42 @@ class AbcentRepository
 				return;
 			}
 			$this->setAbcent(Abcent::create($data));
+		} catch (\Exception $e) {
+			throw new \App\Exceptions\ModelException($e->getMessage());
+		}
+	}
+
+	/**
+	 * Get data report
+	 *
+	 * @author shellrean <wandinak17@gmail.com>
+	 * @since 1.0.0
+	 * @return void
+	 */
+	public function getProblemToday()
+	{
+		try {
+			$reports = Abcent::with([
+				'user' => function($query) {
+					$query->select('id','name','email','role');
+				},
+				'classroom' => function($query) {
+					$query->select('id','teacher_id','name','grade','group');
+				},
+				'classroom.teacher' => function($query) {
+					$query->select('id','name','email');
+				},
+				'subject' => function($query) {
+					$query->select('id','name');
+				}
+			])
+			->where(function($query) {
+				$query->whereDate('created_at', \Carbon\Carbon::today())
+				->where('isabcent',0);
+			})
+			->select('id','user_id','subject_id','classroom_id','isabcent','details')
+			->get();
+			$this->reports = $reports->groupBy('classroom.name');
 		} catch (\Exception $e) {
 			throw new \App\Exceptions\ModelException($e->getMessage());
 		}

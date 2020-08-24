@@ -25,4 +25,9 @@ class Classroom extends Model
     protected $hidden = [
         'invitation_code','created_at','updated_at'
     ];
+
+    public function teacher()
+    {
+        return $this->belongsTo(User::class, 'teacher_id');
+    }
 }
