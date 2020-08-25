@@ -175,6 +175,9 @@ Route::group(['prefix' => 'v1', 'namespace' => 'Api\v1'], function() {
 		 */
 		Route::group(['middleware' => 'auth.teacher'], function() {
 			Route::post('exam_schedules/{exam_schedule_id}/status', 'ExamScheduleController@setStatus');
+			Route::get('exam_schedules/{exam_schedule_id}/check', 'ResultExamController@uncheckEsay');
+			Route::get('exam_schedules/{exam_schedule_id}/result', 'ResultExamController@resultPoint');
+			Route::post('exam_schedules/point', 'ResultExamController@storeCheckEsay');
 			Route::apiResource('exam_schedules', 'ExamScheduleController');
 		});
 

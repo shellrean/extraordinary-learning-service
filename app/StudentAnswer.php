@@ -13,5 +13,8 @@ class StudentAnswer extends Model
     	return $this->belongsTo(Question::class);
     }
 
-    
+    public function question_bank()
+    {
+    	return $this->belongsTo(QuestionBank::class);
+    }
 }

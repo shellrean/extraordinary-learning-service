@@ -265,4 +265,25 @@ class ExamStudentRepository
 			throw new \App\Exceptions\ModelException($e->getMessage());
 		}
 	}
+
+	/**
+	 * Get student answer
+	 *
+	 * @author shellrean <wandinak17@gmail.com>
+	 * @since 1.0.0
+	 * @param $answer_id
+	 * @return void
+	 */
+	public function getDataStudentAnswer($student_answer)
+	{
+		try {
+			$answer = StudentAnswer::find($student_answer);
+			if(!$answer) {
+				throw new \App\Exceptions\ModelNotFoundException('answer not found');
+			}
+			$this->student_answer = $answer;
+		} catch (\Exception $e) {
+			throw new \App\Exceptions\ModelException($e->getMessage());
+		}
+	}
 }
