@@ -156,9 +156,12 @@ class AbcentRepository
 	 * @since 1.0.0
 	 * @return void
 	 */
-	public function getProblemToday()
+	public function getProblemToday($date = '')
 	{
 		try {
+			if($date == '') {
+				$date = \Carbon\Carbon::today();
+			}
 			$reports = Abcent::with([
 				'user' => function($query) {
 					$query->select('id','name','email','role');
@@ -173,8 +176,8 @@ class AbcentRepository
 					$query->select('id','name');
 				}
 			])
-			->where(function($query) {
-				$query->whereDate('created_at', \Carbon\Carbon::today())
+			->where(function($query) use ($date){
+				$query->whereDate('created_at', $date)
 				->where('isabcent',0);
 			})
 			->select('id','user_id','subject_id','classroom_id','isabcent','details')

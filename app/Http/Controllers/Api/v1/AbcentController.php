@@ -65,7 +65,13 @@ class AbcentController extends Controller
      */
     public function reportToday(AbcentRepository $abcentRepository)
     {
-        $abcentRepository->getProblemToday();
+        $date = isset(request()->q) && request()->q
+                ? request()->q
+                : '';
+        if($date != '') {
+            $date = \Carbon\Carbon::parse($date);
+        }
+        $abcentRepository->getProblemToday($date);
         return SendResponse::acceptData($abcentRepository->getReports());
     }
 }
