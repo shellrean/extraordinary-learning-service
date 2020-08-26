@@ -118,7 +118,7 @@ class CommentRepository
 	{
 		$comments = LectureComment::with('user')
 					->where('lecture_id', $id_lecture)
-					->paginate($perPage);
+					->latest()->take($perPage)->get();
 		$this->lecture_comments = $comments;
 	}
 
@@ -211,7 +211,7 @@ class CommentRepository
 	{
 		$comments = ClassroomLiveComment::with('user')
 					->where('classroom_live_id', $class_live)
-					->paginate($perPage);
+					->latest()->take($perPage)->get();
 		$this->classroom_live_comments = $comments;
 	}
 

@@ -24,7 +24,7 @@ class LectureComment extends FormRequest
     public function rules()
     {
         return [
-            'lecture_id'        => 'required|exists:lectues,id',
+            'lecture_id'        => 'required|exists:lectures,id',
             'content'   => 'required'
         ];
     }

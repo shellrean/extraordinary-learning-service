@@ -22,9 +22,9 @@ class CommentController extends Controller
     {
     	$perPage = isset(request()->perPage) && request()->perPage != '' 
     				? request()->perPage 
-    				: 10;
+    				: 60;
     	$commentRepository->getDataLectureComments($lecture_id, $perPage);
-    	return SendResponse::acceptData($commentRepository->getLectureComments());
+    	return SendResponse::acceptData($commentRepository->getLectureComments()->reverse()->values()->toArray());
     }
 
     /**
@@ -67,9 +67,9 @@ class CommentController extends Controller
     {
         $perPage = isset(request()->perPage) && request()->perPage != '' 
                     ? request()->perPage 
-                    : 10;
+                    : 60;
         $commentRepository->getDataClassroomLiveComments($id, $perPage);
-        return SendResponse::acceptData($commentRepository->getClassroomLiveComments());
+        return SendResponse::acceptData($commentRepository->getClassroomLiveComments()->reverse()->values()->toArray());
     }
 
     /**
