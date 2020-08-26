@@ -109,7 +109,8 @@ class LectureRepository
 				'title'		=> $request->title,
 				'body'		=> $request->body,
 				'user_id'	=> $request->user_id,
-				'subject_id' => $request->subject_id
+				'subject_id' => $request->subject_id,
+				'addition' => $request->addition
 			];
 
 			$lecture = Lecture::create($data);

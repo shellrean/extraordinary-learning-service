@@ -20,6 +20,7 @@ class CreateLeacturesTable extends Migration
             $table->string('title');
             $table->longText('body');
             $table->boolean('isactive')->default(false);
+            $table->text('addition')->nullable();
             $table->string('settings')->nullable();
             $table->timestamps();
 

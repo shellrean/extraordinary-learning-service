@@ -8,6 +8,7 @@ use App\Http\Requests\LectureUpdate;
 use App\Http\Requests\LectureSharee;
 use App\Http\Controllers\Controller;
 use App\Actions\SendResponse;
+use App\Services\FileService;
 use Illuminate\Http\Request;
 
 class LectureController extends Controller
@@ -41,10 +42,14 @@ class LectureController extends Controller
      * @return \App\Repositories\LectureRepository $lectureRepository
      * @return \App\Actions\SendResponse
      */
-    public function store(LectureCreate $request, LectureRepository $lectureRepository)
+    public function store(LectureCreate $request, LectureRepository $lectureRepository, FileService $fileService)
     {
     	$user = request()->user('api');
     	$request->user_id = $user->id;
+        if($request->hasFile('file')) {
+            $fileService->store($request);
+            $request->merge(['addition' => $fileService->fileDetail['filename'] ]);
+        }
 
     	$lectureRepository->createNewLecture($request);
     	return SendResponse::acceptData($lectureRepository->getLecture());

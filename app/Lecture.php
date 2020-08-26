@@ -9,7 +9,8 @@ class Lecture extends Model
     protected $guarded = [];
 
     protected $casts = [
-    	'settings'	=> 'casts',
+    	'settings'	=> 'array',
+    	'addition'	=> 'array',
     	'created_at' =>  'datetime:d F Y G : i',
     ];
 
