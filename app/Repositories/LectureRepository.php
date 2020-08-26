@@ -3,7 +3,9 @@
 namespace App\Repositories;
 
 use App\Lecture;
+use App\Classroom;
 use App\ClassroomLecture;
+use App\Services\TelegramService;
 use Illuminate\Support\Facades\DB;
 
 class LectureRepository
@@ -177,6 +179,7 @@ class LectureRepository
 	public function createNewLectureClassroom($request)
 	{
 		try {
+			$lecture = Lecture::find($request->lecture_id);
 			$data  = [];
 			if(is_array($request->classroom_id)) {
 				foreach ($request->classroom_id as $key => $value) {
@@ -190,6 +193,19 @@ class LectureRepository
 					]);
 				}
 				DB::table('classroom_lectures')->insert($data);
+				$lecture = ClassroomLecture::where([
+					'teacher_id' => $request->teacher_id, 
+					'lecture_id' => $request->lecture_id
+				])
+				->whereDate('created_at',now())
+				->first();
+				
+				$classrooms = Classroom::whereIn('id', $request->classroom_id)->get();
+				foreach($classrooms as $classroom) {
+					if(isset($classroom->settings['telegram_id'])) {
+						TelegramService::sendNotifLecture($lecture, $classroom->settings['telegram_id']);
+					}
+				}
 			} else {
 				$data = [
 					'teacher_id' => $request->teacher_id,
@@ -197,7 +213,11 @@ class LectureRepository
 					'classroom_id' => $request->classroom_id,
 					'body' => $request->body
 				];
-				ClassroomLecture::create($data);
+				$lecture = ClassroomLecture::create($data);
+				$classroom = Classroom::find($request->classroom_id);
+				if(isset($classroom->settings['telegram_id'])) {
+					TelegramService::sendNotifLecture($lecture, $classroom->settings['telegram_id']);
+				}
 			}
 		} catch (\Exception $e) {
 			throw new \App\Exceptions\ModelException($e->getMessage());

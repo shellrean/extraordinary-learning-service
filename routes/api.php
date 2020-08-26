@@ -14,6 +14,17 @@ use Illuminate\Support\Facades\Route;
 |
 */
 
+Route::get('update', function() {
+	return \Telegram::getUpdates();
+});
+
+Route::get('send', function() {
+	$response = \Telegram::sendMessage([
+          'chat_id' => '-433413160', 
+          'text' => "Hello there, dian application learning v1.0.0-alpha,"
+          ]);
+	return 'oke';
+});
 Route::group(['prefix' => 'v1', 'namespace' => 'Api\v1'], function() {
 	Route::post('login', 'AuthController@login');
 	Route::get('settings/{name}', 'SettingController@show');

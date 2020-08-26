@@ -68,6 +68,13 @@ class InfoController extends Controller
         $user = request()->user('api');
         $request->user_id = $user->id;
     	$infoRepository->createNewInfo($request);
+        try { 
+            \Telegram::sendMessage([
+                'chat_id' => '-433413160', 
+                'text' => $infoRepository->getInfo
+            ]);
+        } catch (\Exception $e) {
+        }
     	return SendResponse::acceptData($infoRepository->getInfo());
     }
 

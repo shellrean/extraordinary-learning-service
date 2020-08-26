@@ -21,4 +21,9 @@ class ClassroomLecture extends Model
     {
     	return $this->belongsTo(Lecture::class);
     }
+
+    public function teacher()
+    {
+        return $this->belongsTo(User::class, 'teacher_id');
+    }
 }

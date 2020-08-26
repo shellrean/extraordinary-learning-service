@@ -3,9 +3,11 @@
 namespace App\Repositories;
 
 use App\Task;
+use App\Classroom;
 use App\ResultTask;
 use App\StudentTask;
 use App\ClassroomTask;
+use App\Services\TelegramService;
 use Illuminate\Support\Facades\DB;
 
 class TaskRepository
@@ -225,7 +227,29 @@ class TaskRepository
 				];
 				array_push($data, $new_data);
 			}
+
 			DB::table('classroom_tasks')->insert($data);
+			$task = ClassroomTask::where([
+				'task_id' 	=> $request->task_id,
+				'teacher_id'	=> $request->teacher_id
+			])
+			->whereDate('created_at', now())
+			->first();
+
+			if(is_array($request->classroom_id)) {
+				$classrooms = Classroom::whereIn('id', $request->classroom_id)->get();
+
+				foreach($classrooms as $classroom) {
+					if(isset($classroom->settings['telegram_id'])) {
+						TelegramService::sendNotifTask($task, $classroom->settings['telegram_id']);
+					}
+				}
+			} else {
+				$classroom = Classroom::find($request->classroom_id);
+				if(isset($classroom->settings['telegram_id'])) {
+					TelegramService::sendNotifTask($task, $classroom->settings['telegram_id']);
+				}
+			}
 		} catch (\Exception $e) {
 			throw new \App\Exceptions\ModelException($e->getMessage());
 		}

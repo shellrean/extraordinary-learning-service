@@ -20,6 +20,11 @@ class Task extends Model
     	return \Carbon\Carbon::parse($this->deadline)->format('d F Y h : i A');
     }
 
+    public function user()
+    {
+        return $this->belongsTo(User::class);
+    }
+
     public function getStatusAttribute() 
     {
         $user = request()->user('api');
