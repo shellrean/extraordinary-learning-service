@@ -99,16 +99,19 @@ class AbcentRepository
 	 * @since 1.0.0
 	 * @return void
 	 */
-	public function getDataAbcentSubjectClassroomToday($subject_id, $classroom_id)
+	public function getDataAbcentSubjectClassroomToday($subject_id, $classroom_id, $date = '')
 	{
 		try {
-			$abcents = Abcent::with('user')->where(function($query) use ($subject_id, $classroom_id) {
+			if($date == '') {
+				$date = \Carbon\Carbon::today();
+			}
+			$abcents = Abcent::with('user')->where(function($query) use ($subject_id, $classroom_id, $date) {
 				$query->where('subject_id', $subject_id)
 				->where('classroom_id', $classroom_id)
 				->whereHas('user', function($query) {
 					$query->where('role','2');
 				})
-				->whereDate('created_at', \Carbon\Carbon::today());
+				->whereDate('created_at', $date);
 			})->get();
 			$this->abcents = $abcents;
 		} catch (\Exception $e) {

@@ -22,7 +22,13 @@ class AbcentController extends Controller
      */
     public function subjectClassroomToday($subject_id, $classroom_id, AbcentRepository $abcentRepository)
     {
-    	$abcentRepository->getDataAbcentSubjectClassroomToday($subject_id, $classroom_id);
+        $date = isset(request()->date) && request()->date
+                ? request()->date
+                : '';
+        if($date != '') {
+            $date = \Carbon\Carbon::parse($date);
+        }
+    	$abcentRepository->getDataAbcentSubjectClassroomToday($subject_id, $classroom_id, $date);
     	return SendResponse::acceptData($abcentRepository->getAbcents());
     }
 
