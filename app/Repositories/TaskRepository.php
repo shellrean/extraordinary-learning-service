@@ -73,7 +73,7 @@ class TaskRepository
 	public function getDataTasks($user_id, int $perPage, $search = '')
 	{
 		try {
-			$tasks = Task::where('user_id',$user_id)->where('title','LIKE','%'.$search.'%')->paginate($perPage);
+			$tasks = Task::where('user_id',$user_id)->where('title','LIKE','%'.$search.'%')->orderBy('id','desc')->paginate($perPage);
 			$this->tasks = $tasks;
 		} catch (\Exception $e) {
 			throw new \App\Exceptions\ModelException($e->getMessage());
