@@ -92,7 +92,7 @@ class QuestionRepository
 	public function getDataQuestionBank($question_bank_id, $exception = true)
 	{
 		try {
-			$question_bank = QuestionBank::where('id', $question_bank_id)->first();
+			$question_bank = QuestionBank::with('subject')->where('id', $question_bank_id)->first();
 			if(!$question_bank && $exception) {
 				throw new \App\Exceptions\ModelNotFoundException('question bank not found');
 			}
