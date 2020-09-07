@@ -160,6 +160,7 @@ Route::group(['prefix' => 'v1', 'namespace' => 'Api\v1'], function() {
 		 */
 		Route::group(['middleware' => 'auth.teacher'], function() {
 			Route::get('question_banks/{question_bank_id}/question', 'QuestionController@indexQuestion');
+			Route::get('question_banks/{question_bank_id}/duplicate', 'QuestionController@duplicateQuestionBank');
 			Route::post('question_banks/{question_bank_id}/import', 'QuestionController@import');
 			Route::post('question_banks/question', 'QuestionController@storeQuestion');
 			Route::get('question_banks/question/{question_id}', 'QuestionController@showQuestion');
@@ -207,6 +208,15 @@ Route::group(['prefix' => 'v1', 'namespace' => 'Api\v1'], function() {
 		Route::get('events/{event_id}', 'EventController@show');
 		Route::group(['middleware' => 'auth.admin'], function() {
 			Route::apiResource('events', 'EventController')->except('show');
+		});
+
+		/**
+		 |-----------------------------------------------------------------
+		 | Standart route section
+		 |-----------------------------------------------------------------
+		 */
+		Route::group(['middleware' => 'auth.teacher'], function() {
+			Route::apiResource('standarts', 'StandartController');
 		});
 	});
 });
