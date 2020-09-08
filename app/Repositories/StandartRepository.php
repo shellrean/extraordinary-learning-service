@@ -160,7 +160,7 @@ class StandartRepository
 	public function deleteDataStandart($standart_id)
 	{
 		try {
-			Standart::where('standart_id', $standart_id)->delete();
+			Standart::where('id', $standart_id)->delete();
 		} catch (\Exception $e) {
 			throw new \App\Exceptions\ModelException($e->getMessage());
 		}

@@ -82,7 +82,7 @@ class StandartController extends Controller
      */
     public function destroy($standart_id, StandartRepository $standartRepostory)
     {
-    	$standartRepostory->deleteDataStnadart($standart_id);
+    	$standartRepostory->deleteDataStandart($standart_id);
     	return SendResponse::accept('standart deleted');
     }
 }
