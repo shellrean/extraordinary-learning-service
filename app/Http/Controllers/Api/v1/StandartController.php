@@ -23,7 +23,7 @@ class StandartController extends Controller
     				? request()->perPage
     				: 10;
     	$user = request()->user('api');
-    	$standartRepostory->getDataStandarts($perPage, $user->id);
+    	$standartRepostory->getDataStandarts($per_page, $user->id);
     	return SendResponse::acceptData($standartRepostory->getStandarts());
     }
 
@@ -52,7 +52,7 @@ class StandartController extends Controller
     public function store(StandartStore $request, StandartRepository $standartRepostory)
     {
     	$user = request()->user('api');
-    	$request->teacher_id = $user->teacher_id;
+    	$request->teacher_id = $user->id;
     	$standartRepostory->createDataStandart($request);
     	return SendResponse::acceptData($standartRepostory->getStandart());
     }

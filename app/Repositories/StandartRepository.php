@@ -112,7 +112,7 @@ class StandartRepository
 		try {
 			$standart = Standart::create([
 				'teacher_id'	=> $request->teacher_id,
-				'standart_id'	=> $request->standart_id,
+				'standart_id'	=> $request->standart_id != '' ? $request->standart_id : 0,
 				'type'			=> $request->type,
 				'code'			=> $request->code,
 				'body'			=> $request->body
