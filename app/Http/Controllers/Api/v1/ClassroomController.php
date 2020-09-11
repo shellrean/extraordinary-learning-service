@@ -209,6 +209,10 @@ class ClassroomController extends Controller
     public function getDataLiveClassroom($classlive_id, ClassroomRepository $classroomRepository)
     {
         $classroomRepository->getDataClassroomLive($classlive_id);
+        $classroom = $classroomRepository->getClassroom();
+        if($classroom->isactive == 0) {
+            return SendResponse::forbidden('Classroom has closed');
+        }
         return SendResponse::acceptData($classroomRepository->getClassroom());
     }
 

@@ -218,6 +218,19 @@ Route::group(['prefix' => 'v1', 'namespace' => 'Api\v1'], function() {
 		Route::group(['middleware' => 'auth.teacher'], function() {
 			Route::apiResource('standarts', 'StandartController');
 		});
+
+		/**
+		 |-----------------------------------------------------------------
+		 | Schedule route section
+		 |-----------------------------------------------------------------
+		 */
+		Route::group(['middleware' => 'auth.teacher'], function() {
+			Route::get('schedules/{classroom_subject_id}', 'ScheduleController@index');
+			Route::get('schedules/{schedule_id}/show', 'ScheduleController@show');
+			Route::post('schedules', 'ScheduleController@store');
+			Route::put('schedules/{schedule_id}', 'ScheduleController@update');
+			Route::delete('schedules/{schedule_id}', 'ScheduleController@destroy');
+		});
 	});
 });
 
