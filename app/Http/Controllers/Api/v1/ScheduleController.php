@@ -80,4 +80,19 @@ class ScheduleController extends Controller
     	$classroomReposiory->deleteDataSchedule($schedule_id);
     	return SendResponse::accept('schedule deleted');
     }
+
+    /**
+     * Schedule today
+     *
+     * @author shellrean <wandinak17@gmail.com>
+     * @param \App\Repositories\ClassroomRepository
+     * @return \App\Actions\SendResponse
+     */
+    public function scheduleToday(ClassroomRepository $classroomReposiory)
+    {
+        $teacher = request()->user('api');
+        $day_of_week = date('w');
+        $classroomReposiory->getDataSchedulesDay($day_of_week, $teacher->id);
+        return SendResponse::acceptData($classroomReposiory->getSchedules());
+    }
 }

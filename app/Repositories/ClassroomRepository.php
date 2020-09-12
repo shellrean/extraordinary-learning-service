@@ -618,6 +618,50 @@ class ClassroomRepository
 	}
 
 	/**
+	 * Get schedule 
+	 *
+	 * @author shellrean <wandinak17@gmail.com>
+	 * @since 1.0.1
+	 * @param $day_of_week
+	 * @param $teacher_id
+	 * @return void
+	 */
+	public function getDataSchedulesDay($day_of_week, $teacher_id)
+	{
+		try {
+			$schedules = Schedule::with([
+				'classroom_subject' => function($query) {
+					$query->select('id','classroom_id','subject_id');
+				},
+				'classroom_subject.classroom' => function($query) {
+					$query->select('id','name','group','grade');
+				},
+				'classroom_subject.subject' => function($query) {
+					$query->select('id','name');
+				}
+			])
+			->where('day', $day_of_week)
+			->whereHas('classroom_subject', function($query) use($teacher_id) {
+				$query->where('teacher_id', $teacher_id);
+			})
+			->select('id','classroom_subject_id','from_time','end_time')
+			->get();
+
+			$this->schedules = $schedules->map(function($item) {
+				return [
+					'schedule_id'		=> $item->id,
+					'classroom_name'	=> $item->classroom_subject->classroom->name,
+					'subject_name'		=> $item->classroom_subject->subject->name,
+					'from_time'			=> $item->from_time,
+					'end_time'			=> $item->end_time
+				];
+			});
+		} catch (\Exception $e) {
+			throw new \App\Exceptions\ModelException($e->getMessage());
+		}
+	}
+
+	/**
 	 * Delete data schedule
 	 *
 	 * @author shellrean <wandinak17@gmail.com>
