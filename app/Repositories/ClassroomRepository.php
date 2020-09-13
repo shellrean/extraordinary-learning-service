@@ -240,8 +240,7 @@ class ClassroomRepository
 				'name' => $request->name,
 				'grade'	=> $request->grade,
 				'group'	=> $request->group,
-				'settings' => $request->settings,
-				'invitation_code' => strtoupper(date('d').uniqid())
+				'settings' => $request->settings
 			];
 			$classroom = Classroom::create($data);
 		} catch (\Exception $e) {
