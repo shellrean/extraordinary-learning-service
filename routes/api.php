@@ -101,6 +101,8 @@ Route::group(['prefix' => 'v1', 'namespace' => 'Api\v1'], function() {
 		
 		Route::get('classrooms/{classroom_id}/lecture', 'LectureController@classroomLectures');
 
+		Route::get('classrooms/{classroom_id}/schedules', 'ScheduleController@scheduleClassroomToday');
+
 		Route::post('classrooms/join', 'ClassroomController@join');
 		Route::get('classrooms', 'ClassroomController@index');
 		Route::get('classrooms/{classroom_id}', 'ClassroomController@show');
@@ -115,8 +117,8 @@ Route::group(['prefix' => 'v1', 'namespace' => 'Api\v1'], function() {
 		 |-----------------------------------------------------------------
 		 */
 		Route::post('abcents', 'AbcentController@store');
-		Route::get('abcents/subject/{subject_id}/classroom/{classroom_id}', 'AbcentController@subjectClassroomToday');
-		Route::get('abcents/subject/{subject_id}/classroom/{classroom_id}/export', 'AbcentController@subjectClassroomTodayExport');
+		Route::get('abcents/schedule/{schedule_id}', 'AbcentController@scheduleClassroomToday');
+		Route::get('abcents/schedule/{schedule_id}/export', 'AbcentController@scheduleClassroomTodayExport');
 
 		/**
 		 |-----------------------------------------------------------------

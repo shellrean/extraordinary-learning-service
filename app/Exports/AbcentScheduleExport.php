@@ -7,7 +7,7 @@ use Maatwebsite\Excel\Concerns\FromCollection;
 use Maatwebsite\Excel\Concerns\WithHeadings;
 use Maatwebsite\Excel\Concerns\ShouldAutoSize;
 
-class AbcentSubjectClassroomExport implements FromCollection, WithHeadings, ShouldAutoSize
+class AbcentScheduleExport implements FromCollection, WithHeadings, ShouldAutoSize
 {
 	private $collection;
 
@@ -20,12 +20,19 @@ class AbcentSubjectClassroomExport implements FromCollection, WithHeadings, Shou
     */
     public function collection()
     {
-        return $this->collection->map(function ($item, $index){
+        $reasons = [
+            "0" => "-",
+            "1" => "Tanpa Keterangan",
+            "2" => "Sakit",
+            "3" => "Izin",
+            "4" => "Masalah"
+        ];
+        return $this->collection->map(function ($item, $index) use ($reasons){
         	return [
         		'no'	=> $index+1,
         		'name' => $item->user->name,
         		'hadir' => ($item->isabcent == 1 ? 'Hadir': 'Tidak hadir' ),
-        		'type' => isset($item->details['type']) ? $item->details['type'] : '-' ,
+                'reason' => $reasons[$item->reason],
         		'desc' => $item->desc
         	];
         });
@@ -38,7 +45,7 @@ class AbcentSubjectClassroomExport implements FromCollection, WithHeadings, Shou
             'Nama siswa',
             'Hadir/Tidak',
             'Keterangan',
-            'Penjelasan'
+            'Tambahan'
         ];
     }
 }

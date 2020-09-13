@@ -24,7 +24,7 @@ class ClassroomLive extends FormRequest
     public function rules()
     {
         return [
-            'subject_id'    => 'required|exists:subjects,id'
+            'schedule_id'    => 'required|exists:schedules,id'
         ];
     }
 }

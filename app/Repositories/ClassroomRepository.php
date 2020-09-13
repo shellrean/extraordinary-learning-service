@@ -306,9 +306,7 @@ class ClassroomRepository
 	{
 		try {
 			$data = [
-				'teacher_id'	=> $request->teacher_id,
-				'classroom_id'	=> $request->classroom_id,
-				'subject_id'	=> $request->subject_id,
+				'schedule_id'	=> $request->schedule_id,
 				'body'			=> $request->body,
 				'settings'		=> $request->settings
 			];
@@ -331,14 +329,33 @@ class ClassroomRepository
 	 public function getDataClassroomLives($classroom_id, $teacher_id = '', bool $status = true)
 	{
 	 	try {
-	 		$classrooms = ClassroomLive::with(['teacher','subject'])->where(function($query) use ($classroom_id, $status) {
-	 			$query->where('classroom_id', $classroom_id)
-	 			->where('isactive',$status);
+	 		$classrooms = ClassroomLive::with([
+	 			'schedule.classroom_subject.subject' => function($query) {
+	 				$query->select('id','name');
+	 			},
+	 			'schedule.classroom_subject.teacher' => function($query) {
+	 				$query->select('id','name','email');
+	 			}
+	 		])
+	 		->whereHas('schedule.classroom_subject', function($query) use ($classroom_id, $teacher_id) {
+	 			$query->where('classroom_id', $classroom_id);
+	 			if($teacher_id != '') {
+	 				$query->where('teacher_id', $teacher_id);
+	 			}
+	 		})
+	 		->select('id','schedule_id','created_at')
+	 		->where(['isactive', $status,'created_at' => \Carbon\Carbon::now()]);
+
+	 		$this->classrooms = $classrooms->orderBy('id','desc')->get()->map(function($item) {
+	 			return [
+	 				'classroom_live_id'		=> $item->id,
+	 				'classroom_id'			=> $item->schedule->classroom_subject->classroom_id,
+	 				'subject_name'			=> $item->schedule->classroom_subject->subject->name,
+	 				'teacher_name'			=> $item->schedule->classroom_subject->teacher->name,
+	 				'teacher_email'			=> $item->schedule->classroom_subject->teacher->email,
+	 				'start_time'			=> $item->created_at->format('H:m')
+	 			];
 	 		});
-	 		if($teacher_id != '') {
-	 			$classrooms = $classrooms->where('teacher_id', $teacher_id);
-	 		}
-	 		$this->classrooms = $classrooms->orderBy('id','desc')->get();
 	 	} catch (\Exception $e) {
 	 		throw new \App\Exceptions\ModelException($e->getMessage());
 	 	}
@@ -643,6 +660,53 @@ class ClassroomRepository
 			->where('day', $day_of_week)
 			->whereHas('classroom_subject', function($query) use($teacher_id) {
 				$query->where('teacher_id', $teacher_id);
+			})
+			->select('id','classroom_subject_id','from_time','end_time')
+			->get();
+
+			$this->schedules = $schedules->map(function($item) {
+				return [
+					'schedule_id'		=> $item->id,
+					'classroom_name'	=> $item->classroom_subject->classroom->name,
+					'subject_name'		=> $item->classroom_subject->subject->name,
+					'from_time'			=> $item->from_time,
+					'end_time'			=> $item->end_time
+				];
+			});
+		} catch (\Exception $e) {
+			throw new \App\Exceptions\ModelException($e->getMessage());
+		}
+	}
+
+	/**
+	 * Get schedule classroom's today
+	 *
+	 * @author shellrean <wandinak17@gamil.com>
+	 * @since 1.0.1
+	 * @param $day_of_week
+	 * @param $classroom_id
+	 * @return void
+	 */
+	public function getdataSchedulesClassroomDay($day_of_week, $classroom_id, $teacher_id = null)
+	{
+		try {
+			$schedules = Schedule::with([
+				'classroom_subject' => function($query) {
+					$query->select('id','classroom_id','subject_id');
+				},
+				'classroom_subject.classroom' => function($query) {
+					$query->select('id','name','group','grade');
+				},
+				'classroom_subject.subject' => function($query) {
+					$query->select('id','name');
+				}
+			])
+			->where('day',$day_of_week)
+			->whereHas('classroom_subject', function($query) use ($classroom_id, $teacher_id) {
+				$query->where('classroom_id', $classroom_id);
+				if($teacher_id != null) {
+					$query->where('teacher_id', $teacher_id);
+				}
 			})
 			->select('id','classroom_subject_id','from_time','end_time')
 			->get();

@@ -99,15 +99,15 @@ class AbcentRepository
 	 * @since 1.0.0
 	 * @return void
 	 */
-	public function getDataAbcentSubjectClassroomToday($subject_id, $classroom_id, $date = '')
+	public function getDataAbcentScheduleDay($schedule_id, $date = '')
 	{
 		try {
 			if($date == '') {
 				$date = \Carbon\Carbon::today();
 			}
-			$abcents = Abcent::with('user')->where(function($query) use ($subject_id, $classroom_id, $date) {
-				$query->where('subject_id', $subject_id)
-				->where('classroom_id', $classroom_id)
+			$abcents = Abcent::with('user')
+			->where(function($query) use ($schedule_id, $date) {
+				$query->where('schedule_id', $schedule_id)
 				->whereHas('user', function($query) {
 					$query->where('role','2');
 				})
@@ -131,15 +131,14 @@ class AbcentRepository
 		try {
 			$data = [
 				'user_id'		=> $request->user_id,
-				'subject_id'	=> $request->subject_id,
-				'classroom_id'	=> $request->classroom_id,
+				'schedule_id'	=> $request->schedule_id,
 				'isabcent'		=> $request->isabcent,
+				'reason'		=> $request->reason,
 				'desc'			=> $request->desc,
 				'details'		=> $request->details
 			];
 			$user = Abcent::where(function($query) use ($request){
-				$query->where('subject_id', $request->subject_id)
-				->where('classroom_id', $request->classroom_id)
+				$query->where('schedule_id', $request->schedule_id)
 				->whereDate('created_at', \Carbon\Carbon::today())
 				->where('user_id', $request->user_id);
 			})->first();

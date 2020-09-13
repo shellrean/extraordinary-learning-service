@@ -95,4 +95,27 @@ class ScheduleController extends Controller
         $classroomReposiory->getDataSchedulesDay($day_of_week, $teacher->id);
         return SendResponse::acceptData($classroomReposiory->getSchedules());
     }
+
+    /**
+     * Schedule classroom today
+     *
+     * @author shellrean <wandinak17@gmail.com>
+     * @param \App\Repositories\ClassroomRepository
+     * @return \App\Actions\SendResponse
+     */
+    public function scheduleClassroomToday($classroom_id, ClassroomRepository $classroomReposiory)
+    {
+        $day_of_week = date('w');
+        $user = request()->user('api');
+        switch ($user->role) {
+            case '1':
+                $classroomReposiory->getDataSchedulesClassroomDay($day_of_week, $classroom_id, $user->id);
+                break;
+            
+            default:
+                $classroomReposiory->getDataSchedulesClassroomDay($day_of_week, $classroom_id);
+                break;
+        }
+        return SendResponse::acceptData($classroomReposiory->getSchedules());
+    }
 }

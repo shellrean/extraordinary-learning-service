@@ -12,13 +12,8 @@ class ClassroomLive extends Model
     	'settings'	=> 'array'
     ];
 
-    public function teacher()
+    public function schedule()
     {
-    	return $this->belongsTo(User::class,'teacher_id');
-    }
-
-    public function subject()
-    {
-    	return $this->belongsTo(Subject::class);
+        return $this->belongsTo(Schedule::class);
     }
 }
