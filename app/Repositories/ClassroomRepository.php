@@ -267,6 +267,7 @@ class ClassroomRepository
 				'teacher_id' => $request->teacher_id,
 				'name' => $request->name,
 				'grade'	=> $request->grade,
+				'group'	=> $request->group,
 				'settings' => $request->settings 
 			];
 			$this->classroom->update($data);
