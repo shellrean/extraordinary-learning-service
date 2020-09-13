@@ -14,9 +14,13 @@ class ClassroomStudentSeeder extends Seeder
     public function run()
     {
         ClassroomStudent::create([
-        	'student_id'	=> 3,
-        	'classroom_id'	=> 1,
-        	'invitation_code' => 'JDIDKEIEK'
+        	'student_id'	=> 5,
+        	'classroom_id'	=> 1
+        ]);
+
+        ClassroomStudent::create([
+            'student_id'    => 6,
+            'classroom_id'  => 1
         ]);
     }
 }

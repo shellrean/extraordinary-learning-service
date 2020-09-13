@@ -68,6 +68,7 @@ class UserRepository
 	 */
 	public function createNew(UserRequest $request): void
 	{
+		DB::beginTransaction();
 		try {
 			$data = [
 				'name'		=> $request->name,
@@ -75,11 +76,20 @@ class UserRepository
 				'password'	=> bcrypt($request->password),
 				'role'		=> $request->role,
 				'isactive'	=> $request->isactive,
+				'uid'		=> $request->uid,
 				'details'	=> $request->details
 			];
 
 			$user = User::create($data);
+			if($request->role == '2' && $request->classroom_id != '') {
+				ClassroomStudent::create([
+					'student_id'	=> $user->id,
+					'classroom_id'	=> $request->classroom_id
+				]);
+			}
+			DB::commit();
 		} catch (\Exception $e) {
+			DB::rollback();
 			throw new \App\Exceptions\ModelException($e->getMessage());
 		}
 		$this->setUser($user);
@@ -178,6 +188,7 @@ class UserRepository
 			'name'			=> $request->name,
 			'email'			=> $request->email,
 			'isactive'		=> $request->isactive,
+			'uid'			=> $request->uid,
 			'details'		=> $request->details
 		];
 		if(isset($request->password) && $request->password != '') { 
@@ -240,7 +251,7 @@ class UserRepository
 		DB::beginTransaction();
 
 		try {
-			Excel::import(new StudentImport, $request->file('file'));
+			Excel::import(new StudentImport($request->classroom_id), $request->file('file'));
 
 			DB::commit();
 		} catch (\Exception $e) {

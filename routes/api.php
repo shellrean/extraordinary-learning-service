@@ -77,6 +77,7 @@ Route::group(['prefix' => 'v1', 'namespace' => 'Api\v1'], function() {
 		 | Classroom route section
 		 |-----------------------------------------------------------------
 		 */
+		Route::get('classrooms/{classroom_id}/student', 'StudentController@index');
 		Route::group(['middleware' => 'auth.teacher'], function() {
 			Route::get('classrooms/subject/mine', 'ClassroomController@getTeacherSubject');
 			Route::get('classrooms/mine', 'ClassroomController@mine');
@@ -85,9 +86,8 @@ Route::group(['prefix' => 'v1', 'namespace' => 'Api\v1'], function() {
 			Route::post('classrooms/{classroom_id}/live', 'ClassroomController@storeLiveClassroom');
 			Route::post('classrooms/live/{classroom_live_id}/stop', 'ClassroomController@stopLiveClassroom');
 			
-			Route::get('classrooms/{classroom_id}/student', 'StudentController@index');
 			Route::post('classrooms/{classroom_id}/student', 'StudentController@store');
-
+			Route::delete('classrooms/student/{student_id}', 'StudentController@destroy');
 		});
 		Route::get('classrooms/{classroom_id}/subject', 'SubjectController@getTeacherClassroomSubject');
 		

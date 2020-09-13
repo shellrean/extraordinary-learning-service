@@ -14,8 +14,32 @@ class SubjectSeeder extends Seeder
     {
         Subject::create([
         	'name'		=> 'Bahasa Indonesia',
-        	'description' => 'Bahasa nusantara',
         	'settings' => []
+        ]);
+
+        Subject::create([
+            'name'      => 'Matematika',
+            'settings'  => []
+        ]);
+
+        Subject::create([
+            'name'      => 'Fisika',
+            'settings'  => []
+        ]);
+
+        Subject::create([
+            'name'      => 'Kimia',
+            'settings'  => []
+        ]);
+
+        Subject::create([
+            'name'      => 'Jaringan Advance',
+            'settings'  => []
+        ]);
+
+        Subject::create([
+            'name'      => 'Multimedia dan komunikasi',
+            'settings'  => []
         ]);
     }
 }

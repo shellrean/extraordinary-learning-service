@@ -524,6 +524,48 @@ class ClassroomRepository
 	}
 
 	/**
+	 * Insert student to classroom
+	 *
+	 * @author shellrean <wandinak17@gmail.com>
+	 * @since 1.0.1
+	 * @param $request
+	 * @return boolean
+	 */
+	public static function insertStudentToClassroom($user, $classroom_id)
+	{
+		try {
+			$classroom = ClassroomStudent::where('student_id', $user->id)->first();
+			if(!$classroom) {
+				ClassroomStudent::create([
+					'student_id'	=> $user->id,
+					'classroom_id'	=> $classroom_id
+				]);
+				return true;
+			}
+			return false;
+		} catch (\Exception $e) {
+			throw new \App\Exceptions\ModelException($e->getMessage());
+		}
+	}
+
+	/**
+	 * Delete student from classroom
+	 *
+	 * @author shellrean <wandinak17@gmail.com>
+	 * @since 1.0.1
+	 * @param $student_id
+	 * @return void
+	 */
+	public function deleteStudentFromClassroom($student_id)
+	{
+		try {
+			ClassroomStudent::where('student_id', $student_id)->delete();
+		} catch (\Exception $e) {
+			throw new \App\Exceptions\ModelException($e->getMessage());
+		}
+	}
+
+	/**
 	 * Get teacher's subject
 	 *
 	 * @author shellrean <wandinak17@gmail.com>

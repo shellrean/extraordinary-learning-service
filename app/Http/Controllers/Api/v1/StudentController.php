@@ -30,8 +30,26 @@ class StudentController extends Controller
      * @param \App\Http\ClassroomStudent
      * @return \App\Actions\SendResponse
      */
-    public function store($classroom_id, ClassroomStudent $request, ClassroomRepository $classroomRepository)
+    public function store($classroom_id, ClassroomStudent $request, UserRepository $userRepository)
     {
-    	
+        $userRepository->getDataUser($request->uid, 'uid');
+        $created = ClassroomRepository::insertStudentToClassroom($userRepository->getUser(), $classroom_id);
+        if(!$created) {
+            return SendResponse::badRequest('Student has inserted to another classroom');
+        }
+        return SendResponse::accept('student inserted to classroom');
+    }   
+
+    /**
+     * Delete student from classroom
+     *
+     * @author shellrean <wandinak17@gmail.com>
+     * @param \App\ClassroomRepository
+     * @return void
+     */
+    public function destroy($student_id, ClassroomRepository $classroomRepository)
+    {
+        $classroomRepository->deleteStudentFromClassroom($student_id);
+        return SendResponse::accept('student deleted from classroom');
     }
 }
