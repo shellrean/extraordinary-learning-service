@@ -16,7 +16,6 @@ class ClassroomImport implements ToModel, WithStartRow, WithValidation
     {
         return new Classroom([
             'name'           	=> $row[0],
-            'invitation_code' 	=> strtoupper(date('d').uniqid()),
             'grade'				=> $row[1],
             'group'				=> $row[2],
             'teacher_id'		=> $row[3]
