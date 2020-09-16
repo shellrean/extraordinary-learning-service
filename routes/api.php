@@ -234,6 +234,17 @@ Route::group(['prefix' => 'v1', 'namespace' => 'Api\v1'], function() {
 			Route::put('schedules/{schedule_id}', 'ScheduleController@update');
 			Route::delete('schedules/{schedule_id}', 'ScheduleController@destroy');
 		});
+
+		/**
+		 |-----------------------------------------------------------------
+		 | Paper route section
+		 |-----------------------------------------------------------------
+		 */
+		Route::group(['middleware' => 'auth.teacher'], function() {
+			Route::post('papers/{paper_id}/update', 'PaperController@update');
+			Route::get('papers/{classroom_subject_id}/list', 'PaperController@index');
+			Route::apiResource('papers', 'PaperController')->except('update','index');
+		});
 	});
 });
 
