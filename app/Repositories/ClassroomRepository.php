@@ -329,6 +329,7 @@ class ClassroomRepository
 	 public function getDataClassroomLives($classroom_id, $teacher_id = '', bool $status = true)
 	{
 	 	try {
+			$this->getDataClassroom($classroom_id);
 	 		$classrooms = ClassroomLive::with([
 	 			'schedule.classroom_subject.subject' => function($query) {
 	 				$query->select('id','name');
@@ -343,12 +344,15 @@ class ClassroomRepository
 	 				$query->where('teacher_id', $teacher_id);
 	 			}
 	 		})
-	 		->select('id','schedule_id','created_at')
-	 		->where(['isactive', $status,'created_at' => \Carbon\Carbon::now()]);
-
+			->select('id','schedule_id','created_at')
+			->where(function($query) use($status){
+				$query->where('isactive',$status)
+				->whereDate('created_at', \Carbon\Carbon::now());
+			});
 	 		$this->classrooms = $classrooms->orderBy('id','desc')->get()->map(function($item) {
 	 			return [
-	 				'classroom_live_id'		=> $item->id,
+					'classroom_live_id'		=> $item->id,
+					'schedule_id'			=> $item->schedule_id,
 	 				'classroom_id'			=> $item->schedule->classroom_subject->classroom_id,
 	 				'subject_name'			=> $item->schedule->classroom_subject->subject->name,
 	 				'teacher_name'			=> $item->schedule->classroom_subject->teacher->name,
@@ -392,7 +396,15 @@ class ClassroomRepository
 	public function getDataClassroomLive($classlive_id)
 	{
 		try {
-			$liveClass = ClassroomLive::find($classlive_id);
+			$liveClass = ClassroomLive::with([
+				'schedule.classroom_subject.subject'	=> function($query) {
+					$query->select('id','name');
+				},
+				'schedule.classroom_subject.teacher'	=> function($query) {
+					$query->select('id','name','email');
+				}
+			])
+			->find($classlive_id);
 			if(!$liveClass) {
 				throw new \App\Exceptions\ClassRoomNotFoundException();
 			}

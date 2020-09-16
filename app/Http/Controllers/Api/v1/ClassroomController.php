@@ -213,7 +213,20 @@ class ClassroomController extends Controller
         if($classroom->isactive == 0) {
             return SendResponse::forbidden('Classroom has closed');
         }
-        return SendResponse::acceptData($classroomRepository->getClassroom());
+        $liveClass = $classroomRepository->getClassroom();
+        $data = [
+            'id'	=> $liveClass->id,
+            'schedule_id' => $liveClass->schedule_id,
+			'body'	=> $liveClass->body,
+			'settings'	=> $liveClass->settings,
+			'created_at'	=> $liveClass->created_at,
+			'updated_at'	=> $liveClass->updated_at,
+			'classroom_id'	=> $liveClass->schedule->classroom_subject->classroom_id,
+			'subject_name'	=> $liveClass->schedule->classroom_subject->subject->name,
+			'teacher_name'	=> $liveClass->schedule->classroom_subject->teacher->name,
+			'start_time'	=> $liveClass->created_at->format('H:m')	
+		];
+        return SendResponse::acceptData($data);
     }
 
     /**
