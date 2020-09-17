@@ -4,7 +4,7 @@ namespace App\Http\Requests;
 
 use Illuminate\Foundation\Http\FormRequest;
 
-class ClassroomLive extends FormRequest
+class ScheduleStore extends FormRequest
 {
     /**
      * Determine if the user is authorized to make this request.
@@ -24,7 +24,10 @@ class ClassroomLive extends FormRequest
     public function rules()
     {
         return [
-            'schedule_id'    => 'required|exists:schedules,id'
+            'classroom_subject_id'  => 'required|exists:classroom_subjects,id',
+            'day'                   => 'required',
+            'from_time'             => 'required',
+            'end_time'              => 'required'
         ];
     }
 }

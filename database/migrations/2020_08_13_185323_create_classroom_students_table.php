@@ -17,7 +17,6 @@ class CreateClassroomStudentsTable extends Migration
             $table->id();
             $table->unsignedBigInteger('student_id');
             $table->unsignedBigInteger('classroom_id');
-            $table->string('invitation_code');
             $table->timestamps();
 
             $table->foreign('student_id')->references('id')->on('users')->onDelete('cascade');

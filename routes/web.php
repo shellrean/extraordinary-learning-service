@@ -14,5 +14,5 @@ use Illuminate\Support\Facades\Route;
 */
 
 Route::get('/', function () {
-    return [ 'app' => 'Dian leraning application', 'version' => '1.0.0-alpha'];
+    return [ 'app' => 'Extraordinary-LMS application', 'version' => '1.0.1', 'author' => 'shellrean ICT Team'];
 });

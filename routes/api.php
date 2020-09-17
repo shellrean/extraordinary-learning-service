@@ -77,6 +77,7 @@ Route::group(['prefix' => 'v1', 'namespace' => 'Api\v1'], function() {
 		 | Classroom route section
 		 |-----------------------------------------------------------------
 		 */
+		Route::get('classrooms/{classroom_id}/student', 'StudentController@index');
 		Route::group(['middleware' => 'auth.teacher'], function() {
 			Route::get('classrooms/subject/mine', 'ClassroomController@getTeacherSubject');
 			Route::get('classrooms/mine', 'ClassroomController@mine');
@@ -85,9 +86,8 @@ Route::group(['prefix' => 'v1', 'namespace' => 'Api\v1'], function() {
 			Route::post('classrooms/{classroom_id}/live', 'ClassroomController@storeLiveClassroom');
 			Route::post('classrooms/live/{classroom_live_id}/stop', 'ClassroomController@stopLiveClassroom');
 			
-			Route::get('classrooms/{classroom_id}/student', 'StudentController@index');
 			Route::post('classrooms/{classroom_id}/student', 'StudentController@store');
-
+			Route::delete('classrooms/student/{student_id}', 'StudentController@destroy');
 		});
 		Route::get('classrooms/{classroom_id}/subject', 'SubjectController@getTeacherClassroomSubject');
 		
@@ -100,6 +100,8 @@ Route::group(['prefix' => 'v1', 'namespace' => 'Api\v1'], function() {
 		Route::get('classrooms/{classroom_id}/task', 'TaskController@classroomTasks');
 		
 		Route::get('classrooms/{classroom_id}/lecture', 'LectureController@classroomLectures');
+
+		Route::get('classrooms/{classroom_id}/schedules', 'ScheduleController@scheduleClassroomToday');
 
 		Route::post('classrooms/join', 'ClassroomController@join');
 		Route::get('classrooms', 'ClassroomController@index');
@@ -115,8 +117,8 @@ Route::group(['prefix' => 'v1', 'namespace' => 'Api\v1'], function() {
 		 |-----------------------------------------------------------------
 		 */
 		Route::post('abcents', 'AbcentController@store');
-		Route::get('abcents/subject/{subject_id}/classroom/{classroom_id}', 'AbcentController@subjectClassroomToday');
-		Route::get('abcents/subject/{subject_id}/classroom/{classroom_id}/export', 'AbcentController@subjectClassroomTodayExport');
+		Route::get('abcents/schedule/{schedule_id}', 'AbcentController@scheduleClassroomToday');
+		Route::get('abcents/schedule/{schedule_id}/export', 'AbcentController@scheduleClassroomTodayExport');
 
 		/**
 		 |-----------------------------------------------------------------
@@ -160,6 +162,7 @@ Route::group(['prefix' => 'v1', 'namespace' => 'Api\v1'], function() {
 		 */
 		Route::group(['middleware' => 'auth.teacher'], function() {
 			Route::get('question_banks/{question_bank_id}/question', 'QuestionController@indexQuestion');
+			Route::get('question_banks/{question_bank_id}/duplicate', 'QuestionController@duplicateQuestionBank');
 			Route::post('question_banks/{question_bank_id}/import', 'QuestionController@import');
 			Route::post('question_banks/question', 'QuestionController@storeQuestion');
 			Route::get('question_banks/question/{question_id}', 'QuestionController@showQuestion');
@@ -207,6 +210,40 @@ Route::group(['prefix' => 'v1', 'namespace' => 'Api\v1'], function() {
 		Route::get('events/{event_id}', 'EventController@show');
 		Route::group(['middleware' => 'auth.admin'], function() {
 			Route::apiResource('events', 'EventController')->except('show');
+		});
+
+		/**
+		 |-----------------------------------------------------------------
+		 | Standart route section
+		 |-----------------------------------------------------------------
+		 */
+		Route::group(['middleware' => 'auth.teacher'], function() {
+			Route::apiResource('standarts', 'StandartController');
+		});
+
+		/**
+		 |-----------------------------------------------------------------
+		 | Schedule route section
+		 |-----------------------------------------------------------------
+		 */
+		Route::group(['middleware' => 'auth.teacher'], function() {
+			Route::get('schedules/today', 'ScheduleController@scheduleToday');
+			Route::get('schedules/{classroom_subject_id}', 'ScheduleController@index');
+			Route::get('schedules/{schedule_id}/show', 'ScheduleController@show');
+			Route::post('schedules', 'ScheduleController@store');
+			Route::put('schedules/{schedule_id}', 'ScheduleController@update');
+			Route::delete('schedules/{schedule_id}', 'ScheduleController@destroy');
+		});
+
+		/**
+		 |-----------------------------------------------------------------
+		 | Paper route section
+		 |-----------------------------------------------------------------
+		 */
+		Route::group(['middleware' => 'auth.teacher'], function() {
+			Route::post('papers/{paper_id}/update', 'PaperController@update');
+			Route::get('papers/{classroom_subject_id}/list', 'PaperController@index');
+			Route::apiResource('papers', 'PaperController')->except('update','index');
 		});
 	});
 });

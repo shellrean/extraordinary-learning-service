@@ -182,4 +182,18 @@ class QuestionController extends Controller
         $questionRepository->deleteDataQuestion($question_id);
         return SendResponse::accept('question deleted');
     }
+
+    /**
+     * Duplicate data question bank
+     *
+     * @author shellrean <wandinak17@gmail.com>
+     * @param \App\Repositories\QuestionRepository
+     * @param $question_bank_id
+     * @return \App\Actions\SendResponse
+     */
+    public function duplicateQuestionBank($question_bank_id, QuestionRepository $questionRepository)
+    {
+        return $questionRepository->duplicateDataQuestionBank($question_bank_id);
+        // return SendResponse::accept('question bank duplicated');
+    }
 }

@@ -21,9 +21,8 @@ class CreateUsersTable extends Migration
             $table->string('password');
             $table->enum('role',[0,1,2])->comment('0: School 1:Teacher 2:Student')->default('2');
             $table->boolean('isactive')->default(false);
-            $table->boolean('isonline')->default(false);
-            $table->string('channel')->nullable()->default('');
             $table->text('details')->nullable();
+            $table->string('uid')->nullable();
             $table->rememberToken();
             $table->timestamps();
         });

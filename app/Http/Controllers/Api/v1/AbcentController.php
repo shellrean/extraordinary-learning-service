@@ -2,8 +2,8 @@
 
 namespace App\Http\Controllers\Api\v1;
 
-use App\Exports\AbcentSubjectClassroomExport;
 use App\Repositories\AbcentRepository;
+use App\Exports\AbcentScheduleExport;
 use App\Http\Requests\AbcentRequest;
 use App\Http\Controllers\Controller;
 use Maatwebsite\Excel\Facades\Excel;
@@ -20,7 +20,7 @@ class AbcentController extends Controller
      * @param int $classroom_id
      * @return \App\Actions\SendResponse
      */
-    public function subjectClassroomToday($subject_id, $classroom_id, AbcentRepository $abcentRepository)
+    public function scheduleClassroomToday($schedule_id, AbcentRepository $abcentRepository)
     {
         $date = isset(request()->date) && request()->date
                 ? request()->date
@@ -28,7 +28,7 @@ class AbcentController extends Controller
         if($date != '') {
             $date = \Carbon\Carbon::parse($date);
         }
-    	$abcentRepository->getDataAbcentSubjectClassroomToday($subject_id, $classroom_id, $date);
+        $abcentRepository->getDataAbcentScheduleDay($schedule_id, $date);
     	return SendResponse::acceptData($abcentRepository->getAbcents());
     }
 
@@ -56,10 +56,16 @@ class AbcentController extends Controller
      * @param int $classroom_id
      * @return \App\Actions\SendResponse
      */
-    public function subjectClassroomTodayExport($subject_id, $classroom_id, AbcentRepository $abcentRepository) 
+    public function scheduleClassroomTodayExport($schedule_id, AbcentRepository $abcentRepository) 
     {
-        $abcentRepository->getDataAbcentSubjectClassroomToday($subject_id, $classroom_id);
-        return Excel::download(new AbcentSubjectClassroomExport($abcentRepository->getAbcents()), 'abcent_subject_classroom.xlsx');
+        $date = isset(request()->date) && request()->date
+                ? request()->date
+                : '';
+        if($date != '') {
+            $date = \Carbon\Carbon::parse($date);
+        }
+        $abcentRepository->getDataAbcentScheduleDay($schedule_id, $date);
+        return Excel::download(new AbcentScheduleExport($abcentRepository->getAbcents()), 'abcent_subject_classroom.xlsx');
     }
 
     /**

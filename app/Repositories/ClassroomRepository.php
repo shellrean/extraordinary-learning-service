@@ -2,13 +2,14 @@
 
 namespace App\Repositories;
 
-use App\Classroom;
-use App\ClassroomLive;
-use App\ClassroomStudent;
-use App\ClassroomSubject;
-use App\Imports\ClassroomImport;
 use Maatwebsite\Excel\Facades\Excel;
 use Illuminate\Support\Facades\DB;
+use App\Imports\ClassroomImport;
+use App\ClassroomSubject;
+use App\ClassroomStudent;
+use App\ClassroomLive;
+use App\Classroom;
+use App\Schedule;
 
 class ClassroomRepository
 {
@@ -35,6 +36,18 @@ class ClassroomRepository
 	 * App\ClassroomStudent
 	 */
 	private $classroom_students;
+
+	/**
+	 * Data schedules
+	 * App\Schedule
+	 */
+	private $schedules;
+
+	/**
+	 * Data schedule
+	 * App\Schedule
+	 */
+	private $schedule;
 
 	/**
 	 * Retreive data classrooms
@@ -73,6 +86,18 @@ class ClassroomRepository
 	}
 
 	/**
+	 * Retreive data schedules
+	 *
+	 * @author shellrean <wandinak17@gmail.com>
+	 * @since 1.0.1
+	 * @return Collection
+	 */
+	public function getSchedules()
+	{
+		return $this->schedules;
+	}
+
+	/**
 	 * Retreive data classroom
 	 *
 	 * @author shellrean <wandinak17@gmail.com>
@@ -85,6 +110,18 @@ class ClassroomRepository
 	}
 
 	/**
+	 * Retreive data schedule
+	 *
+	 * @author shellrean <wandinak17@gmail.com>
+	 * @since 1.0.1
+	 * @return App\Schedules
+	 */
+	public function getSchedule()
+	{
+		return $this->schedule;
+	}
+
+	/**
 	 * Set data classroom
 	 *
 	 * @author shellrean <wandinak17@gmail.com>
@@ -94,6 +131,18 @@ class ClassroomRepository
 	public function setClassroom(Classroom $classroom)
 	{
 		$this->classroom = $classroom;
+	}
+
+	/**
+	 * Set data schedule
+	 *
+	 * @author shellrean <wandinak17@gmail.com>
+	 * @since 1.0.1
+	 * @param App\Schedule
+	 */
+	public function setSchedule(Schedule $schedule)
+	{
+		$this->schedule = $schedule;
 	}
 
 	/**
@@ -191,8 +240,7 @@ class ClassroomRepository
 				'name' => $request->name,
 				'grade'	=> $request->grade,
 				'group'	=> $request->group,
-				'settings' => $request->settings,
-				'invitation_code' => strtoupper(date('d').uniqid())
+				'settings' => $request->settings
 			];
 			$classroom = Classroom::create($data);
 		} catch (\Exception $e) {
@@ -218,6 +266,7 @@ class ClassroomRepository
 				'teacher_id' => $request->teacher_id,
 				'name' => $request->name,
 				'grade'	=> $request->grade,
+				'group'	=> $request->group,
 				'settings' => $request->settings 
 			];
 			$this->classroom->update($data);
@@ -257,9 +306,7 @@ class ClassroomRepository
 	{
 		try {
 			$data = [
-				'teacher_id'	=> $request->teacher_id,
-				'classroom_id'	=> $request->classroom_id,
-				'subject_id'	=> $request->subject_id,
+				'schedule_id'	=> $request->schedule_id,
 				'body'			=> $request->body,
 				'settings'		=> $request->settings
 			];
@@ -282,11 +329,37 @@ class ClassroomRepository
 	 public function getDataClassroomLives($classroom_id, $teacher_id = '', bool $status = true)
 	{
 	 	try {
-	 		$classrooms = ClassroomLive::with(['teacher','subject'])->where('classroom_id', $classroom_id)->where('isactive',$status);
-	 		if($teacher_id != '') {
-	 			$classrooms = $classrooms->where('teacher_id', $teacher_id);
-	 		}
-	 		$this->classrooms = $classrooms->orderBy('id','desc')->get();
+			$this->getDataClassroom($classroom_id);
+	 		$classrooms = ClassroomLive::with([
+	 			'schedule.classroom_subject.subject' => function($query) {
+	 				$query->select('id','name');
+	 			},
+	 			'schedule.classroom_subject.teacher' => function($query) {
+	 				$query->select('id','name','email');
+	 			}
+	 		])
+	 		->whereHas('schedule.classroom_subject', function($query) use ($classroom_id, $teacher_id) {
+	 			$query->where('classroom_id', $classroom_id);
+	 			if($teacher_id != '') {
+	 				$query->where('teacher_id', $teacher_id);
+	 			}
+	 		})
+			->select('id','schedule_id','created_at')
+			->where(function($query) use($status){
+				$query->where('isactive',$status)
+				->whereDate('created_at', \Carbon\Carbon::now());
+			});
+	 		$this->classrooms = $classrooms->orderBy('id','desc')->get()->map(function($item) {
+	 			return [
+					'classroom_live_id'		=> $item->id,
+					'schedule_id'			=> $item->schedule_id,
+	 				'classroom_id'			=> $item->schedule->classroom_subject->classroom_id,
+	 				'subject_name'			=> $item->schedule->classroom_subject->subject->name,
+	 				'teacher_name'			=> $item->schedule->classroom_subject->teacher->name,
+	 				'teacher_email'			=> $item->schedule->classroom_subject->teacher->email,
+	 				'start_time'			=> $item->created_at->format('H:m')
+	 			];
+	 		});
 	 	} catch (\Exception $e) {
 	 		throw new \App\Exceptions\ModelException($e->getMessage());
 	 	}
@@ -323,7 +396,15 @@ class ClassroomRepository
 	public function getDataClassroomLive($classlive_id)
 	{
 		try {
-			$liveClass = ClassroomLive::find($classlive_id);
+			$liveClass = ClassroomLive::with([
+				'schedule.classroom_subject.subject'	=> function($query) {
+					$query->select('id','name');
+				},
+				'schedule.classroom_subject.teacher'	=> function($query) {
+					$query->select('id','name','email');
+				}
+			])
+			->find($classlive_id);
 			if(!$liveClass) {
 				throw new \App\Exceptions\ClassRoomNotFoundException();
 			}
@@ -454,6 +535,48 @@ class ClassroomRepository
 	}
 
 	/**
+	 * Insert student to classroom
+	 *
+	 * @author shellrean <wandinak17@gmail.com>
+	 * @since 1.0.1
+	 * @param $request
+	 * @return boolean
+	 */
+	public static function insertStudentToClassroom($user, $classroom_id)
+	{
+		try {
+			$classroom = ClassroomStudent::where('student_id', $user->id)->first();
+			if(!$classroom) {
+				ClassroomStudent::create([
+					'student_id'	=> $user->id,
+					'classroom_id'	=> $classroom_id
+				]);
+				return true;
+			}
+			return false;
+		} catch (\Exception $e) {
+			throw new \App\Exceptions\ModelException($e->getMessage());
+		}
+	}
+
+	/**
+	 * Delete student from classroom
+	 *
+	 * @author shellrean <wandinak17@gmail.com>
+	 * @since 1.0.1
+	 * @param $student_id
+	 * @return void
+	 */
+	public function deleteStudentFromClassroom($student_id)
+	{
+		try {
+			ClassroomStudent::where('student_id', $student_id)->delete();
+		} catch (\Exception $e) {
+			throw new \App\Exceptions\ModelException($e->getMessage());
+		}
+	}
+
+	/**
 	 * Get teacher's subject
 	 *
 	 * @author shellrean <wandinak17@gmail.com>
@@ -472,6 +595,202 @@ class ClassroomRepository
 				$subjects = $subjects->where('classroom_id', $classroom_id);
 			}
 			$this->subjects = $subjects->get();
+		} catch (\Exception $e) {
+			throw new \App\Exceptions\ModelException($e->getMessage());
+		}
+	}
+
+	/**
+	 * Get data schedules
+	 *
+	 * @author shellrean <wandinak17@gmail.com>
+	 * @since 1.0.1
+	 * @param $classroom_subject_id
+	 * @return void
+	 */
+	public function getDataSchedules($classroom_subject_id)
+	{
+		try {
+			$schedules = Schedule::where('classroom_subject_id', $classroom_subject_id)->orderBy('from_time')->get();
+			$this->schedules = $schedules;
+		} catch (\Exception $e) {
+			throw new \App\Exceptions\ModelException($e->getMessage());
+		}
+	}
+
+	/**
+	 * Get data schedule
+	 *
+	 * @author shellrean <wandinak17@gmail.com>
+	 * @since 1.0.1
+	 * @param $schedule_id
+	 * @return void
+	 */
+	public function getDataSchedule($schedule_id, bool $exception = true)
+	{
+		try {
+			$schedule = Schedule::where('id', $schedule_id)->first();
+			if(!$schedule && $exception) {
+				throw new \App\Exceptions\ModelNotFoundException($e->getMessage());
+			}
+			$this->setSchedule($schedule);
+		} catch (\Exception $e) {
+			throw new \App\Exceptions\ModelException($e->getMessage());
+		}
+	}
+
+	/**
+	 * Create data schedules
+	 *
+	 * @author shellrean <wandinak17@gmail.com>
+	 * @since 1.0.1
+	 * @param $request
+	 * @return void
+	 */
+	public function createNewSchedule($request)
+	{
+		try {
+			$schedule = Schedule::create([
+				'classroom_subject_id'	=> $request->classroom_subject_id,
+				'day'					=> $request->day,
+				'from_time'				=> $request->from_time,
+				'end_time'				=> $request->end_time
+			]);
+			$this->setSchedule($schedule);
+		} catch (\Exception $e) {
+			throw new \App\Exceptions\ModelException($e->getMessage());
+		}
+	}
+
+	/**
+	 * Update data schedule
+	 *
+	 * @author shellrean <wandinak17@gmail.com>
+	 * @since 1.0.1
+	 * @param $schedule_id
+	 * @param $request
+	 * @return void
+	 */
+	public function updateDataSchedule($request, $schedule_id = '')
+	{
+		try {
+			if($schedule_id != '') {
+				$this->getDataSchedule($schedule_id);
+			}
+			$this->schedule->update([
+				'classroom_subject_id'	=> $request->classroom_subject_id,
+				'day'					=> $request->day,
+				'from_time'				=> $request->from_time,
+				'end_time'				=> $request->end_time
+			]);
+		} catch (\Exception $e) {
+			throw new \App\Exceptions\ModelException($e->getMessage());
+		}
+	}
+
+	/**
+	 * Get schedule 
+	 *
+	 * @author shellrean <wandinak17@gmail.com>
+	 * @since 1.0.1
+	 * @param $day_of_week
+	 * @param $teacher_id
+	 * @return void
+	 */
+	public function getDataSchedulesDay($day_of_week, $teacher_id)
+	{
+		try {
+			$schedules = Schedule::with([
+				'classroom_subject' => function($query) {
+					$query->select('id','classroom_id','subject_id');
+				},
+				'classroom_subject.classroom' => function($query) {
+					$query->select('id','name','group','grade');
+				},
+				'classroom_subject.subject' => function($query) {
+					$query->select('id','name');
+				}
+			])
+			->where('day', $day_of_week)
+			->whereHas('classroom_subject', function($query) use($teacher_id) {
+				$query->where('teacher_id', $teacher_id);
+			})
+			->select('id','classroom_subject_id','from_time','end_time')
+			->get();
+
+			$this->schedules = $schedules->map(function($item) {
+				return [
+					'schedule_id'		=> $item->id,
+					'classroom_name'	=> $item->classroom_subject->classroom->name,
+					'subject_name'		=> $item->classroom_subject->subject->name,
+					'from_time'			=> $item->from_time,
+					'end_time'			=> $item->end_time
+				];
+			});
+		} catch (\Exception $e) {
+			throw new \App\Exceptions\ModelException($e->getMessage());
+		}
+	}
+
+	/**
+	 * Get schedule classroom's today
+	 *
+	 * @author shellrean <wandinak17@gamil.com>
+	 * @since 1.0.1
+	 * @param $day_of_week
+	 * @param $classroom_id
+	 * @return void
+	 */
+	public function getdataSchedulesClassroomDay($day_of_week, $classroom_id, $teacher_id = null)
+	{
+		try {
+			$schedules = Schedule::with([
+				'classroom_subject' => function($query) {
+					$query->select('id','classroom_id','subject_id');
+				},
+				'classroom_subject.classroom' => function($query) {
+					$query->select('id','name','group','grade');
+				},
+				'classroom_subject.subject' => function($query) {
+					$query->select('id','name');
+				}
+			])
+			->where('day',$day_of_week)
+			->whereHas('classroom_subject', function($query) use ($classroom_id, $teacher_id) {
+				$query->where('classroom_id', $classroom_id);
+				if($teacher_id != null) {
+					$query->where('teacher_id', $teacher_id);
+				}
+			})
+			->select('id','classroom_subject_id','from_time','end_time')
+			->get();
+
+			$this->schedules = $schedules->map(function($item) {
+				return [
+					'schedule_id'		=> $item->id,
+					'classroom_name'	=> $item->classroom_subject->classroom->name,
+					'subject_name'		=> $item->classroom_subject->subject->name,
+					'from_time'			=> $item->from_time,
+					'end_time'			=> $item->end_time
+				];
+			});
+		} catch (\Exception $e) {
+			throw new \App\Exceptions\ModelException($e->getMessage());
+		}
+	}
+
+	/**
+	 * Delete data schedule
+	 *
+	 * @author shellrean <wandinak17@gmail.com>
+	 * @since 1.0.1
+	 * @param $schedule_id
+	 * @return void
+	 */
+	public function deleteDataSchedule($schedule_id)
+	{
+		try {
+			Schedule::where('id',$schedule_id)->delete();
 		} catch (\Exception $e) {
 			throw new \App\Exceptions\ModelException($e->getMessage());
 		}

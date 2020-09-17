@@ -209,7 +209,24 @@ class ClassroomController extends Controller
     public function getDataLiveClassroom($classlive_id, ClassroomRepository $classroomRepository)
     {
         $classroomRepository->getDataClassroomLive($classlive_id);
-        return SendResponse::acceptData($classroomRepository->getClassroom());
+        $classroom = $classroomRepository->getClassroom();
+        if($classroom->isactive == 0) {
+            return SendResponse::forbidden('Classroom has closed');
+        }
+        $liveClass = $classroomRepository->getClassroom();
+        $data = [
+            'id'	=> $liveClass->id,
+            'schedule_id' => $liveClass->schedule_id,
+			'body'	=> $liveClass->body,
+			'settings'	=> $liveClass->settings,
+			'created_at'	=> $liveClass->created_at,
+			'updated_at'	=> $liveClass->updated_at,
+			'classroom_id'	=> $liveClass->schedule->classroom_subject->classroom_id,
+			'subject_name'	=> $liveClass->schedule->classroom_subject->subject->name,
+			'teacher_name'	=> $liveClass->schedule->classroom_subject->teacher->name,
+			'start_time'	=> $liveClass->created_at->format('H:m')	
+		];
+        return SendResponse::acceptData($data);
     }
 
     /**

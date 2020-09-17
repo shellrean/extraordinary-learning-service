@@ -4,7 +4,7 @@ use Illuminate\Database\Migrations\Migration;
 use Illuminate\Database\Schema\Blueprint;
 use Illuminate\Support\Facades\Schema;
 
-class CreateClassroomsTable extends Migration
+class CreatePapersTable extends Migration
 {
     /**
      * Run the migrations.
@@ -13,15 +13,18 @@ class CreateClassroomsTable extends Migration
      */
     public function up()
     {
-        Schema::create('classrooms', function (Blueprint $table) {
+        Schema::create('papers', function (Blueprint $table) {
             $table->id();
+            $table->unsignedBigInteger('classroom_subject_id');
             $table->unsignedBigInteger('teacher_id');
-            $table->string('name');
-            $table->string('grade');
-            $table->string('group')->nullable();
+            $table->enum('type',['lesson_plan','syllabus']);
+            $table->string('name')->nullable();
+            $table->text('body')->nullable();
+            $table->string('file_location')->nullable();
             $table->text('settings')->nullable();
             $table->timestamps();
 
+            $table->foreign('classroom_subject_id')->references('id')->on('classroom_subjects')->onDelete('cascade');
             $table->foreign('teacher_id')->references('id')->on('users')->onDelete('cascade');
         });
     }
@@ -33,6 +36,6 @@ class CreateClassroomsTable extends Migration
      */
     public function down()
     {
-        Schema::dropIfExists('classrooms');
+        Schema::dropIfExists('papers');
     }
 }

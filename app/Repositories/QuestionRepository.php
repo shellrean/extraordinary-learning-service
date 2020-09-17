@@ -92,7 +92,7 @@ class QuestionRepository
 	public function getDataQuestionBank($question_bank_id, $exception = true)
 	{
 		try {
-			$question_bank = QuestionBank::where('id', $question_bank_id)->first();
+			$question_bank = QuestionBank::with('subject')->where('id', $question_bank_id)->first();
 			if(!$question_bank && $exception) {
 				throw new \App\Exceptions\ModelNotFoundException('question bank not found');
 			}
@@ -201,10 +201,14 @@ class QuestionRepository
 	 * @param $question_bank_id
 	 * @return void
 	 */
-	public function getDataQuestions($question_bank_id, int $per_page)
+	public function getDataQuestions($question_bank_id, int $per_page):void
 	{
 		try {
 			$questions = Question::with('options')->where('question_bank_id', $question_bank_id);
+			if($per_page == 0) {
+				$this->questions = $questions->get();
+				return;
+			}
 			$this->questions = $questions->paginate($per_page);
 		} catch (\Exception $e) {
 			throw new \App\Exceptions\ModelException($e->getMessage());
@@ -246,7 +250,7 @@ class QuestionRepository
 	 * @param \App\Http\Requests\QuestionStore
 	 * @return void
 	 */
-	public function createDataQuestion($request)
+	public function createDataQuestion($request, string $type = 'new')
 	{
 		DB::beginTransaction();
 		try {
@@ -260,12 +264,22 @@ class QuestionRepository
 
 			if($request->type == 1) {
 				$options = [];
-				foreach($request->options as $key => $option) {
-					array_push($options, [
-						'question_id'	=> $question->id,
-						'body'	=> $option,
-						'correct' => ($request->correct == $key ? 1 : 0 )
-					]);
+				if($type == 'new') {
+					foreach($request->options as $key => $option) {
+						array_push($options, [
+							'question_id'	=> $question->id,
+							'body'	=> $option,
+							'correct' => ($request->correct == $key ? 1 : 0 )
+						]);
+					}
+				} else {
+					foreach($request->options as $option) {
+						array_push($options, [
+							'question_id'	=> $question->id,
+							'body'	=> $option->body,
+							'correct' => $option->correct
+						]);
+					}
 				}
 				DB::table('question_options')->insert($options);
 			}
@@ -450,6 +464,40 @@ class QuestionRepository
 					throw new \App\Exceptions\ModelException($e->getMessage());
 				}
 			}
+		}
+	}
+
+	/**
+	 * Duplicate question bank
+	 *
+	 * @author shellrean <wandinak17@gamil.com>
+	 * @since 1.0.1
+	 * @param $question_bank_id
+	 * @return void
+	 */
+	public function duplicateDataQuestionBank($question_bank_id)
+	{
+		DB::beginTransaction();
+		try {
+			$this->getDataQuestionBank($question_bank_id);
+			$this->question_bank->code = $this->question_bank->code.' (Copy)';
+			$this->createDataQuestionBank($this->question_bank);
+
+			$this->getDataQuestions($question_bank_id,0);
+
+			$questions = $this->questions->map(function($value, $key) {
+				$value->question_bank_id = $this->question_bank->id;
+				return $value;
+			});
+
+			foreach ($questions as $key => $value) {
+				$this->createDataQuestion($value, 'duplicate');
+			}
+
+			DB::commit();
+		} catch (\Exception $e) {
+			DB::rollback();
+			throw new \App\Exceptions\ModelException($e->getMessage());
 		}
 	}
 }
