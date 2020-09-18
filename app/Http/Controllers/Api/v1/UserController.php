@@ -219,4 +219,19 @@ class UserController extends Controller
         $userRepository->getUserNotInData($request);
         return SendResponse::acceptData($userRepository->getUsers());
     }
+
+    /**
+     * Change user profile
+     *
+     * @author shellrean <wandinak17@gmail.com>
+     * @param \Illuminate\Http\Request
+     * @return \App\Actions\SendResponse
+     */
+    public function updateProfile(Request $request, UserRepository $userRepository)
+    {
+        $user = request()->user('api');
+        $userRepository->setUser($user);
+        $userRepository->updateDataProfile($request);
+        return SendResponse::acceptData($userRepository->getUser());
+    }
 }

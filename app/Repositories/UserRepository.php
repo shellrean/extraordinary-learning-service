@@ -299,4 +299,31 @@ class UserRepository
 			throw new \App\Exceptions\ModelException($e->getMessage());
 		}
 	}
+
+	/**
+	 * Update profile data
+	 *
+	 * @author shellran <wandinak17@gmail.com>
+	 * @since 1.0.1
+	 * @param $request
+	 * @return void
+	 */
+	public function updateDataProfile($request, $user_id = '')
+	{
+		try {
+			if($user_id != '') {
+				$this->getDataUser($user_id);
+			}
+			$data = array();
+			if(isset($request->name)) {
+				$data['name'] = $request->name;
+			}
+			if(isset($request->password) && $request->password != '') {
+				$data['password'] = bcrypt($request->password);
+			}
+			$this->user->update($data);
+		} catch (\Exception $e) {
+			throw new \App\Exceptions\ModelException($e->getMessage());
+		}
+	}
 }

@@ -31,6 +31,7 @@ Route::group(['prefix' => 'v1', 'namespace' => 'Api\v1'], function() {
 		Route::post('users/online', 'UserController@setOnlineUser');
 
 		Route::post('users/photo', 'UserController@updatePhoto');
+		Route::post('users/profile', 'UserController@updateProfile');
 		Route::group(['middleware' => 'auth.admin'], function() {
 			Route::post('users/teacher/import', 'UserController@importTeacher');
 			Route::post('users/teacher', 'UserController@storeTeacher');
