@@ -13,6 +13,20 @@ use Illuminate\Http\Request;
 class AbcentController extends Controller
 {
     /**
+     * Update absent data
+     * 
+     * @author shellrean <wandinak17@gmail.com>
+     * @param int $abcent_id
+     * @param \App\Http\Requests\AbcentRequest
+     * @return \App\Actions\SendResponse
+     */
+    public function update($abcent_id, AbcentRequest $request, AbcentRepository $abcentRepository)
+    {
+        $abcentRepository->updateDataAbcent($request, $abcent_id);
+        return SendResponse::acceptData($abcentRepository->getAbcent());
+    }
+
+    /**
      * Get subject's classroom today
      *
      * @author shellrean <wandinak17@gmail.com>

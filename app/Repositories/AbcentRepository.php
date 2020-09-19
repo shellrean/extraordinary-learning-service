@@ -73,6 +73,26 @@ class AbcentRepository
 	}
 
 	/**
+	 * Get data absent
+	 * 
+	 * @author shellrean <wandinak17@gmail.com>
+	 * @since 1.0.1
+	 * @return void
+	 */
+	public function getDataAbcent($abcent_id, bool $exception = true)
+	{
+		try {
+			$abcent = Abcent::where('id', $abcent_id)->first();
+			if(!$abcent_id && $exception) {
+				throw new \App\Exceptions\ModelNotFoundException('abcent not found');
+			}
+			$this->setAbcent($abcent);
+		} catch (\Exception $e) {
+			throw new \App\Exceptions\ModelException($e->getMessage());
+		}
+	}
+
+	/**
 	 * Get data subject's abcent today
 	 *
 	 * @author shellrean <wandinak17@gmail.com>
@@ -146,6 +166,32 @@ class AbcentRepository
 				return;
 			}
 			$this->setAbcent(Abcent::create($data));
+		} catch (\Exception $e) {
+			throw new \App\Exceptions\ModelException($e->getMessage());
+		}
+	}
+
+	/**
+	 * Update data absent
+	 * 
+	 * @author shellrean <wandinak17@gmail.com>
+	 * @since 1.0.1
+	 * @param $abcent_id
+	 * @param $request
+	 * @return void
+	 */
+	public function updateDataAbcent($request, $abcent_id = '')
+	{
+		try {
+			if($abcent_id != '') {
+				$this->getDataAbcent($abcent_id);
+			}
+			$this->abcent->update([
+				'isabcent'		=> $request->isabcent,
+				'reason'		=> $request->reason,
+				'desc'			=> $request->desc,
+				'details'		=> $request->details
+			]);
 		} catch (\Exception $e) {
 			throw new \App\Exceptions\ModelException($e->getMessage());
 		}

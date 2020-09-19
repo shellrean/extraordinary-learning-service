@@ -120,6 +120,9 @@ Route::group(['prefix' => 'v1', 'namespace' => 'Api\v1'], function() {
 		Route::post('abcents', 'AbcentController@store');
 		Route::get('abcents/schedule/{schedule_id}', 'AbcentController@scheduleClassroomToday');
 		Route::get('abcents/schedule/{schedule_id}/export', 'AbcentController@scheduleClassroomTodayExport');
+		Route::group(['middleware' => 'auth.teacher'], function() {
+			Route::put('abcents/{abcent_id}', 'AbcentController@update');
+		});
 
 		/**
 		 |-----------------------------------------------------------------
