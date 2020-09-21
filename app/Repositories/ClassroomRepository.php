@@ -373,14 +373,17 @@ class ClassroomRepository
 	 * @param $classlive_id
 	 * @param bool $status
 	 */
-	public function setStatusClassroomLive($classlive_id, bool $status)
+	public function setStatusClassroomLive($classlive_id, bool $status, $note = '')
 	{
 		try {
 			$liveClass = ClassroomLive::find($classlive_id);
 			if(!$liveClass) {
 				throw new \App\Exceptions\ClassRoomNotFoundException();
 			}
-			$liveClass->update(['isactive' => $status]);
+			$liveClass->update([
+				'isactive' => $status,
+				'note'		=> $note
+			]);
 		} catch (\Exception $e) {
 			throw new \App\Exceptions\ModelException($e->getMessage());
 		}

@@ -236,11 +236,13 @@ class LectureRepository
 	public function getDataLecturesClassroom($classroom_id, $teacher_id = '')
 	{
 		try {
-			$lectures = ClassroomLecture::with(['lecture','lecture.subject'])->where('classroom_id', $classroom_id);
+			$lectures = ClassroomLecture::with(['lecture' => function($query) {
+				$query->select('id','title');
+			}])->where('classroom_id', $classroom_id);
 			if($teacher_id != '') {
 				$lectures = $lectures->where('teacher_id', $teacher_id);
 			}
-			$this->lectures = $lectures->orderBy('id','desc')->paginate(10);
+			$this->lectures = $lectures->orderBy('id','desc')->select('id','created_at','body','lecture_id')->paginate(10);
 		} catch (\Exception $e) {
 			throw new \App\Exceptions\ModelException($e->getMessage());
 		}

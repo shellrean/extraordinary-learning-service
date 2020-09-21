@@ -179,13 +179,16 @@ class TaskRepository
 	public function getDataTaskClassroom($classroom_id, $teacher_id = '')
 	{
 		try {
-			$tasks = ClassroomTask::with('task')
-					->where('classroom_id', $classroom_id)
-					->orderBy('id','desc');
+			$tasks = ClassroomTask::with(['task' =>  function($query) {
+				$query->select('id', 'title');
+			}])
+			->where('classroom_id', $classroom_id)
+			->orderBy('id','desc');
+			
 			if($teacher_id != '') {
 				$tasks = $tasks->where('teacher_id', $teacher_id);
 			}
-			$tasks = $tasks->paginate(10);
+			$tasks = $tasks->select('id','task_id','body','created_at')->paginate(10);
 			$this->tasks = $tasks;
 		} catch (\Exception $e) {
 			throw new \App\Exceptions\ModelException($e->getMessage());

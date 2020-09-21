@@ -192,9 +192,9 @@ class ClassroomController extends Controller
      * @param $classlive_id
      * @return \App\Actions\SendResponse
      */
-    public function stopLiveClassroom($classlive_id, ClassroomRepository $classroomRepository)
+    public function stopLiveClassroom($classlive_id, Request $request, ClassroomRepository $classroomRepository)
     {
-        $classroomRepository->setStatusClassroomLive($classlive_id, false);
+        $classroomRepository->setStatusClassroomLive($classlive_id, false, $request->note);
         return SendResponse::accept('live class stopped');
     }
 
