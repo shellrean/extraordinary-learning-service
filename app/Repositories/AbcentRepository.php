@@ -3,6 +3,7 @@
 namespace App\Repositories;
 
 use App\Abcent;
+use App\Schedule;
 
 class AbcentRepository 
 {
@@ -209,28 +210,34 @@ class AbcentRepository
 		try {
 			if($date == '') {
 				$date = \Carbon\Carbon::today();
+				$day = $date->dayOfWeek;
+			} else {
+				$day = $date->dayOfWeek;
 			}
-			$reports = Abcent::with([
-				'user' => function($query) {
-					$query->select('id','name','email','role');
+			
+			$repots = Schedule::with([
+				'classroom_subject' => function($query) {
+					$query->select('id','classroom_id','subject_id','teacher_id');
 				},
-				'classroom' => function($query) {
-					$query->select('id','teacher_id','name','grade','group');
-				},
-				'classroom.teacher' => function($query) {
-					$query->select('id','name','email');
-				},
-				'subject' => function($query) {
+				'classroom_subject.classroom',
+				'classroom_subject.subject' => function($query) {
 					$query->select('id','name');
+				},
+				'classroom_subject.teacher' => function($query) {
+					$query->select('id','name','uid');
+				},
+				'abcents' => function($query) {
+					$query->select('id','user_id','schedule_id','isabcent');
+				},
+				'abcents.user' => function($query) {
+					$query->select('id','name','uid','role');
 				}
 			])
-			->where(function($query) use ($date){
-				$query->whereDate('created_at', $date)
-				->where('isabcent',0);
-			})
-			->select('id','user_id','subject_id','classroom_id','isabcent','details')
+			->where('day', $day)
+			->select('id','classroom_subject_id','from_time','end_time')
+			->orderBy('from_time')
 			->get();
-			$this->reports = $reports->groupBy('classroom.name');
+			$this->reports = $repots;
 		} catch (\Exception $e) {
 			throw new \App\Exceptions\ModelException($e->getMessage());
 		}

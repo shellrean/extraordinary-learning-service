@@ -12,4 +12,9 @@ class Schedule extends Model
     {
     	return $this->belongsTo(ClassroomSubject::class);
     }
+
+    public function abcents()
+    {
+        return $this->hasMany(Abcent::class);
+    }
 }
