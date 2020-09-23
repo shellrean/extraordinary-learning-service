@@ -226,8 +226,9 @@ class AbcentRepository
 				'classroom_subject.teacher' => function($query) {
 					$query->select('id','name','uid');
 				},
-				'abcents' => function($query) {
-					$query->select('id','user_id','schedule_id','isabcent');
+				'abcents' => function($query) use($date) {
+					$query->select('id','user_id','schedule_id','isabcent')
+					->whereDate('created_at', $date);
 				},
 				'abcents.user' => function($query) {
 					$query->select('id','name','uid','role');
