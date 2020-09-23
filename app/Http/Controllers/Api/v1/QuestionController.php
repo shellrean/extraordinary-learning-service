@@ -194,6 +194,5 @@ class QuestionController extends Controller
     public function duplicateQuestionBank($question_bank_id, QuestionRepository $questionRepository)
     {
         return $questionRepository->duplicateDataQuestionBank($question_bank_id);
-        // return SendResponse::accept('question bank duplicated');
     }
 }

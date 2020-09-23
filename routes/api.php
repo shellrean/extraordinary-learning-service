@@ -249,6 +249,15 @@ Route::group(['prefix' => 'v1', 'namespace' => 'Api\v1'], function() {
 			Route::get('papers/{classroom_subject_id}/list', 'PaperController@index');
 			Route::apiResource('papers', 'PaperController')->except('update','index');
 		});
+
+		/**
+		 |-----------------------------------------------------------------
+		 | Paper route section
+		 |-----------------------------------------------------------------
+		 */
+		Route::group(['middleware'	=> 'auth.teacher'], function() {
+			Route::get('report/recap-abcent', 'ReportController@recapAbcent');
+		});
 	});
 });
 
