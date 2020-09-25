@@ -3,24 +3,28 @@
 namespace App\Imports;
 
 use App\User;
-use Maatwebsite\Excel\Concerns\ToModel;
+use Illuminate\Support\Collection;
+use Maatwebsite\Excel\Concerns\ToCollection;
 use Maatwebsite\Excel\Concerns\WithStartRow;
 use Maatwebsite\Excel\Concerns\WithValidation;
 
-class TeacherImport implements ToModel, WithStartRow, WithValidation
+class TeacherImport implements ToCollection, WithStartRow, WithValidation
 {
-    /**
-    * @param Collection $collection
-    */
-    public function model(array $row)
+    public function collection(Collection $rows)
     {
-        return new User([
-            'name'           	=> $row[0],
-            'email'        		=> $row[1],
-            'password'      	=> bcrypt($row[2]),
-            'role'				=> '1',
-            'isactive'          => true
-        ]);
+        foreach ($rows as $row) 
+        {
+            if($row->filter()->isNotEmpty()){
+                $user = User::create([
+                    'name'           	=> $row[0],
+                    'email'        		=> $row[1],
+                    'password'      	=> bcrypt($row[2]),
+                    'role'				=> '1',
+                    'isactive'          => true,
+                    'uid'               => $row[3]
+                ]);
+            }
+        }
     }
 
     public function startRow(): int
@@ -31,7 +35,8 @@ class TeacherImport implements ToModel, WithStartRow, WithValidation
     public function rules(): array
     {
     	return [
-    		'0'	=> 'unique:users,email'
+            '1'	=> 'unique:users,email',
+            '3' => 'unique:users,uid'
     	];
     }
 }

@@ -2,24 +2,32 @@
 
 namespace App\Imports;
 
+use App\User;
 use App\Classroom;
-use Maatwebsite\Excel\Concerns\ToModel;
+use Illuminate\Support\Collection;
+use Maatwebsite\Excel\Concerns\ToCollection;
 use Maatwebsite\Excel\Concerns\WithStartRow;
 use Maatwebsite\Excel\Concerns\WithValidation;
 
-class ClassroomImport implements ToModel, WithStartRow, WithValidation
+class ClassroomImport implements ToCollection, WithStartRow, WithValidation
 {
-   /**
-    * @param Collection $collection
-    */
-    public function model(array $row)
+    public function collection(Collection $rows)
     {
-        return new Classroom([
-            'name'           	=> $row[0],
-            'grade'				=> $row[1],
-            'group'				=> $row[2],
-            'teacher_id'		=> $row[3]
-        ]);
+        foreach ($rows as $row) 
+        {
+            if($row->filter()->isNotEmpty()){
+                $user = User::where('uid', $row[3])->first();
+                if($user && $user->role == '1') {
+                    Classroom::create([
+                        'name'           	=> $row[0],
+                        'grade'				=> $row[1],
+                        'group'				=> $row[2],
+                        'teacher_id'		=> $user->id,
+                        'settings'          => []
+                    ]);
+                }
+            }
+        }
     }
 
     public function startRow(): int
@@ -30,7 +38,7 @@ class ClassroomImport implements ToModel, WithStartRow, WithValidation
     public function rules(): array
     {
     	return [
-    		'3'	=> 'exists:users,id'
+    		'3'	=> 'exists:users,uid'
     	];
     }
 }

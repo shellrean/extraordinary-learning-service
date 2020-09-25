@@ -719,6 +719,7 @@ class ClassroomRepository
 				$query->where('teacher_id', $teacher_id);
 			})
 			->select('id','classroom_subject_id','from_time','end_time')
+			->orderBy('from_time')
 			->get();
 
 			$this->schedules = $schedules->map(function($item) {
@@ -766,6 +767,7 @@ class ClassroomRepository
 				}
 			})
 			->select('id','classroom_subject_id','from_time','end_time')
+			->orderBy('from_time')
 			->get();
 
 			$this->schedules = $schedules->map(function($item) {

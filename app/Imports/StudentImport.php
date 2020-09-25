@@ -24,18 +24,20 @@ class StudentImport implements ToCollection, WithStartRow, WithValidation
     {
         foreach ($rows as $row) 
         {
-            $user = User::create([
-                'name'              => $row[0],
-                'email'              => $row[1],
-                'password'          => bcrypt($row[2]),
-                'role'               => '2',
-                'isactive'          => true,
-                'uid'               => $row[3]
-            ]);
-            ClassroomStudent::create([
-                'student_id'        => $user->id,
-                'classroom_id'      => $this->classroom_id
-            ]);
+            if($row->filter()->isNotEmpty()){
+                $user = User::create([
+                    'name'              => $row[0],
+                    'email'              => $row[1],
+                    'password'          => bcrypt($row[2]),
+                    'role'               => '2',
+                    'isactive'          => true,
+                    'uid'               => $row[3]
+                ]);
+                ClassroomStudent::create([
+                    'student_id'        => $user->id,
+                    'classroom_id'      => $this->classroom_id
+                ]);
+            }
         }
     }
 
@@ -47,7 +49,8 @@ class StudentImport implements ToCollection, WithStartRow, WithValidation
     public function rules(): array
     {
     	return [
-    		'1'	=> 'unique:users,email'
+            '1'	=> 'unique:users,email',
+            '3' => 'unique:users,uid'
     	];
     }
 }

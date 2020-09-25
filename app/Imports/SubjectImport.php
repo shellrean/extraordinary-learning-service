@@ -3,23 +3,24 @@
 namespace App\Imports;
 
 use App\Subject;
-use Maatwebsite\Excel\Concerns\ToModel;
+use Illuminate\Support\Collection;
+use Maatwebsite\Excel\Concerns\ToCollection;
 use Maatwebsite\Excel\Concerns\WithStartRow;
 
-class SubjectImport implements ToModel, WithStartRow
+class SubjectImport implements ToCollection, WithStartRow
 {
-    /**
-    * @param array $row
-    *
-    * @return \Illuminate\Database\Eloquent\Model|null
-    */
-    public function model(array $row)
+    public function collection(Collection $rows)
     {
-        return new Subject([
-            'name'      => $row[0],
-            'description' => $row[1],
-            'settings'    => []
-        ]);
+        foreach ($rows as $row) 
+        {
+            if($row->filter()->isNotEmpty()){
+                Subject::create([
+                    'name'      => $row[0],
+                    'description' => $row[1],
+                    'settings'    => []
+                ]);
+            }
+        }
     }
     public function startRow(): int
     {
