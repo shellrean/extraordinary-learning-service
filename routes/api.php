@@ -21,6 +21,7 @@ Route::group(['prefix' => 'v1', 'namespace' => 'Api\v1'], function() {
 	Route::get('report/today', 'AbcentController@reportToday')->middleware('auth.res');
 
 	Route::get('download/excel/standart', 'StandartController@exportExcel');
+	Route::get('download/excel/recap-abcent', 'ReportController@recapAbcentExcel');
 	
 	Route::group(['middleware' => 'auth:api'], function() {
 		Route::get('logout', 'AuthController@logout');
