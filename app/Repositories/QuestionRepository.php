@@ -169,7 +169,8 @@ class QuestionRepository
 				'mc_option_count' => $request->mc_option_count,
 				'esay_count' => $request->esay_count,
 				'percentage' => $request->percentage,
-				'subject_id'	=> $request->subject_id
+				'subject_id'	=> $request->subject_id,
+				'standart_id' => $request->standart_id ?: 0,
 			];
 			$this->question_bank->update($data);
 		} catch (\Exception $e) {

@@ -94,6 +94,20 @@ class QuestionController extends Controller
      */
     public function update($question_bank_id, QuestionBankStore $request,QuestionRepository $questionRepository)
     {
+        $user = request()->user('api');
+        if($request->standart != '') {
+            $standart = \App\Standart::where([
+                'subject_id'    => $request->subject_id,
+                'teacher_id'    => $user->id,
+                'code'          => $request->standart
+            ])->first();
+            if(!$standart) {
+                return  SendResponse::badRequest('Standart not found');
+            }
+            $request->standart_id = $standart->id;
+        } else {
+            $request->standart_id = 0;
+        }
     	$questionRepository->updateDataQuestionBank($question_bank_id, $request);
     	return SendResponse::acceptData($questionRepository->getQuestionBank());
     }
