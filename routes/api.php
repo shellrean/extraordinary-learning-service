@@ -20,6 +20,8 @@ Route::group(['prefix' => 'v1', 'namespace' => 'Api\v1'], function() {
 	Route::post('users/offline', 'UserController@userOffline')->middleware('auth.res');
 	Route::get('report/today', 'AbcentController@reportToday')->middleware('auth.res');
 
+	Route::get('download/excel/standart', 'StandartController@exportExcel');
+	
 	Route::group(['middleware' => 'auth:api'], function() {
 		Route::get('logout', 'AuthController@logout');
 		/**
@@ -27,6 +29,7 @@ Route::group(['prefix' => 'v1', 'namespace' => 'Api\v1'], function() {
 		 | User route section
 		 |-----------------------------------------------------------------
 		 */
+		
 		Route::get('user-authenticated', 'UserController@getUserLogin');
 		Route::post('users/online', 'UserController@setOnlineUser');
 

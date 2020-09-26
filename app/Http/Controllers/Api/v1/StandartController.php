@@ -2,7 +2,9 @@
 
 namespace App\Http\Controllers\Api\v1;
 
+use PhpOffice\PhpSpreadsheet\Writer\Xlsx;
 use App\Repositories\StandartRepository;
+use App\Exports\StandartExportSpreet;
 use App\Http\Controllers\Controller;
 use App\Http\Requests\StandartStore;
 use App\Actions\SendResponse;
@@ -83,5 +85,37 @@ class StandartController extends Controller
     {
     	$standartRepostory->deleteDataStandart($standart_id);
     	return SendResponse::accept('standart deleted');
+    }
+
+    /**
+     * Export data standart
+     * 
+     * @author shellrean <wandinak17@gmail.com>
+     * @param \App\Repositories\StandartRepository
+     * @return \App\Actions\SendResponse
+     */
+    public function exportExcel(StandartRepository $standartRepository)
+    {
+        $user_id = isset(request()->u) ? request()->u : '';
+        $subject_id = isset(request()->s) ? request()->s : '';
+
+        $subject = \App\Subject::find($subject_id);
+        $user = \App\User::find($user_id);
+        if(!$subject) {
+            return SendResponse::notFound('Subject not found');
+        }
+        if(!$user) {
+            return SendResponse::notFound('User not found');
+        }
+
+        $standartRepository->getDataStandarts($user->Id, $subject->id);
+
+        $spreadsheet = StandartExportSpreet::export($standartRepository->getStandarts(), $subject->name);
+        $writer = new Xlsx($spreadsheet);
+
+        $filename = $subject->name.'_'.$user->name;
+        header('Content-Type: application/vnd.openxmlformats-officedocument.spreadsheetml.sheet');
+        header('Content-Disposition: attachment; filename="'.$filename.'.xlsx"');
+        $writer->save('php://output');
     }
 }

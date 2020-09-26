@@ -65,5 +65,4 @@ class ReportController extends Controller
 
         return Excel::download(new RecapAbcentExport($results, $daterange, $classroomRepository->getSchedule()->day), 'recapitulasi_abcent.xlsx');
     }
-    
 }
