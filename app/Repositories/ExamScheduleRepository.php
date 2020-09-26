@@ -104,6 +104,7 @@ class ExamScheduleRepository
 				'date' => $request->date,
 				'start_time' => $request->start_time,
 				'duration' => $request->duration*60,
+				'type'	=> $request->type,
 				'setting' => $request->setting
 			];
 			ExamSchedule::create($data);
@@ -150,6 +151,7 @@ class ExamScheduleRepository
 				'question_bank_id'	=> $request->question_bank_id,
 				'classrooms' => $request->classrooms,
 				'name'	=> $request->name,
+				'type'	=> $request->type,
 				'date' => $request->date,
 				'start_time' => $request->start_time,
 				'duration' => $request->duration*60,

@@ -28,7 +28,8 @@ class ExamScheduleStore extends FormRequest
             'name'  => 'required',
             'date'  => 'required',
             'start_time' => 'required',
-            'duration' => 'required|int'
+            'duration' => 'required|int',
+            'type'  => 'required|int'
         ];
     }
 }

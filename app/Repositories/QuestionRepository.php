@@ -92,7 +92,7 @@ class QuestionRepository
 	public function getDataQuestionBank($question_bank_id, $exception = true)
 	{
 		try {
-			$question_bank = QuestionBank::with('subject')->where('id', $question_bank_id)->first();
+			$question_bank = QuestionBank::with('standart','subject')->where('id', $question_bank_id)->first();
 			if(!$question_bank && $exception) {
 				throw new \App\Exceptions\ModelNotFoundException('question bank not found');
 			}
@@ -141,7 +141,8 @@ class QuestionRepository
 				'esay_count' => $request->esay_count,
 				'percentage' => $request->percentage,
 				'subject_id'	=> $request->subject_id,
-				'author'	=> $request->author
+				'author'	=> $request->author,
+				'standart_id' => $request->standart_id ?: 0,
 			];
 			$bank = QuestionBank::create($data);
 			$this->question_bank = $bank;

@@ -42,7 +42,18 @@ class QuestionController extends Controller
     public function store(QuestionBankStore $request, QuestionRepository $questionRepository)
     {
     	$user = request()->user('api');
-    	$request->author = $user->id;
+        $request->author = $user->id;
+        if($request->standart != '') {
+            $standart = \App\Standart::where([
+                'subject_id'    => $request->subject_id,
+                'teacher_id'    => $user->id,
+                'code'          => $request->standart
+            ])->first();
+            if(!$standart) {
+                return  SendResponse::badRequest('Standart not found');
+            }
+            $request->standart_id = $standart->id;
+        }
     	$questionRepository->createDataQuestionBank($request);
     	return SendResponse::acceptData($questionRepository->getQuestionBank());
     }
@@ -57,7 +68,20 @@ class QuestionController extends Controller
     public function show($question_bank_id, QuestionRepository $questionRepository)
     {
         $questionRepository->getDataQuestionBank($question_bank_id);
-        return SendResponse::acceptData($questionRepository->getQuestionBank());
+        $data = $questionRepository->getQuestionBank();
+        return SendResponse::acceptData([
+            'id'    => $data->id,
+            'code' => $data->code,
+            'subject' => $data->subject,
+            'standart' => isset($data->standart->code) ? $data->standart->code : '',
+            'standart_data' => $data->standart,
+            'mc_count' => $data->mc_count,
+            'mc_option_count' => $data->mc_option_count,
+            'esay_count' => $data->esay_count,
+            'percentage' => $data->percentage,
+            'subject_id' => $data->subject_id,
+            'author' => $data->author
+        ]);
     }
 
     /**

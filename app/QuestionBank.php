@@ -16,4 +16,9 @@ class QuestionBank extends Model
     {
     	return $this->belongsTo(Subject::class)->select('id','name');
     }
+
+    public function standart()
+    {
+        return $this->belongsTo(Standart::class);
+    }
 }

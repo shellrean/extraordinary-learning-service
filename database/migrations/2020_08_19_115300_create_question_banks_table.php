@@ -16,6 +16,7 @@ class CreateQuestionBanksTable extends Migration
         Schema::create('question_banks', function (Blueprint $table) {
             $table->id();
             $table->string('code', 100);
+            $table->bigInteger('standart_id')->default(0);
             $table->integer('mc_count')->comment('multiple choice count');
             $table->integer('mc_option_count')->default(4)->comment('multple choise option count');
             $table->integer('esay_count')->default(0);
