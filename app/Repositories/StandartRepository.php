@@ -64,14 +64,19 @@ class StandartRepository
 	 * @param $techer_id
 	 * @return void
 	 */
-	public function getDataStandarts(int $perPage, $teacher_id = null)
+	public function getDataStandarts($teacher_id = null, $subject_id = null)
 	{
 		try {
-			$standarts = Standart::with('children')->where('standart_id',0);
+			$standarts = Standart::with(['children' => function($query) {
+				$query->orderBy('code');
+			}])->where('standart_id',0);
 			if($teacher_id != null) {
 				$standarts = $standarts->where('teacher_id', $teacher_id);
 			}
-			$this->standarts = $standarts->paginate($perPage);
+			if($subject_id != null) {
+				$standarts = $standarts->where('subject_id', $subject_id);
+			}
+			$this->standarts = $standarts->orderBy('code')->get();
 		} catch (\Exception $e) {
 			throw new \App\Exceptions\ModelException($e->getMessage());
 		}
@@ -114,6 +119,7 @@ class StandartRepository
 				'teacher_id'	=> $request->teacher_id,
 				'standart_id'	=> $request->standart_id != '' ? $request->standart_id : 0,
 				'type'			=> $request->type,
+				'subject_id'	=> $request->subject_id,
 				'code'			=> $request->code,
 				'body'			=> $request->body
 			]);
@@ -160,7 +166,11 @@ class StandartRepository
 	public function deleteDataStandart($standart_id)
 	{
 		try {
-			Standart::where('id', $standart_id)->delete();
+			$standart = Standart::where('id', $standart_id)->first();
+			if($standart->standart_id == 0) {
+				Standart::where('standart_id', $standart->id)->delete();
+			}
+			$standart->delete();
 		} catch (\Exception $e) {
 			throw new \App\Exceptions\ModelException($e->getMessage());
 		}

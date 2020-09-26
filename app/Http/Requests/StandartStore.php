@@ -26,7 +26,8 @@ class StandartStore extends FormRequest
         return [
             'type'  => 'required',
             'code'  => 'required',
-            'body'  => 'required'
+            'body'  => 'required',
+            'subject_id' => 'required'
         ];
     }
 }

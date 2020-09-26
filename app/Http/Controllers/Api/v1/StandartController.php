@@ -19,11 +19,10 @@ class StandartController extends Controller
      */
     public function index(StandartRepository $standartRepostory)
     {
-    	$per_page = isset(request()->perPage) && request()->perPage != ''
-    				? request()->perPage
-    				: 10;
-    	$user = request()->user('api');
-    	$standartRepostory->getDataStandarts($per_page, $user->id);
+        $user = request()->user('api');
+        $subject_id = isset(request()->s) ? request()->s : '';
+
+    	$standartRepostory->getDataStandarts($user->id, $subject_id);
     	return SendResponse::acceptData($standartRepostory->getStandarts());
     }
 

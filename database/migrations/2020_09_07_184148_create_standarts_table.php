@@ -17,12 +17,14 @@ class CreateStandartsTable extends Migration
             $table->id();
             $table->unsignedBigInteger('teacher_id');
             $table->bigInteger('standart_id')->default(0);
+            $table->unsignedBigInteger('subject_id');
             $table->string('type');
             $table->string('code');
             $table->text('body');
             $table->timestamps();
 
             $table->foreign('teacher_id')->references('id')->on('users')->onDelete('cascade');
+            $table->foreign('subject_id')->references('id')->on('subjects')->onDelete('cascade');
         });
     }
 
