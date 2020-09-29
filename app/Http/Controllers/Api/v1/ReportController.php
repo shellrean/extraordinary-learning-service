@@ -9,6 +9,7 @@ use Maatwebsite\Excel\Facades\Excel;
 use App\Http\Controllers\Controller;
 use App\Exports\RecapAbcentSpreet;
 use App\Exports\RecapAbcentExport;
+use App\Exports\RecapResultExam;
 use App\Actions\SendResponse;
 
 class ReportController extends Controller
@@ -71,6 +72,41 @@ class ReportController extends Controller
         
 
         $filename = 'Rekapitulasi absensi dari '.$from->format('d-m-Y').'_'.$end->format('d-m-Y');
+        header('Content-Type: application/vnd.openxmlformats-officedocument.spreadsheetml.sheet');
+        header('Content-Disposition: attachment; filename="'.$filename.'.xlsx"');
+        $writer->save('php://output');
+    }
+
+    /**
+     * Recapitulation result exams
+     * 
+     * @author shellrean <wandinak17@gmail.com>
+     * @param Query
+     * @return \App\Actions\SendResponse
+     */
+    public function recapResultExams(ReportRepository $reportRepository)
+    {
+        $exams = isset(request()->e) && request()->e != ''
+                ? request()->e
+                : '';
+        $classroom = isset(request()->c) && request()->c != ''
+                ? request()->c
+                : '';
+
+        if($exams == '' || $classroom == '') {
+            return SendResponse::badRequest('invalid parameter');
+        }
+
+        $exam_ids = explode(',', $exams);
+        $classroom_id = $classroom;
+
+        $reportRepository->getDataRecapResultExams($exam_ids, $classroom_id);
+        $data = $reportRepository->getRecapResultExams();
+
+        $spreadsheet = RecapResultExam::export($data, $exam_ids);
+        $writer = new Xlsx($spreadsheet);
+
+        $filename = 'Rekapitulasi nilai ulangan'.$exams.$classroom;
         header('Content-Type: application/vnd.openxmlformats-officedocument.spreadsheetml.sheet');
         header('Content-Disposition: attachment; filename="'.$filename.'.xlsx"');
         $writer->save('php://output');
