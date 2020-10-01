@@ -11,6 +11,7 @@ use App\Http\Requests\UserImport;
 use App\Actions\SendResponse;
 use App\Services\FileService;
 use Illuminate\Http\Request;
+use App\Token;
 
 class UserController extends Controller
 {
@@ -32,6 +33,18 @@ class UserController extends Controller
                 $auth->classroom->makeVisible('invitation_code');
             }
         }
+        $token = Token::where('user_id', $auth->id)->first();
+        if(!$token) {
+            $token = Token::create([
+                'user_id'   => $auth->id,
+                'name'      => 'download_token',
+                'token'     => bcrypt($auth->id)
+            ]);
+        } else {
+            $token->token = bcrypt($auth->id);
+            $token->save();
+        }
+        $auth->token_download = $token->token;
     	return SendResponse::acceptData($auth);
     }
 

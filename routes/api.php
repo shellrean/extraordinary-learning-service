@@ -20,9 +20,11 @@ Route::group(['prefix' => 'v1', 'namespace' => 'Api\v1'], function() {
 	Route::post('users/offline', 'UserController@userOffline')->middleware('auth.res');
 	Route::get('report/today', 'AbcentController@reportToday')->middleware('auth.res');
 
-	Route::get('download/excel/standart', 'StandartController@exportExcel');
-	Route::get('download/excel/recap/abcent', 'ReportController@recapAbcentExcel');
-	Route::get('download/excel/recap/result/exams', 'ReportController@recapResultExams');
+	Route::group(['middleware' => 'auth.token'], function() {
+		Route::get('download/excel/standart', 'StandartController@exportExcel');
+		Route::get('download/excel/recap/abcent', 'ReportController@recapAbcentExcel');
+		Route::get('download/excel/recap/result/exams', 'ReportController@recapResultExams');
+	});
 	
 	Route::group(['middleware' => 'auth:api'], function() {
 		Route::get('logout', 'AuthController@logout');

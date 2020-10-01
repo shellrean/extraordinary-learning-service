@@ -56,7 +56,7 @@ class ReportRepository
      * @param $end
      * @return void
      */
-    public function getDataRecapAbcents($classroom_id, $schedule_id, $from = '', $end = '')
+    public function getDataRecapAbcents($classroom_id, $schedule_ids, $from = '', $end = '')
     {
         try {
             if($from == '') {
@@ -65,41 +65,106 @@ class ReportRepository
             if($end == '') {
                 $end = \Carbon\Carbon::today()->addDay(1);
             }
-            $abcents = Abcent::where('schedule_id', $schedule_id)
+
+            $result_abcents = Abcent::whereIn('schedule_id', $schedule_ids)
             ->whereBetween('created_at', [$from, $end])
-            ->get();
-            
-            $classrooms = ClassroomStudent::with([
+            ->get()
+            ->map(function($item) {
+                return [
+                    'user_id'   => $item->user_id,
+                    'schedule_id' => $item->schedule_id,
+                    'isabcent' => $item->isabcent,
+                    'reason' => $item->reason,
+                    'created_at' => $item->created_at->format('d-m-Y'),
+                    'time'  => $item->created_at->format('h:i:s A'),
+                    'desc' => $item->desc,
+                    'details' => $item->details
+                ];
+            })
+            ->values();
+
+            $days = \App\Schedule::whereIn('id', $schedule_ids)->get()->pluck('day');
+
+            $begin = new \DateTime($from->format('Y-m-d'));
+            $end = new \DateTime($end->format('Y-m-d'));
+
+            $interval = new \DateInterval('P1D');
+            $daterange = new \DatePeriod($begin, $interval ,$end);
+
+            $students = ClassroomStudent::with([
                 'student'   => function($query) {
                     $query->select('id','name','uid');
                 }
             ])
-            ->where('classroom_id', $classroom_id)->get();
+            ->where('classroom_id', $classroom_id)
+            ->get(); 
 
+            $data = [];
+            foreach($daterange as $date) {
+                if(in_array($date->format('w'), $days->toArray())) {
+                    array_push($data, $date->format('d-m-Y'));
+                }
+            }
             $dat = [];
-            foreach($classrooms as $student) {
-                $data = $abcents->where('user_id', $student->student_id)->map(function($item) {
-                    return [
-                        'id'    => $item->id,
-                        'user_id'=> $item->user_id,
-                        'schedule_id' => $item->schedule_id,
-                        'isabcent'  => $item->isabcent,
-                        'reason'    => $item->reason,
-                        'desc'  => $item->desc,
-                        'details'   => $item->details,
-                        'created_at' => $item->created_at->format('Y-m-d')
-                    ];
-                })
-                ->values();
+            foreach($students as $s) {
+                $total = 0;
+                $absen = 0;
+                $sick = 0;
+                $alpha = 0;
+                $permit = 0;
+                $problem = 0;
+                $new_dat['nis'] = $s->student->uid;
+                $new_dat['name'] = $s->student->name;
+                foreach($data as $key => $value) {
+                    if(!$result_abcents->isEmpty()) {
+                        $check = $result_abcents->where('created_at', $value)->first();
+                        if($check) {
+                            $new_dat[$key] = $check['isabcent'];
+                            if($check['isabcent'] == '1') {
+                                $total += 1;
+                            }
+                            if($check['isabcent'] == '0'){
+                                $absen += 1;
+                            }
+                            switch ($check['reason']) {
+                                case '1':
+                                    $alpha += 1;
+                                    break;
+                                
+                                case '2':
+                                    $sick += 1;
+                                break;
+                                case '3':
+                                    $permit += 1;
+                                break;
+                                case '4':
+                                    $problem += 1;
+                                break;
+                                default:
+                                    
+                                break;
+                            }
+                        } else {
+                            $new_dat[$key] = 'x';
+                        }
+                    } else {
+                        $new_dat[$key] = 'x';
+                    }
+                }
 
-                $ret = [
-                    'student'   => $student,
-                    'abcents'   => $data
-                ];
-                array_push($dat, $ret);
+                $new_dat['total'] = $total;
+                $new_dat['absen'] = $absen; 
+                $new_dat['alpha'] = $alpha;
+                $new_dat['permit'] = $permit;
+                $new_dat['sick'] = $sick;
+                $new_dat['problem'] = $problem;
+                array_push($dat, $new_dat);
             }
 
-            $this->recap_abcents = $dat;
+            $this->recap_abcents = [
+                'dates' => $data,
+                'data' => $dat
+            ];
         } catch (\Exception $e) {
             throw new \App\Exceptions\ModelException($e->getMessage());
         }

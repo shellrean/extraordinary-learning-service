@@ -32,6 +32,7 @@ class ReportController extends Controller
         if($schedule_id == '' || $classroom_id == '') {
             return SendResponse::badRequest('request parameter invalid');
         }
+        $schedule_ids = explode(',', $schedule_id);
         $from = isset(request()->f) && request()->f != ''
                 ? request()->f
                 : '';
@@ -57,17 +58,11 @@ class ReportController extends Controller
             $from = \Carbon\Carbon::today()->addDay(1);
         }
         $classroomRepository->getDataSchedule($schedule_id);
-        $reportRepository->getDataRecapAbcents($classroom_id, $schedule_id, $from, $end);
+        $reportRepository->getDataRecapAbcents($classroom_id, $schedule_ids, $from, $end);
 
         $results = $reportRepository->getRecapAbcents();
 
-        $begin = new \DateTime($from->format('Y-m-d'));
-        $end = new \DateTime($end->format('Y-m-d'));
-
-        $interval = new \DateInterval('P1D');
-        $daterange = new \DatePeriod($begin, $interval ,$end);
-
-        $spreadsheet = RecapAbcentSpreet::export($results, $daterange, $classroomRepository->getSchedule()->day, $from, $end, $classroomRepository->getSchedule());
+        $spreadsheet = RecapAbcentSpreet::export($results, $from, $end);
         $writer = new Xlsx($spreadsheet);
         
 

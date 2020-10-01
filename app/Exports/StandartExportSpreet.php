@@ -28,11 +28,9 @@ class StandartExportSpreet
             ],
             'fill' => [
                 'fillType' => \PhpOffice\PhpSpreadsheet\Style\Fill::FILL_SOLID,
-                'startColor' => array('argb' => '1BC5BD')
+                'startColor' => array('argb' => 'FFCC99')
             ],
             'font'  => array(
-                'bold'  => true,
-                'color' => array('rgb' => 'ffffff'),
                 'size'  => 12,
             )
         ];
