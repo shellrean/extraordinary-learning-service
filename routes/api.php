@@ -24,6 +24,7 @@ Route::group(['prefix' => 'v1', 'namespace' => 'Api\v1'], function() {
 		Route::get('download/excel/standart', 'StandartController@exportExcel');
 		Route::get('download/excel/recap/abcent', 'ReportController@recapAbcentExcel');
 		Route::get('download/excel/recap/result/exams', 'ReportController@recapResultExams');
+		Route::get('download/excel/recap/result/tasks', 'ReportController@recapResultTasks');
 	});
 	
 	Route::group(['middleware' => 'auth:api'], function() {

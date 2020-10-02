@@ -106,4 +106,31 @@ class ReportController extends Controller
         header('Content-Disposition: attachment; filename="'.$filename.'.xlsx"');
         $writer->save('php://output');
     }
+
+    /**
+     * Recapitulation result tasts
+     * 
+     * @author shellrean <wandinak17@gmail.com>
+     * @param Query
+     * @return \App\Actions\SendResponse
+     */
+    public function recapResultTasks(ReportRepository $reportRepository)
+    {
+        $tasks = isset(request()->t) && request()->t != ''
+                ? request()->t
+                : '';
+        $classroom = isset(request()->c) && request()-> c != ''
+                ? request()->c
+                : '';
+        if($tasks == '' || $classroom == '') {
+            return SendResponse::badRequest('invalid parameter');
+        }
+
+        $task_ids = explode(',', $tasks);
+        $classroom_id = $classroom;
+
+        $reportRepository->getDataRecapResultTasks($task_ids, $classroom_id);
+
+        return SendResponse::acceptData($reportRepository->getRecapResultTaks());
+    }
 }

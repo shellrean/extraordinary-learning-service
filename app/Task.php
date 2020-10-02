@@ -28,15 +28,17 @@ class Task extends Model
     public function getStatusAttribute() 
     {
         $user = request()->user('api');
-        if($user->role == '2') {
-            $task = StudentTask::where([
-                'student_id'    => $user->id,
-                'task_id'       => $this->id
-            ])->count();
-            if($task) {
-                return true;
+        if($user) {
+            if($user->role == '2') {
+                $task = StudentTask::where([
+                    'student_id'    => $user->id,
+                    'task_id'       => $this->id
+                ])->count();
+                if($task) {
+                    return true;
+                }
+                return false;
             }
-            return false;
         }
         return false;
     }

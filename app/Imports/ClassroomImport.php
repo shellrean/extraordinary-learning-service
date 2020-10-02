@@ -7,9 +7,8 @@ use App\Classroom;
 use Illuminate\Support\Collection;
 use Maatwebsite\Excel\Concerns\ToCollection;
 use Maatwebsite\Excel\Concerns\WithStartRow;
-use Maatwebsite\Excel\Concerns\WithValidation;
 
-class ClassroomImport implements ToCollection, WithStartRow, WithValidation
+class ClassroomImport implements ToCollection, WithStartRow
 {
     public function collection(Collection $rows)
     {
@@ -33,12 +32,5 @@ class ClassroomImport implements ToCollection, WithStartRow, WithValidation
     public function startRow(): int
     {
     	return 2;
-    }
-
-    public function rules(): array
-    {
-    	return [
-    		'3'	=> 'exists:users,uid'
-    	];
     }
 }

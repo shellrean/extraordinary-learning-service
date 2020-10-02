@@ -8,10 +8,8 @@ use Illuminate\Support\Collection;
 use Maatwebsite\Excel\Concerns\ToModel;
 use Maatwebsite\Excel\Concerns\ToCollection;
 use Maatwebsite\Excel\Concerns\WithStartRow;
-use Maatwebsite\Excel\Concerns\WithValidation;
 
-
-class StudentImport implements ToCollection, WithStartRow, WithValidation
+class StudentImport implements ToCollection, WithStartRow
 {
     private $classroom_id;
 
@@ -25,18 +23,22 @@ class StudentImport implements ToCollection, WithStartRow, WithValidation
         foreach ($rows as $row) 
         {
             if($row->filter()->isNotEmpty()){
-                $user = User::create([
-                    'name'              => $row[0],
-                    'email'              => $row[1],
-                    'password'          => bcrypt($row[2]),
-                    'role'               => '2',
-                    'isactive'          => true,
-                    'uid'               => $row[3]
-                ]);
-                ClassroomStudent::create([
-                    'student_id'        => $user->id,
-                    'classroom_id'      => $this->classroom_id
-                ]);
+                $check = User::where('email', $row[1])->first();
+                $check2 = User::where('uid', $row[3])->first();
+                if(!$check && !$check2) {
+                    $user = User::create([
+                        'name'              => $row[0],
+                        'email'              => $row[1],
+                        'password'          => bcrypt($row[2]),
+                        'role'               => '2',
+                        'isactive'          => true,
+                        'uid'               => $row[3]
+                    ]);
+                    ClassroomStudent::create([
+                        'student_id'        => $user->id,
+                        'classroom_id'      => $this->classroom_id
+                    ]);
+                }
             }
         }
     }
@@ -44,13 +46,5 @@ class StudentImport implements ToCollection, WithStartRow, WithValidation
     public function startRow(): int
     {
     	return 2;
-    }
-
-    public function rules(): array
-    {
-    	return [
-            '1'	=> 'unique:users,email',
-            '3' => 'unique:users,uid'
-    	];
     }
 }

@@ -4,9 +4,11 @@ namespace App\Repositories;
 
 use Illuminate\Support\Facades\DB;
 
+use App\ClassroomStudent;
+use App\ResultTask;
 use App\Schedule;
 use App\Abcent;
-use App\ClassroomStudent;
+use App\Task;
 
 class ReportRepository
 {
@@ -21,6 +23,12 @@ class ReportRepository
      * @var Collection
      */
     private $recap_result_exams;
+
+    /**
+     * Data recap result tas
+     * @var Collection
+     */
+    private $recap_result_tasks;
 
     /**
      * Retreive data recap_abcent
@@ -39,11 +47,23 @@ class ReportRepository
      * 
      * @author shellrean <wandinak17@gmail.com>
      * @since 1.1.0
-     * @return self $recap_abcents
+     * @return self $recap_result_exams
      */
     public function getRecapResultExams()
     {
         return $this->recap_result_exams;
+    }
+
+    /**
+     * Retreive data recap result tasks
+     * 
+     * @author shellrean <wandinak17@gmail.com>
+     * @since 1.1.0
+     * @return self $recap_result_task
+     */
+    public function getRecapResultTaks()
+    {
+        return $this->recap_result_tasks;
     }
 
     /**
@@ -220,6 +240,72 @@ class ReportRepository
             }
 
             $this->recap_result_exams = collect($rest)->sortBy('name')->values();
+        } catch (\Exception $e) {
+            throw new \App\Exceptions\ModelException($e->getMessage());
+        }
+    }
+
+    /**
+     * Get data recapitulation tas
+     * 
+     * @author shellrean <wandinak17@gmail.com>
+     * @since 1.1.0
+     * @param array $task_ids
+     * @param $classroom_id
+     * @return void
+     */
+    public function getDataRecapResultTasks(array $task_ids, $classroom_id)
+    {
+        try {
+            $classroom_students = ClassroomStudent::with([
+                'student'   => function($query) {
+                    $query->select('id','name','uid');
+                }
+            ])
+            ->where(function($query) use ($classroom_id) {
+                $query->where('classroom_id', $classroom_id)
+                ->whereHas('student');
+            })
+            ->get();
+
+            $tasks = [];
+            foreach($task_ids as $id) {
+                $task = Task::where('id',$id)->select('id','title','created_at')->first();
+                if($task) {
+                    array_push($tasks, $task);
+                }
+            }
+
+            $result_tasks = ResultTask::with(['student_task' => function($query) use($classroom_students) {
+                $query->whereIn('student_id', $classroom_students->pluck('student_id')->toArray());
+            }])
+            ->whereHas('student_task')
+            ->get();
+
+            $data = [];
+            foreach($classroom_students as $student) {
+                $new_push['nis'] = $student->student->uid;
+                $new_push['name'] = $student->student->name;
+                foreach($tasks as $key => $task) {
+                    $check = $result_tasks
+                            ->where('student_task.student_id', $student->student_id)
+                            ->where('student_task.task_id', $task->id)->first();
+                    if($check) {
+                        $new_push[$key] = $check->point;
+                    } else {
+                        $new_push[$key] = '-';
+                    }
+                }
+
+                array_push($data, $new_push);
+            }
+
+            
+
+            $this->recap_result_tasks = [
+                'header'     => $tasks,
+                'data'      => $data
+            ];
         } catch (\Exception $e) {
             throw new \App\Exceptions\ModelException($e->getMessage());
         }
