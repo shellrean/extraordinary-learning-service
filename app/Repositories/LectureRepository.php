@@ -237,7 +237,9 @@ class LectureRepository
 	{
 		try {
 			$lectures = ClassroomLecture::with(['lecture' => function($query) {
-				$query->select('id','title');
+				$query->select('id','title','subject_id');
+			}, 'lecture.subject' => function($query) {
+				$query->select('id','name');
 			}])->where('classroom_id', $classroom_id);
 			if($teacher_id != '') {
 				$lectures = $lectures->where('teacher_id', $teacher_id);
