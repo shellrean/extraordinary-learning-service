@@ -10,6 +10,7 @@ use App\Http\Controllers\Controller;
 use App\Exports\RecapAbcentSpreet;
 use App\Exports\RecapAbcentExport;
 use App\Exports\RecapResultExam;
+use App\Exports\RecapResultTask;
 use App\Actions\SendResponse;
 
 class ReportController extends Controller
@@ -131,6 +132,12 @@ class ReportController extends Controller
 
         $reportRepository->getDataRecapResultTasks($task_ids, $classroom_id);
 
-        return SendResponse::acceptData($reportRepository->getRecapResultTaks());
+        $spreadsheet = RecapResultTask::export($reportRepository->getRecapResultTaks());
+        $writer = new Xlsx($spreadsheet);
+
+        $filename = 'Rekapitulasi nilai tugas'.$tasks.$classroom;
+        header('Content-Type: application/vnd.openxmlformats-officedocument.spreadsheetml.sheet');
+        header('Content-Disposition: attachment; filename="'.$filename.'.xlsx"');
+        $writer->save('php://output');
     }
 }

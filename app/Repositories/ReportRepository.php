@@ -300,10 +300,15 @@ class ReportRepository
                 array_push($data, $new_push);
             }
 
-            
+            $tasks = collect($tasks)->map(function($item) {
+                return [
+                    'title'      => $item->title,
+                    'created_at' => $item->created_at->format('d-m-Y H:m')
+                ];
+            });
 
             $this->recap_result_tasks = [
-                'header'     => $tasks,
+                'tasks'     => $tasks,
                 'data'      => $data
             ];
         } catch (\Exception $e) {
