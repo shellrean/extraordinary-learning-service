@@ -117,7 +117,9 @@ class ResultRepository
 		try {
 			$results = ExamResult::with(['student' => function($query) {
 				$query->select('id','name');
-			}])->orderBy('student_id');
+			}])
+			->where('exam_schedule_id', $exam_schedule_id)
+			->orderBy('student_id');
 			if($classroom_id != '') {
 				$classroom_students = DB::table('classroom_students')->where('classroom_id', $classroom_id)->get()->pluck('student_id');
 				$results = $results->whereIn('student_id', $classroom_students->toArray());
