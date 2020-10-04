@@ -2,6 +2,7 @@
 
 namespace App\Http\Controllers\Api\v1;
 
+use PhpOffice\PhpSpreadsheet\Writer\Xlsx;
 use App\Http\Requests\ResultTaskStore;
 use App\Http\Controllers\Controller;
 use App\Repositories\TaskRepository;
@@ -9,6 +10,7 @@ use App\Http\Requests\TaskCollect;
 use App\Http\Requests\TaskUpdate;
 use App\Http\Requests\TaskSharee;
 use App\Http\Requests\TaskCreate;
+use App\Exports\ResultTaskSpreet;
 use App\Actions\SendResponse;
 use Illuminate\Http\Request;
 
@@ -224,6 +226,7 @@ class TaskController extends Controller
                 ],
                 'student'   => [
                     'id'    => $item->student->id,
+                    'uid'   => $item->student->uid,
                     'name'  => $item->student->name
                 ]
             ];
@@ -259,5 +262,33 @@ class TaskController extends Controller
     {
         $taskRepository->deleteDataStudentTask($student_task_id);
         return SendResponse::accept('Student task submit deleted');
+    }
+
+    /**
+     * Export data task result
+     * 
+     * @author shellrean <wandinak17@gmail.com>
+     * @return \App\Repositories\TaskRepository
+     * @return \App\Actions\SendResponse
+     */
+    public function downloadExcelResult(TaskRepository $taskRepository)
+    {
+        $task_id = isset(request()->t) ? request()->t : '';
+        $classroom_id = isset(request()->c) ? request()->c : '';
+
+        if($task_id == '' || $task_id == '') {
+            return SendResponse::badRequest('invalid parameters');
+        }
+
+        $taskRepository->getDataTaskResults($task_id, $classroom_id);
+        $data = $taskRepository->getTasks();
+
+        $spreadsheet = ResultTaskSpreet::export($data);
+        $writer = new Xlsx($spreadsheet);
+
+        $filename = 'Nilai tugas '.$task_id.' - '.$classroom_id;
+        header('Content-Type: application/vnd.openxmlformats-officedocument.spreadsheetml.sheet');
+        header('Content-Disposition: attachment; filename="'.$filename.'.xlsx"');
+        $writer->save('php://output');
     }
 }
