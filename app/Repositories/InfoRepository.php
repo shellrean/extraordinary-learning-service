@@ -111,7 +111,7 @@ class InfoRepository
 				'user_id'	=> $request->user_id,
 				'title'		=> $request->title,
 				'body'		=> $request->body,
-				'status'	=> $request->status,
+				'status'	=> $request->status == '' ? 0 : $request->status,
 				'settings'	=> $request->settings
 			];
 
@@ -139,7 +139,7 @@ class InfoRepository
 			$data = [
 				'title'		=> $request->title,
 				'body'		=> $request->body,
-				'status'	=> $request->status,
+				'status'	=> $request->status == '' ? 0 : $request->status,
 				'settings'	=> $request->settings
 			];
 

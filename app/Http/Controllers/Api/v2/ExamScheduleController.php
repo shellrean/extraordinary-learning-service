@@ -35,6 +35,6 @@ class ExamScheduleController extends Controller
     	if(!$use) {
     		return SendResponse::acceptData([]);
     	}
-    	return SendResponse::acceptData($use);
+    	return SendResponse::acceptData($use->values());
     }
 }
